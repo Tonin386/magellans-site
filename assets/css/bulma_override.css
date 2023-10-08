@@ -1,0 +1,17 @@
+:root {
+    --magellans_dark: #7f3f18;
+    --magellans_light: #eba40e;
+}
+
+.is-primary {
+    background-color: var(--magellans_light)!important;
+}
+
+.is-dark {
+    background-color: var(--magellans_dark)!important;
+}
+
+.navbar-link.is-active, .navbar-link:focus, .navbar-link:focus-within, .navbar-link:hover, a.navbar-item.is-active, a.navbar-item:focus, a.navbar-item:focus-within, a.navbar-item:hover {
+    color: var(--magellans_light)!important;
+    background-color: transparent;
+}

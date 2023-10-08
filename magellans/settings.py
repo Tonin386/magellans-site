@@ -20,8 +20,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 STATIC_URL = '/static/'
 
 # Additional directories where Django will look for static files
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'static'),
+    BASE_DIR / "assets",
 ]
 
 # Quick-start development settings - unsuitable for production
@@ -32,9 +33,10 @@ SECRET_KEY = 'django-insecure-7cxr-qg^cmmmpun1x-q9136c3-w8a$@#$%yagj&s5sjob%t0^+
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
+if DEBUG:
+    STATIC_URL = "/assets/"
 
 ALLOWED_HOSTS = ["localhost"]
-
 
 # Application definition
 
@@ -49,7 +51,8 @@ INSTALLED_APPS = [
     'showcase',
     'warehouse',
     'bank',
-    'members'
+    'members',
+    'markdownx'
 ]
 
 MIDDLEWARE = [
