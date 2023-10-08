@@ -2,9 +2,10 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>{% block title %}{% endblock %}</title>
+  <title>{% block title %}{% endblock %} - Magellans</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
   <link rel="stylesheet" href="{% static 'css/bulma_override.css'%}">
+  <link rel="shortcut icon" type="image/x-icon" href="{% static 'img/favicon.ico' %}">
 </head>
 <body>
   <header>
@@ -20,6 +21,15 @@
   
   <footer>
     {% block footer %}
+    {% if request.user.is_authenticated %}
+    <div class="footer-dialog">
+      <a class="button is-dark" id="hello-user" href="{% url 'my-profile'%}">
+        Hello {{ request.user.first_name }} ! ☀️ 
+        <br> 
+        Voir votre profil
+      </a>
+    </div>
+    {% endif %}
     {% endblock %}
   </footer>
 </body>

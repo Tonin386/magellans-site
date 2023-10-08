@@ -8,12 +8,12 @@ class MemberAdmin(admin.ModelAdmin):
     
     def account_formatted(self, obj):
         if obj.account == 0:
-            return "O.OO€"
+            return "0.00€"
         return "+%.2f€" % obj.account if obj.account > 0 else "-%.2f€" % abs(obj.account)
     
     def donation_formatted(self, obj):
         if obj.donation == 0:
-            return "O.OO€"
+            return "0.00€"
         return "+%.2f€" % obj.donation if obj.donation > 0 else "-%.2f€" % abs(obj.donation)
     
     phone_formatted.short_description = "N° téléphone"

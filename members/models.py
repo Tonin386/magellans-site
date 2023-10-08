@@ -62,3 +62,16 @@ class Member(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return "%s %s (%s)" % (self.first_name, self.last_name, self.email)
+    
+    def phone_formatted(self):
+        return ' '.join(self.phone[i:i+2] for i in range(0, len(self.phone), 2))
+    
+    def account_formatted(self):
+        if self.account == 0:
+            return "±0.00€"
+        return "+%.2f€" % self.account if self.account > 0 else "-%.2f€" % abs(self.account)
+    
+    def donation_formatted(self):
+        if self.donation == 0:
+            return "±0.00€"
+        return "+%.2f€" % self.donation if self.donation > 0 else "-%.2f€" % abs(self.donation)
