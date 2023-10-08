@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}
+Magellans
+{% endblock %}
+
+{% block nav %}
+<nav class="navbar" role="navigation" aria-label="main navigation">
+  <div class="navbar-brand">
+    <a class="navbar-item" href="/">
+      <img src="{% static 'img/logo.webp' %}">
+    </a>
+    
+    <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navbarBasicExample">
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+    </a>
+  </div>
+  
+  <div id="navbarBasicExample" class="navbar-menu">
+    <div class="navbar-start">
+      
+      {% for cat in categories %}
+      <a class="navbar-item" href="{% url 'category-detail' slug=cat.slug %}">
+        {{ cat.name }}
+      </a>
+      {% endfor %}
+      
+      {% if request.user.is_staff %}
+      <a class="navbar-item" href="{% url 'warehouse' %}">
+        Gestion magasin
+      </a>
+      <a class="navbar-item" href="{% url 'bank' %}">
+        Gestion trésorerie
+      </a>
+      <a class="navbar-item" href="{% url 'members' %}">
+        Gestion membres
+      </a>
+      {% if request.user.is_superuser %}
+      <a class="navbar-item" href="{% url 'admin:index' %}">
+        Administration site
+      </a>
+      {% endif %}
+      {% endif %}
+      
+    </div>
+    
+    <div class="navbar-end">
+      <div class="navbar-item">
+        {% if request.user.is_authenticated %}
+        <div class="buttons">
+          <p>Salut, {{ request.user.first_name }} ! ☀️</p>
+          <a class="button is-primary" href="{% url 'logout' %}?next={{ request.path }}">
+            Se déconnecter
+          </a>
+        </div>
+        {% else %}
+        <div class="buttons">
+          <a class="button is-primary" href="{% url 'login' %}?next={{ request.path }}">
+            Se connecter
+          </a>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</nav>
+{% endblock %}

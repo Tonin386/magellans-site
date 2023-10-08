@@ -1,0 +1,33 @@
+{% include "nav.html" %}
+
+{% block content %}
+<section class="section">
+    <div class="container">
+        <div class="columns is-centered">
+            <div class="column is-one-third">
+                <h1 class="title">Se connecter</h1>
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="field">
+                        <label class="label">Courriel</label>
+                        <div class="control">
+                            <input class="input" type="text" name="username" placeholder="Courriel" required>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label class="label">Mot de passe</label>
+                        <div class="control">
+                            <input class="input" type="password" name="password" placeholder="Mt de passe" required>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <div class="control">
+                            <button class="button is-primary" type="submit">Se connecter</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
