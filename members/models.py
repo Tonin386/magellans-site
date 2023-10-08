@@ -6,7 +6,9 @@ ROLE_CHOICES = [
     ('C', "Communication"),
     ('T', "Trésorier.ère"),
     ('S', "Secrétaire"),
-    ('M', "Membre")
+    ('M', "Membre"),
+    ('E', "Externe"),
+    ('O', 'Organisation')
 ]
 
 GENDER_CHOICES = [
@@ -45,7 +47,6 @@ class Member(AbstractBaseUser, PermissionsMixin):
     is_staff = models.BooleanField(default=False, verbose_name="CA")
     date_joined = models.DateTimeField(auto_now_add=True, verbose_name="Date d'inscription")
     donation = models.FloatField(default=0, verbose_name="Montant donation")
-    member_id = models.IntegerField(verbose_name="ID Membre")
     phone = models.CharField(max_length=15, blank=True, verbose_name="N° téléphone")
     account = models.FloatField(default=0, verbose_name="Statut compte")
     role = models.CharField(max_length=1, choices=ROLE_CHOICES, default='M', verbose_name="Role")

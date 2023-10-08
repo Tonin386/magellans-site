@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block title %}
+Trésorerie
+{% endblock %}
+
+{% block nav %}
+{% include "nav.html" %}
+{% endblock %}
+
+{% block content %}
+    <section class="section">
+        <div class="container">
+            <h1 class="title">Liste des Opérations</h1>
+
+            <table class="table is-bordered" id="operations-table">
+                <thead>
+                    <tr>
+                        <th>ID Opération</th>
+                        <th>Description</th>
+                        <th>Type d'opération</th>
+                        <th>Emetteur de l'opération</th>
+                        <th>Receveur de l'opération</th>
+                        <th>Montant</th>
+                        <th>Date d'ajout</th>
+                        <th>Date</th>
+                        <th>Statut</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for operation in operations %}
+                        <tr>
+                            <td>{{ operation.id }}</td>
+                            <td>{{ operation.desc }}</td>
+                            <td>{{ operation.get_direction_display }}</td>
+                            <td>{{ operation.src }}</td>
+                            <td>{{ operation.dest }}</td>
+                            <td>{{ operation.amout }}</td>
+                            <td>{{ operation.date_added }}</td>
+                            <td>{{ operation.date }}</td>
+                            <td>{{ operation.get_status_display }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <script>
+        $(document).ready(function() {
+            let table = new DataTable('#operations-table');
+        });
+    </script>
+{% endblock %}

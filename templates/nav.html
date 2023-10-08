@@ -2,59 +2,56 @@
 {% block nav %}
 <div style="background-image: url('{% static 'img/nav_background.png' %}');">
   <nav class="navbar" role="navigation" aria-label="main navigation";>
-    <div class="navbar-brand">
+    <div class="navbar-brand" style="background-image: url('{% static 'img/logo.webp' %}');">
       <a class="navbar-item" href="/">
-        <img src="{% static 'img/logo.webp' %}">
       </a>
-      
-      <span class="navbar-burger" data-target="navbarMenuHeroA">
+      <span class="navbar-burger" data-target="navbar">
         <span></span>
         <span></span>
         <span></span>
       </span>
     </div>
     
-    <div id="navbarBasicExample" class="navbar-menu" >
+    <div id="navbar" class="navbar-menu">
       <div class="navbar-start">
-        
-        <a class="navbar-item" href="{% url 'home' %}">
+        <a class="navbar-item text-outline" href="{% url 'home' %}">
           Accueil
         </a>
-        
         {% for cat in categories %}
-        <a class="navbar-item" href="{% url 'category-detail' slug=cat.slug %}">
+        <a class="navbar-item text-outline" href="{% url 'category-detail' slug=cat.slug %}">
           {{ cat.name }}
         </a>
         {% endfor %}
-        
-        {% if request.user.is_staff %}
-        <a class="navbar-item" href="{% url 'warehouse' %}">
-          Gestion magasin
-        </a>
-        <a class="navbar-item" href="{% url 'bank' %}">
-          Gestion trésorerie
-        </a>
-        <a class="navbar-item" href="{% url 'members' %}">
-          Gestion membres
-        </a>
-        {% if request.user.is_superuser %}
-        <a class="navbar-item" href="{% url 'admin:index' %}">
-          Administration site
-        </a>
-        {% endif %}
-        {% endif %}
-        
       </div>
       
       <div class="navbar-end">
         <div class="navbar-item">
-          {% if request.user.is_authenticated %}
-          <div class="buttons">
-            <a class="button is-primary" href="{% url 'logout' %}?next={{ request.path }}">
-              Se déconnecter
+
+          {% if request.user.is_staff %}
+          <div class="navbar-item has-dropdown is-hoverable">
+            <a class="navbar-link text-outline" href="">
+              Dashboard administration
             </a>
+            <div class="navbar-dropdown is-boxed">
+              <a class="navbar-item text-outline" href="{% url 'warehouse' %}">
+                Magasin
+              </a>
+              <a class="navbar-item text-outline" href="{% url 'bank' %}">
+                Trésorerie
+              </a>
+              <a class="navbar-item text-outline" href="{% url 'members' %}">
+                Membres
+              </a>
+              {% if request.user.is_superuser %}
+              <a class="navbar-item text-outline" href="{% url 'admin:index' %}">
+                Administration site
+              </a>
+              {% endif %} 
+            </div>
           </div>
-          {% else %}
+          {% endif %}
+
+          {% if not request.user.is_authenticated %}
           <div class="buttons">
             <a class="button is-primary" href="{% url 'login' %}?next={{ request.path }}">
               Se connecter
