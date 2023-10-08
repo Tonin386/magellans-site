@@ -25,6 +25,8 @@ STATICFILES_DIRS = [
     BASE_DIR / "assets",
 ]
 
+AUTH_USER_MODEL = 'members.Member'
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
@@ -47,12 +49,11 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'members',
     'magellans',
     'showcase',
     'warehouse',
-    'bank',
-    'members',
-    'markdownx'
+    'bank'
 ]
 
 MIDDLEWARE = [
@@ -83,10 +84,9 @@ TEMPLATES = [
         },
     },
 ]
+AUTH_USER_MODEL = 'members.Member'
 
 WSGI_APPLICATION = 'magellans.wsgi.application'
-
-
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
@@ -116,11 +116,10 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'fr-fr'
 
 TIME_ZONE = 'UTC'
 

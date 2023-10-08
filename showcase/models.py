@@ -5,15 +5,19 @@ from django.utils.text import slugify
 # Create your models here.
 
 class Site(models.Model):
-    name = models.CharField(max_length=100)
-    desc = models.TextField()
+    name = models.CharField(max_length=100, verbose_name="Site")
+    desc = models.TextField(verbose_name="Description")
     
     def __str__(self):
         return "Site " + self.name
     
 class Category(models.Model):
-    name = models.CharField(max_length=100)
+    name = models.CharField(max_length=100, verbose_name="Nom")
     slug = models.SlugField(max_length=100, unique=True, blank=True)
+    
+    class Meta:
+        verbose_name = "Catégorie"
+        verbose_name_plural = "Catégories"
     
     def save(self, *args, **kwargs):
         if not self.slug:
