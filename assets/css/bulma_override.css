@@ -12,6 +12,29 @@
 }
 
 .navbar-link.is-active, .navbar-link:focus, .navbar-link:focus-within, .navbar-link:hover, a.navbar-item.is-active, a.navbar-item:focus, a.navbar-item:focus-within, a.navbar-item:hover {
-    color: var(--magellans_light)!important;
+    color: white!important;
     background-color: transparent;
+}
+
+.navbar {
+    background-color: #ffce6547;
+    padding: 30px;
+}
+
+.navbar-item {
+    margin: 5px;
+}
+
+a.navbar-item {
+    color: white;
+    border-radius: 10px;
+    transition: all 0.15s ease-in-out;
+}
+
+a.navbar-item:hover {
+    background-color: #eba40e;
+}
+
+body {
+    background-repeat: no-repeat;
 }
