@@ -38,7 +38,7 @@ DEBUG = True
 if DEBUG:
     STATIC_URL = "/assets/"
 
-ALLOWED_HOSTS = ["localhost"]
+ALLOWED_HOSTS = ["localhost","127.0.0.1"]
 
 # Application definition
 
