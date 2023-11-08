@@ -1,64 +1,72 @@
 {% load static %}
 {% block nav %}
 <div style="background-image: url('{% static 'img/nav_background.png' %}');">
-  <nav class="navbar" role="navigation" aria-label="main navigation";>
-    <div class="navbar-brand" style="background-image: url('{% static 'img/logo.webp' %}');">
-      <a class="navbar-item" href="/">
+  
+  <nav class="navbar navbar-expand-lg">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="{% url 'home' %}">
+        <img src="{% static 'img/logo.webp' %}" alt="Bootstrap" width="50" height="50">
       </a>
-      <span class="navbar-burger" data-target="navbar">
-        <span></span>
-        <span></span>
-        <span></span>
-      </span>
-    </div>
-    
-    <div id="navbar" class="navbar-menu">
-      <div class="navbar-start">
-        <a class="navbar-item text-outline" href="{% url 'home' %}">
-          Accueil
-        </a>
-        {% for cat in categories %}
-        <a class="navbar-item text-outline" href="{% url 'category-detail' slug=cat.slug %}">
-          {{ cat.name }}
-        </a>
-        {% endfor %}
-      </div>
-      
-      <div class="navbar-end">
-        <div class="navbar-item">
-
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <li class="nav-item">
+            <a class="nav-link text-outline" href="{% url 'home' %}">
+              Accueil
+            </a>
+          </li>
+          {% for cat in categories %}
+          <li class="nav-item">
+            <a class="nav-link text-outline" href="{% url 'category-detail' slug=cat.slug %}">
+              {{ cat.name }}
+            </a>
+          </li>
+          {% endfor %}
+          
           {% if request.user.is_staff %}
-          <div class="navbar-item has-dropdown is-hoverable">
-            <a class="navbar-link text-outline" href="">
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle text-outline" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
               Dashboard administration
             </a>
-            <div class="navbar-dropdown is-boxed">
-              <a class="navbar-item text-outline" href="{% url 'warehouse' %}">
-                Magasin
-              </a>
-              <a class="navbar-item text-outline" href="{% url 'bank' %}">
-                Trésorerie
-              </a>
-              <a class="navbar-item text-outline" href="{% url 'members' %}">
-                Membres
-              </a>
+            <ul class="dropdown-menu">
+              <li>
+                <a class="dropdown-item text-outline" href="{% url 'warehouse' %}">
+                  Magasin
+                </a>
+              </li>
+              <li>
+                <a class="dropdown-item text-outline" href="{% url 'bank' %}">
+                  Trésorerie
+                </a>
+              </li>
+              <li>
+                <a class="dropdown-item text-outline" href="{% url 'members' %}">
+                  Membres
+                </a>
+              </li>
               {% if request.user.is_superuser %}
-              <a class="navbar-item text-outline" href="{% url 'admin:index' %}">
-                Administration site
-              </a>
+              <li><hr class="dropdown-divider"></li>
+              <li>
+                <a class="dropdown-item text-outline" href="{% url 'admin:index' %}">
+                  Administration site
+                </a>
+              </li>
               {% endif %} 
-            </div>
-          </div>
+            </ul>
+          </li>
           {% endif %}
-
+        </ul>
+        <ul class="navbar-nav float-right">
           {% if not request.user.is_authenticated %}
-          <div class="buttons">
-            <a class="button is-primary" href="{% url 'login' %}?next={{ request.path }}">
+          <li class=" nav-item float-right">
+            <a class="btn btn-primary" href="{% url 'login' %}?next={{ request.path }}">
               Se connecter
             </a>
-          </div>
+          </li>
           {% endif %}
-        </div>
+        </ul>
       </div>
     </div>
   </nav>
