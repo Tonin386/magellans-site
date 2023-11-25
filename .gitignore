@@ -163,3 +163,4 @@ credentials
 
 postgres_data/
 redis_data/
+staticfiles/

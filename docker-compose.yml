@@ -1,45 +1,64 @@
-version: '3'
+version: '3.8'
+
+networks:
+  magellans_site:
+    driver: 'bridge'
 
 services:
   # PostgreSQL service
   postgres:
-    image: postgres:latest
+    restart: always
+    image: postgres:16-bullseye
     environment:
-      POSTGRES_DB: magellans-dj
-      POSTGRES_USER: magellans
-      POSTGRES_PASSWORD: M@g3LL4ns-db_53cr3t
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    ports:
+      - ${DB_PORT}:${DB_PORT}
+    networks:
+      - magellans_site
 
   # Redis service
   redis:
+    restart: always
     image: redis:5
     command: redis-server
     volumes:
       - redis_data:/data
+    networks:
+      - magellans_site
+
 
   # Django service
   django:
+    restart: always
     build:
       context: ./app
     command: python manage.py runserver 0.0.0.0:8000
     volumes:
       - ./app:/app
-    ports:
-      - "8000:8000"
     depends_on:
       - postgres
       - redis
+    networks:
+      - magellans_site
+
 
   # Nginx service
   nginx:
+    restart: always
     image: nginx:latest
     volumes:
       - ./nginx/conf.d:/etc/nginx/conf.d/default.conf
     ports:
-      - "81:80"
+      - "80:80"
     depends_on:
       - django
+    networks:
+      - magellans_site
+
 
 volumes:
   postgres_data:

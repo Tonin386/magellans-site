@@ -1,12 +1,17 @@
-{% extends "base.html" %}
-
-{% block title %}
-Accueil
-{% endblock %}
-
-{% block nav %}
-{% include "nav.html" %}
-{% endblock %}
-
-{% block content %}
-{% endblock %}
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Accueil - Magellans</title>
+    {% include "head.html" %}
+</head>
+<body class="d-flex mh-100 h-100 justify-content-center">
+    <div class="container d-flex m-0">
+        <div class="row m-auto">
+            <h1 class="col" style="color: var(--magellans_dark)">
+                🛠️ Bienvenue sur le site de Magellans, en construction 🛠️
+            </h1>
+        </div>
+    </div>
+</body>
+</html>

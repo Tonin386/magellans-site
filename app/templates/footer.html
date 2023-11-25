@@ -1,0 +1,14 @@
+<footer>
+    {% if request.user.is_authenticated %}
+    <div class="footer-dialog bg-dark" id="hello-user">
+      <p class="text-center text-white mb-1">Hello {{ request.user.first_name }} ! ☀️ </p>
+      <a class="btn btn-primary d-block" href="{% url 'my-profile' %}">
+        Mon profil
+      </a>
+      <a class="btn btn-primary d-block mt-1 " href="{% url 'logout' %}?next={{ request.path }}">
+        Se déconnecter
+      </a>
+    </a>
+  </div>
+  {% endif %}
+</footer>
