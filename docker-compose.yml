@@ -8,6 +8,7 @@ services:
   # PostgreSQL service
   postgres:
     restart: always
+    container_name: django-pgsql
     image: postgres:16-bullseye
     environment:
       POSTGRES_DB: ${DB_NAME}
@@ -23,6 +24,7 @@ services:
   # Redis service
   redis:
     restart: always
+    container_name: django-redis
     image: redis:5
     command: redis-server
     volumes:
@@ -34,9 +36,10 @@ services:
   # Django service
   django:
     restart: always
+    container_name: django-app
     build:
       context: ./app
-    command: python manage.py runserver 0.0.0.0:8000
+    command: gunicorn magellans.wsgi:application 0.0.0.0:8000
     volumes:
       - ./app:/app
     depends_on:
@@ -49,6 +52,7 @@ services:
   # Nginx service
   nginx:
     restart: always
+    container_name: django-nginx
     image: nginx:latest
     volumes:
       - ./nginx/conf.d:/etc/nginx/conf.d/default.conf
