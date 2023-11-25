@@ -160,3 +160,6 @@ cython_debug/
 #.idea/
 
 credentials
+
+postgres_data/
+redis_data/

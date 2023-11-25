@@ -1,0 +1,46 @@
+version: '3'
+
+services:
+  # PostgreSQL service
+  postgres:
+    image: postgres:latest
+    environment:
+      POSTGRES_DB: magellans-dj
+      POSTGRES_USER: magellans
+      POSTGRES_PASSWORD: M@g3LL4ns-db_53cr3t
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  # Redis service
+  redis:
+    image: redis:5
+    command: redis-server
+    volumes:
+      - redis_data:/data
+
+  # Django service
+  django:
+    build:
+      context: ./app
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - ./app:/app
+    ports:
+      - "8000:8000"
+    depends_on:
+      - postgres
+      - redis
+
+  # Nginx service
+  nginx:
+    image: nginx:latest
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d/default.conf
+    ports:
+      - "81:80"
+    depends_on:
+      - django
+
+volumes:
+  postgres_data:
+  redis_data:
