@@ -40,9 +40,7 @@ SECRET_KEY = 'django-insecure-7cxr-qg^cmmmpun1x-q9136c3-w8a$@#$%yagj&s5sjob%t0^+
 DEBUG = os.getenv("DEBUG") == str(1)
 ALLOWED_HOSTS = ["django"]
 
-if DEBUG:
-    STATIC_URL = "/assets/"
-else:
+if not DEBUG:
     SECRET_KEY = os.getenv("SECRET_KEY")
     ALLOWED_HOSTS += ["*"]
 

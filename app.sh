@@ -8,6 +8,8 @@ fi
 if [ "$1" = "up" ]; then
   echo "Starting my django app."
   docker-compose --env-file app/.env up -d
+elif [ "$1" = "log" ]; then
+  docker-compose --env-file app/.env up
 elif [ "$1" = "down" ]; then
   docker-compose --env-file app/.env down -v
 elif [ "$1" = "in" ]; then

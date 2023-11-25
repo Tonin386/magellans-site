@@ -3,6 +3,10 @@ server {
     listen [::]:80;
     server_name localhost;
 
+    location /static/ {
+        alias /app/staticfiles/;
+    }
+
     location / {
         proxy_set_header X-Forwarded-Host $host;
         proxy_set_header X-Forwarded-Server $host;
@@ -13,4 +17,5 @@ server {
         error_log /var/log/nginx/error_backend.log;
 		proxy_pass http://django:8000;
 	}
+
 }
