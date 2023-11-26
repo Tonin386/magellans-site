@@ -1,6 +1,6 @@
 {% load static %}
 {% block nav %}
-<div style="background-image: url('{% static 'img/nav_background.png' %}');">
+<!-- <div style="background-image: url('{% static 'img/nav_background.png' %}');"> -->
   
   <nav class="navbar navbar-expand-lg">
     <div class="container-fluid">
@@ -17,13 +17,6 @@
               Accueil
             </a>
           </li>
-          {% for cat in categories %}
-          <li class="nav-item">
-            <a class="nav-link text-outline" href="{% url 'category-detail' slug=cat.slug %}">
-              {{ cat.name }}
-            </a>
-          </li>
-          {% endfor %}
           
           {% if request.user.is_staff %}
           <li class="nav-item dropdown">
