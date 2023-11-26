@@ -11,7 +11,7 @@ if [ "$1" = "up" ]; then
 elif [ "$1" = "log" ]; then
   docker-compose --env-file app/.env up
 elif [ "$1" = "down" ]; then
-  docker-compose --env-file app/.env down -v
+  docker-compose --env-file app/.env down
 elif [ "$1" = "in" ]; then
   docker-compose --env-file app/.env up -d
   docker exec -it django-app sh

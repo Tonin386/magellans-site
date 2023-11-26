@@ -17,5 +17,4 @@ server {
         error_log /var/log/nginx/error_backend.log;
 		proxy_pass http://django:8000;
 	}
-
 }
