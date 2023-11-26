@@ -11,8 +11,8 @@ server {
     listen [::]:443 ssl;
     server_name magellans.fr;
 
-    ssl_certificate /home/magellans/ssl/fullchain.pem;
-    ssl_certificate_key /home/magellans/ssl/privkey.pem;
+    ssl_certificate /app/ssl/fullchain.pem;
+    ssl_certificate_key /app/ssl/privkey.pem;
 
     location /static/ {
         alias /app/staticfiles/;
