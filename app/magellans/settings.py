@@ -31,7 +31,7 @@ ALLOWED_HOSTS = ["django"]
 if not DEBUG:
     SECRET_KEY = os.getenv("SECRET_KEY")
     ALLOWED_HOSTS += ["*"]
-
+    STATIC_ROOT = BASE_DIR / 'assets'
 
 # Application definition
 

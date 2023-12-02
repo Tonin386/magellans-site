@@ -4,20 +4,28 @@
 <head>
     <title>Accueil - Magellans</title>
     {% include "head.html" %}
+    <link rel="stylesheet" href="{% static 'css/home.css' %}">
 </head>
 <body class="d-flex mh-100 h-100 justify-content-center">
-    <div class="container d-flex m-0">
-        <div class="row w-100 m-auto text-center">
-            <div class="col-xl-3 my-5">
-                <img src="{% static 'img/logo.webp' %}" class="img-fluid">
+    <div class="container-fluid">
+        <video id="video-background" autoplay muted loop>
+            <source src="{% static 'media/video/presentation.webm' %}" type="video/webm">
+            Votre navigateur ne prend pas en charge ce format de vidéo.
+        </video>
+        
+        <div id="title" class="row py-md-5 justify-content-center">
+            <div class="col-md d-flex align-items-center justify-content-center">
+                <img class="img-fluid" src="{% static 'media/img/logo.svg' %}">
             </div>
-            <div class="col-xl-6 m-auto">
-                <h2 class="display-4 text-center" style="color: var(--magellans_dark)"> Prochainement...</h2>
+            <div class="col-md-5 text-center text-shadow">
+                <h1 class="text-magellans-light display-1">Magellans</h1>
+                <p class="text-magellans-light display-6">Association d'audiovisuel et de cinéma.</p>
             </div>
-            <div class="col-xl-3 my-5">
-                <img src="{% static 'img/logo.webp' %}" class="img-fluid">
+            <div class="col-md align-items-center justify-content-center d-none d-md-flex">
+                <img class="img-fluid" src="{% static 'media/img/logo.svg' %}">
             </div>
         </div>
     </div>
+    <script src="{% static 'js/home.js' %}"></script>
 </body>
 </html>
