@@ -13,16 +13,22 @@
             Votre navigateur ne prend pas en charge ce format de vidéo.
         </video>
         
-        <div id="title" class="row py-md-5 justify-content-center">
-            <div class="col-md d-flex align-items-center justify-content-center">
+        <div id="title" class="row py-md-1 no-gutters m-0">
+            <div class="col-xl-2 align-items-center justify-content-center d-flex">
                 <img class="img-fluid" src="{% static 'media/img/logo.svg' %}">
             </div>
-            <div class="col-md-5 text-center text-shadow">
+            <div class="col-xl-4 text-shadow text-center text-xl-start">
                 <h1 class="text-magellans-light display-1">Magellans</h1>
-                <p class="text-magellans-light display-6">Association d'audiovisuel et de cinéma.</p>
+                <p class="text-magellans-light display-6 d-none d-xl-inline">Association d'audiovisuel et de cinéma.</p>
             </div>
-            <div class="col-md align-items-center justify-content-center d-none d-md-flex">
-                <img class="img-fluid" src="{% static 'media/img/logo.svg' %}">
+            <div class="col-xl-2 d-flex align-items-center justify-content-center">
+                <a href="{% url 'contact' %}" class="nav-link p-1 text-shadow text-magellans-light fs-3">Qui sommes-nous ? ></a>
+            </div>
+            <div class="col-xl-2 d-flex align-items-center justify-content-center">
+                <a href="{% url 'projects' %}" class="nav-link p-1 text-shadow text-magellans-light fs-3">Nos projets ></a>
+            </div>
+            <div class="col-xl-2 d-flex align-items-center justify-content-center">
+                <a href="{% url 'login' %}" class="nav-link p-1 text-shadow text-magellans-light fs-3">Nous rejoindre ></a>
             </div>
         </div>
     </div>

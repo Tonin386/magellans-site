@@ -16,6 +16,10 @@ STATICFILES_DIRS = [
     BASE_DIR / "assets",
 ]
 
+MEDIA_URL = '/media/'
+
+MEDIA_ROOT = BASE_DIR / "assets/media"
+
 AUTH_USER_MODEL = 'members.Member'
 
 # Quick-start development settings - unsuitable for production
