@@ -166,3 +166,5 @@ redis_data/
 staticfiles/
 video/
 projets/
+postfix/
+dovecot/

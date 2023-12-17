@@ -66,6 +66,36 @@ services:
     networks:
       - magellans_site
 
+postfix:
+    image: catatnight/postfix
+    container_name: postfix-mail-server
+    hostname: mail-server
+    restart: always
+    environment:
+      - MAIL_DOMAIN=magellans.fr
+      - ALLOWED_SENDER_DOMAINS=magellans.fr
+      - ALLOWED_NETWORKS=0.0.0.0/0
+    ports:
+      - "25:25"
+      - "587:587"
+    volumes:
+      - ./postfix/config:/etc/postfix
+      - ./postfix/spool:/var/spool/postfix
+      - ${SSL_CERTS_DIR}:/etc/postfix/ssl
+      
+dovecot:
+  image: catatnight/dovecot
+  container_name: dovecot-mail-server
+  hostname: mail-server
+  restart: always
+  ports:
+    - "143:143"
+    - "993:993"
+  volumes:
+    - ./dovecot:/etc/dovecot
+    - ./dovecot/mail:/var/mail
+      - ${SSL_CERTS_DIR}:/etc/dovecot/ssl
+
 
 volumes:
   postgres_data:
