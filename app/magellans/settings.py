@@ -16,6 +16,10 @@ STATICFILES_DIRS = [
     BASE_DIR / "assets",
 ]
 
+MEDIA_URL = '/media/'
+
+MEDIA_ROOT = BASE_DIR / "assets/media"
+
 AUTH_USER_MODEL = 'members.Member'
 
 # Quick-start development settings - unsuitable for production
@@ -31,7 +35,7 @@ ALLOWED_HOSTS = ["django"]
 if not DEBUG:
     SECRET_KEY = os.getenv("SECRET_KEY")
     ALLOWED_HOSTS += ["*"]
-
+    STATIC_ROOT = BASE_DIR / 'assets'
 
 # Application definition
 

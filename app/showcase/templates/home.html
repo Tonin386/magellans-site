@@ -4,20 +4,34 @@
 <head>
     <title>Accueil - Magellans</title>
     {% include "head.html" %}
+    <link rel="stylesheet" href="{% static 'css/home.css' %}">
 </head>
 <body class="d-flex mh-100 h-100 justify-content-center">
-    <div class="container d-flex m-0">
-        <div class="row w-100 m-auto text-center">
-            <div class="col-xl-3 my-5">
-                <img src="{% static 'img/logo.webp' %}" class="img-fluid">
+    <div class="container-fluid">
+        <video id="video-background" autoplay muted loop>
+            <source src="{% static 'media/video/presentation.webm' %}" type="video/webm">
+            Votre navigateur ne prend pas en charge ce format de vidéo.
+        </video>
+        
+        <div id="title" class="row py-md-1 no-gutters m-0">
+            <div class="col-xl-2 align-items-center justify-content-center d-flex">
+                <img class="img-fluid" src="{% static 'media/img/logo.svg' %}">
             </div>
-            <div class="col-xl-6 m-auto">
-                <h2 class="display-4 text-center" style="color: var(--magellans_dark)"> Prochainement...</h2>
+            <div class="col-xl-4 text-shadow text-center text-xl-start">
+                <h1 class="text-magellans-light display-1">Magellans</h1>
+                <p class="text-magellans-light display-6 d-none d-xl-inline">Association d'audiovisuel et de cinéma.</p>
             </div>
-            <div class="col-xl-3 my-5">
-                <img src="{% static 'img/logo.webp' %}" class="img-fluid">
+            <div class="col-xl-2 d-flex align-items-center justify-content-center">
+                <a href="{% url 'contact' %}" class="nav-link p-1 text-shadow text-magellans-light fs-3">Qui sommes-nous ? ></a>
+            </div>
+            <div class="col-xl-2 d-flex align-items-center justify-content-center">
+                <a href="{% url 'projects' %}" class="nav-link p-1 text-shadow text-magellans-light fs-3">Nos projets ></a>
+            </div>
+            <div class="col-xl-2 d-flex align-items-center justify-content-center">
+                <a href="{% url 'login' %}" class="nav-link p-1 text-shadow text-magellans-light fs-3">Nous rejoindre ></a>
             </div>
         </div>
     </div>
+    <script src="{% static 'js/home.js' %}"></script>
 </body>
 </html>

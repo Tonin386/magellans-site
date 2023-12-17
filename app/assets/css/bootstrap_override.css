@@ -11,6 +11,14 @@ body {
     background-color: rgb(237, 207, 149);
 }
 
+.text-magellans-light {
+    color: var(--magellans_light)!important;
+}
+
+.text-magellans-dark {
+    color: var(--magellans_dark)!important;
+}
+
 .btn {
     border: 0px;
 }
@@ -91,4 +99,8 @@ a.nav-link.dropdown-toggle.show {
 .input-group-text, .input-group {
     border: 0px!important;
     color: white;
+}
+
+.text-shadow {
+    text-shadow: 2px 4px 10px #000;
 }
