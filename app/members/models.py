@@ -8,7 +8,7 @@ ROLE_CHOICES = [
     ('S', "Secrétaire"),
     ('M', "Membre"),
     ('E', "Externe"),
-    ('O', 'Organisation')
+    ('O', 'Organisation') #Association, partenaire, entreprise...
 ]
 
 GENDER_CHOICES = [
