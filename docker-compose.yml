@@ -76,12 +76,11 @@ services:
       - "143:143"
       - "993:993"
     volumes:
-      - ./postfix/config:/etc/postfix
-      - ./postfix/spool:/var/spool/postfix
+      - ./postfix/:/etc/postfix
       - ${SSL_CERTS_DIR}:/app/ssl
       - ./dovecot:/etc/dovecot
-      - ./dovecot/mail:/var/mail
-      - ./dovecot/users:/home
+      - ./volumes/mail:/var/mail
+      - ./volumes/users:/home
 
 volumes:
   postgres_data:
