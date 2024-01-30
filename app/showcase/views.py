@@ -6,6 +6,9 @@ def home(request):
         
     return render(request, 'home.html', locals())
 
+def home_public(request):
+    return render(request, 'home_public.html', locals())
+
 def projects(request):
     return render(request, 'projects.html', locals())
 

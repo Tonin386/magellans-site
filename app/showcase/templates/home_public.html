@@ -1,0 +1,24 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Accueil - Magellans</title>
+    {% include "head.html" %}
+    <link rel="stylesheet" href="{% static 'css/home.css' %}">
+</head>
+<body class="d-flex mh-100 h-100 justify-content-center">
+    <div class="container d-flex m-0">
+        <div class="row w-100 m-auto text-center">
+            <div class="col-xl-3 my-5">
+                <img src="{% static 'img/logo.webp' %}" class="img-fluid">
+            </div>
+            <div class="col-xl-6 m-auto">
+                <h2 class="display-4 text-center" style="color: var(--magellans_dark)"> Prochainement...</h2>
+            </div>
+            <div class="col-xl-3 my-5">
+                <img src="{% static 'img/logo.webp' %}" class="img-fluid">
+            </div>
+        </div>
+    </div>
+</body>
+</html>
