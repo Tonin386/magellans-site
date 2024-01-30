@@ -1,9 +1,6 @@
 FROM ubuntu:latest
 
 RUN apt-get update && apt-get upgrade -y && \
-    apt-get install postfix dovecot-imapd dovecot-pop3d systemctl -y
+    apt-get install postfix dovecot-imapd dovecot-pop3d -y
 
-RUN systemctl restart postfix && \
-    systemctl restart dovecot
-
-CMD ["/bin/bash"]
+CMD service postfix start && service dovecot start && tail -f /dev/null

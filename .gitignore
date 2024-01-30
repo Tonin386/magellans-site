@@ -168,3 +168,6 @@ video/
 projets/
 postfix/
 dovecot/
+volumes/
+migrations/
+!migrations/__init__.py
