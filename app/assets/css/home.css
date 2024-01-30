@@ -1,6 +1,6 @@
 body {
     margin: 0;
-    overflow: hidden;
+    overflow-x: hidden;
 }
 
 #video-background {
@@ -20,6 +20,12 @@ body {
     text-align: center;
 }
 
-.img-fluid {
+#logo {
     max-height: 100px;
+}
+
+#second-panel {
+    background-image: url("/static/img/nav_background.png");
+    background-repeat: no-repeat;
+    background-size: cover;
 }
