@@ -64,23 +64,24 @@ services:
     networks:
       - magellans_site
 
-  mail-server:
-    restart: always
-    container_name: django-mail
-    build:
-      dockerfile: django-mail.dockerfile
-      context: .
-    ports:
-      - "25:25"
-      - "587:587"
-      - "143:143"
-      - "993:993"
-    volumes:
-      - ./postfix/:/etc/postfix
-      - ${SSL_CERTS_DIR}:/app/ssl
-      - ./dovecot:/etc/dovecot
-      - ./volumes/mail:/var/mail
-      - ./volumes/users:/home
+  # mail-server:
+  #   restart: always
+  #   container_name: django-mail
+  #   build:
+  #     dockerfile: django-mail.dockerfile
+  #     context: .
+  #   ports:
+  #     - "25:25"
+  #     - "587:587"
+  #     - "143:143"
+  #     - "993:993"
+  #     - "465:465"
+  #   volumes:
+  #     - ./postfix/:/etc/postfix
+  #     - ${SSL_CERTS_DIR}:/app/ssl
+  #     - ./dovecot:/etc/dovecot
+  #     - ./volumes/mail:/var/mail
+  #     - ./volumes/users:/home
 
 volumes:
   postgres_data:

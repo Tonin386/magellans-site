@@ -36,9 +36,9 @@ body {
 }
 
 .nav-link.active, .dropdown-toggle.show, .nav-link:hover, a.nav-link.active, a.nav-link:focus, a.nav-link:focus-within, a.nav-link:hover, a.dropdown-item:hover, a.dropdown-toggle:focus {
-    color: white!important;
-    background-color: var(--magellans_light)!important;
+    color: var(--magellans_light)!important;
 } 
+
 .navbar {
     background-color: #ffce6547;
 }
@@ -55,14 +55,13 @@ body {
 }
 
 .dropdown-menu {
-    background-color:#7f3f18;
     border-radius: 0px 0px 10px 10px;
     margin-top: 0px!important;
     width: 100%;
 }
 
 a.dropdown-item {
-    color: white;
+    color: var(--magellans_dark)!important;
     transition: all 0.15s ease-in-out;
 }
 

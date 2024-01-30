@@ -8,16 +8,16 @@ Se connecter
 <section class="section">
     <div class="container">
         <div class="row m-auto">
-            <h1 class="display-3">Se connecter</h1>
+            <h1 class="display-3 mt-3 text-magellans-dark">Se connecter</h1>
             <form method="post">
                 {% csrf_token %}
                 <div class="input-group input-group-lg col-12 mt-3">
                     <span class="input-group-text bg-primary col-2" id="email-span">Courriel</span>
-                    <input class="form-control bg-tertiary" type="text" name="username" placeholder="Courriel" aria-describedby="email-span">
+                    <input class="form-control" type="text" name="username" placeholder="Courriel" aria-describedby="email-span">
                 </div>
                 <div class="input-group input-group-lg col-12 mt-3">
                     <span class="input-group-text bg-primary col-2" id="password-span">Mot de passe</span>
-                    <input class="form-control bg-tertiary" type="password" name="password" placeholder="Mot de passe" aria-describedby="password-span">
+                    <input class="form-control" type="password" name="password" placeholder="Mot de passe" aria-describedby="password-span">
                 </div>
                 <div class="input-group input-group-lg mt-3">
                     <button class="btn btn-primary m-auto" type="submit">Se connecter</button>
