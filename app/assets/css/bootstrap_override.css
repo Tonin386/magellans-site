@@ -1,5 +1,5 @@
 :root {
-    --magellans_dark: #7f3f18;
+    --magellans_dark: #522f11;
     --magellans_light: #eba40e;
     --magellans_extra-light: rgb(237, 207, 149);
 }
@@ -10,18 +10,10 @@ body {
     padding: 0;
     min-height: 100vh;
     background-color: var(--magellans_extra-light);
-}
-
-.text-magellans-light {
-    color: var(--magellans_light)!important;
-}
-
-.text-magellans-dark {
-    color: var(--magellans_dark)!important;
-}
-
-.text-magellans-extra-light  {
-    color: var(--magellans_extra-light)!important;
+    background-image: url('/static/img/magellans_background.png');
+    background-size: cover;
+    background-attachment: fixed;
+    color: var(--magellans_dark);
 }
 
 .btn {
@@ -42,6 +34,11 @@ body {
 
 .bg-tertiary {
     background-color: #e4b142;
+}
+
+.card {
+    border-width: 2px;
+    border-color: var(--magellans_dark);
 }
 
 .nav-link.active, .dropdown-toggle.show, .nav-link:hover, a.nav-link.active, a.nav-link:focus, a.nav-link:focus-within, a.nav-link:hover, a.dropdown-item:hover, a.dropdown-toggle:focus {
@@ -82,26 +79,6 @@ a.nav-link {
 
 a.nav-link.dropdown-toggle.show {
     border-radius: 10px 10px 0px 0px;
-}
-
-.footer-dialog {
-    position: fixed;
-    bottom: 0px;
-    right: 5%;
-}
-
-#hello-user {
-    border-radius: 10px 10px 0px 0px;
-    padding: 10px;
-    transition: all 0.15s ease-in-out;
-}
-
-.text-outline {
-  text-shadow:
-  -1px -1px 2px rgba(0, 0, 0, 0.5), /* Top-left shadow */
-  1px -1px 2px rgba(0, 0, 0, 0.5), /* Top-right shadow */
-  -1px 1px 2px rgba(0, 0, 0, 0.5), /* Bottom-left shadow */
-  1px 1px 2px rgba(0, 0, 0, 0.5); /* Bottom-right shadow */
 }
 
 .input-group-text, .input-group {
