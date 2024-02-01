@@ -7,6 +7,8 @@ class Project(models.Model):
     duration = models.IntegerField("Durée en minutes")
     desc = models.TextField("Résumé")
     poster = models.ImageField(upload_to='img/')
+    shoot_date = models.DateField("Date du tournage", blank=True, null=True)
+    released_date = models.DateField("Date de sortie", blank=True, null=True)
     
     def __str__(self):
         return "Projet" + self.name

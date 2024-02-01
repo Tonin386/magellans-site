@@ -14,3 +14,6 @@ def projects(request):
 
 def contact(request):
     return render(request, 'contact.html', locals())
+
+def join_us(request):
+    return render(request, 'join_us.html', locals())
