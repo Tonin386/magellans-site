@@ -4,18 +4,6 @@
     --magellans_extra-light: rgb(237, 207, 149);
 }
 
-body {
-    background-repeat: no-repeat;
-    margin: 0;
-    padding: 0;
-    min-height: 100vh;
-    background-color: var(--magellans_extra-light);
-    background-image: url('/static/img/magellans_background.png');
-    background-size: cover;
-    background-attachment: fixed;
-    color: var(--magellans_dark);
-}
-
 .btn {
     border: 0px;
 }

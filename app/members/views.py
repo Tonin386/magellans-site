@@ -1,10 +1,10 @@
 from django.contrib.auth.decorators import login_required
+from django.shortcuts import render, HttpResponse
 from django.views.generic import DetailView
-from django.shortcuts import render
 from .models import Member
 
 def members(request):
-    return "Hello"
+    return render(request, "members.html", locals())
 
 @login_required
 def my_profile(request):
@@ -13,4 +13,3 @@ def my_profile(request):
 class MemberDetailView(DetailView):
     model = Member
     template_name="member_detail.html"
-    
