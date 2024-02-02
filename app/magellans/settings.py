@@ -53,7 +53,8 @@ INSTALLED_APPS = [
     'magellans',
     'showcase',
     'warehouse',
-    'bank'
+    'bank',
+    'dashboard'
 ]
 
 MIDDLEWARE = [

@@ -1,3 +1,15 @@
+body {
+    background-repeat: no-repeat;
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    background-image: url('/static/img/magellans_background.png');
+    background-size: cover;
+    background-attachment: fixed;
+    color: var(--magellans_dark);
+    /* opacity: 0.5; */
+}
+
 .text-magellans-light {
     color: var(--magellans_light)!important;
 }

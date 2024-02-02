@@ -1,5 +1,4 @@
 {% load static %}
-<!-- <div style="background-image: url('{% static 'img/nav_background.png' %}');"> -->
   
   <nav class="navbar navbar-light navbar-expand-lg bg-light">
     <div class="container-fluid">
@@ -31,6 +30,26 @@
               Nous rejoindre
             </a>
           </li>
+
+          {% if request.user.is_authenticated %}
+          <li class="nav-item dropdown">
+            <a class="nav-link p-1 text-magellans-dark fs-4 dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              Espace membres
+            </a>
+            <ul class="dropdown-menu">
+              <li>
+                <a class="dropdown-item fs-4" href="{% url 'warehouse' %}">
+                  Location de matériel
+                </a>
+              </li>
+              <li>
+                <a class="dropdown-item fs-4" href="{% url 'my-profile' %}">
+                  Mon profil
+                </a>
+              </li>
+            </ul>
+          </li>
+          {% endif %}
           
           {% if request.user.is_staff %}
           <li class="nav-item dropdown">
@@ -51,6 +70,11 @@
               <li>
                 <a class="dropdown-item fs-4" href="{% url 'members' %}">
                   Membres
+                </a>
+              </li>
+              <li>
+                <a class="dropdown-item fs-4" href="{% url 'dashboard' %}">
+                  Projets
                 </a>
               </li>
               {% if request.user.is_superuser %}
