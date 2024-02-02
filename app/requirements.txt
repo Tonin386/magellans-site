@@ -1,9 +1,11 @@
 Django
 gunicorn
+uvicorn[standard]
 psycopg2-binary
 redis
 django-redis
 channels
+channels-redis
 numpy
 pandas
 requests
@@ -17,3 +19,5 @@ python-dotenv
 pytz
 whitenoise
 httpx
+asgiref
+daphne

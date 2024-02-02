@@ -43,6 +43,7 @@ if not DEBUG:
 # Application definition
 
 INSTALLED_APPS = [
+    'daphne',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -54,7 +55,9 @@ INSTALLED_APPS = [
     'showcase',
     'warehouse',
     'bank',
-    'dashboard'
+    'dashboard',
+    'api',
+    'channels',
 ]
 
 MIDDLEWARE = [
@@ -87,6 +90,18 @@ TEMPLATES = [
 AUTH_USER_MODEL = 'members.Member'
 
 WSGI_APPLICATION = 'magellans.wsgi.application'
+ASGI_APPLICATION = 'magellans.asgi.application'
+
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            "hosts": [('redis', 6379)],
+        },
+    },
+}
+
+
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
@@ -135,3 +150,17 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'root': {
+        'handlers': ['console'],
+        'level': 'DEBUG',
+    },
+}
