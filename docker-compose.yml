@@ -102,10 +102,10 @@ services:
       - "587:587"  # ESMTP (explicit TLS => STARTTLS)
       - "993:993"  # IMAP4 (implicit TLS)
     volumes:
-      - ./docker-data/dms/mail-data/:/var/mail/
-      - ./docker-data/dms/mail-state/:/var/mail-state/
-      - ./docker-data/dms/mail-logs/:/var/log/mail/
-      - ./docker-data/dms/config/:/tmp/docker-mailserver/
+      - ./volumes/mail/data/:/var/mail/
+      - ./volumes/mail/state/:/var/mail-state/
+      - ./volumes/mail/logs/:/var/log/mail/
+      - ./volumes/mail/config/:/tmp/docker-mailserver/
       - /etc/localtime:/etc/localtime:ro
       - ${SSL_CERTS_DIR}:/app/ssl
     restart: always

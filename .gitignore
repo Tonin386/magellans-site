@@ -161,13 +161,13 @@ cython_debug/
 
 credentials
 
+mailserver.env
+
 postgres_data/
 redis_data/
 staticfiles/
 video/
 projets/
-postfix/
-dovecot/
 volumes/
 migrations/
 !migrations/__init__.py
