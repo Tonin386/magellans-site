@@ -61,30 +61,16 @@ services:
     ports:
       - "80:80"
       - "443:443"
+      - "25:25"    # SMTP  (explicit TLS => STARTTLS, Authentication is DISABLED => use port 465/587 instead)
+      - "143:143"  # IMAP4 (explicit TLS => STARTTLS)
+      - "465:465"  # ESMTP (implicit TLS)
+      - "587:587"  # ESMTP (explicit TLS => STARTTLS)
+      - "993:993"  # IMAP4 (implicit TLS)
+
     depends_on:
       - django
     networks:
       - magellans_site
-
-  # mail-server:
-  #   restart: always
-  #   container_name: django-mail
-  #   build:
-  #     dockerfile: django-mail.dockerfile
-  #     context: .
-  #   ports:
-  #     - "25:25"
-  #     - "587:587"
-  #     - "143:143"
-  #     - "993:993"
-  #     - "465:465"
-  #   volumes:
-  #     - ./postfix/:/etc/postfix
-  #     - ${SSL_CERTS_DIR}:/app/ssl
-  #     - ./dovecot:/etc/dovecot
-  #     - ./volumes/mail:/var/mail
-  #     - ./volumes/users:/home
-
 
   mail-server:
     image: ghcr.io/docker-mailserver/docker-mailserver:latest
@@ -95,12 +81,6 @@ services:
     # More information about the mail-server ports:
     # https://docker-mailserver.github.io/docker-mailserver/latest/config/security/understanding-the-ports/
     # To avoid conflicts with yaml base-60 float, DO NOT remove the quotation marks.
-    ports:
-      - "25:25"    # SMTP  (explicit TLS => STARTTLS, Authentication is DISABLED => use port 465/587 instead)
-      - "143:143"  # IMAP4 (explicit TLS => STARTTLS)
-      - "465:465"  # ESMTP (implicit TLS)
-      - "587:587"  # ESMTP (explicit TLS => STARTTLS)
-      - "993:993"  # IMAP4 (implicit TLS)
     volumes:
       - ./volumes/mail/data/:/var/mail/
       - ./volumes/mail/state/:/var/mail-state/
@@ -120,6 +100,17 @@ services:
     networks:
       - magellans_site
 
+  roundcube:
+    image: roundcube/roundcubemail:latest
+    links:
+      - postgres
+    environment:
+      - ROUNDCUBEMAIL_DB_TYPE=pgsql
+      - ROUNDCUBEMAIL_DB_HOST=${DB_HOST}
+      - ROUNDCUBEMAIL_DB_PORT=${DB_PORT}
+      - ROUNDCUBEMAIL_DB_USER=${DB_USER}
+      - ROUNDCUBEMAIL_DB_PASSWORD=${DB_PASSWORD}
+      - ROUNDCUBEMAIL_DB_NAME=${DB_NAME}
 
 volumes:
   postgres_data:
