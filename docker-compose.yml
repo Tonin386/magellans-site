@@ -102,8 +102,6 @@ services:
 
   roundcube:
     image: roundcube/roundcubemail:latest
-    links:
-      - postgres
     environment:
       - ROUNDCUBEMAIL_DB_TYPE=pgsql
       - ROUNDCUBEMAIL_DB_HOST=${DB_HOST}
@@ -111,6 +109,8 @@ services:
       - ROUNDCUBEMAIL_DB_USER=${DB_USER}
       - ROUNDCUBEMAIL_DB_PASSWORD=${DB_PASSWORD}
       - ROUNDCUBEMAIL_DB_NAME=${DB_NAME}
+    networks:
+      - magellans_site
 
 volumes:
   postgres_data:
