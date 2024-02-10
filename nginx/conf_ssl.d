@@ -12,8 +12,8 @@ server {
     listen [::]:443 ssl;
     server_name magellans.fr;
 
-    ssl_certificate /app/ssl/fullchain.pem;
-    ssl_certificate_key /app/ssl/privkey.pem;
+    ssl_certificate /etc/letsencrypt/live/magellans.fr-0001/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/magellans.fr-0001/privkey.pem;
 
     location /static/ {
         alias /app/staticfiles/;
@@ -47,18 +47,18 @@ server {
 server {
     listen 80;
     listen [::]:80;
-    server_name mail.magellans.fr;
+    server_name webmail.magellans.fr;
 
-    return 301 https://mail.magellans.fr;
+    return 301 https://webmail.magellans.fr;
 }
 
 server {
     listen 443 ssl;
     listen [::]:443 ssl;
-    server_name mail.magellans.fr;
+    server_name webmail.magellans.fr;
 
-    ssl_certificate /app/ssl/fullchain.pem;
-    ssl_certificate_key /app/ssl/privkey.pem;
+    ssl_certificate /etc/letsencrypt/live/magellans.fr-0001/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/magellans.fr-0001/privkey.pem;
 
     location / {
         proxy_pass http://roundcube:80;
@@ -72,32 +72,29 @@ server {
     }
 }
 
-server {
-    listen 587;
-    server_name mail.magellans.fr;
+# worker_processes auto;
+# mail {
+#     server_name mail.magellans.fr;
+#     auth_http   mail-server/cgi-bin/nginxauth.cgi;
 
-    location / {
-        proxy_pass http://mail-server:587;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
-    }
+#     proxy_pass_error_message on;
 
-    # Additional configuration for your SMTP server if needed...
-}
+#     ssl                 on;
+#     ssl_certificate /etc/letsencrypt/live/magellans.fr-0001/fullchain.pem;
+#     ssl_certificate_key /etc/letsencrypt/live/magellans.fr-0001/privkey.pem;
+#     ssl_protocols       TLSv1 TLSv1.1 TLSv1.2;
+#     ssl_ciphers         HIGH:!aNULL:!MD5;
+#     ssl_session_cache   shared:SSL:10m;
+#     ssl_session_timeout 10m;
 
-server {
-    listen 993;
-    server_name mail.magellans.fr;
+#     server {
+#         listen     587;
+#         protocol   smtp;
+#         smtp_auth  login plain cram-md5;
+#     }
 
-    location / {
-        proxy_pass http://mail-server:993;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
-    }
-
-    # Additional configuration for your IMAP server if needed...
-}
+#     server {
+#         listen   993;
+#         protocol imap;
+#     }
+# }
