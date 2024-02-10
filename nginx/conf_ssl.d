@@ -12,8 +12,8 @@ server {
     listen [::]:443 ssl;
     server_name magellans.fr;
 
-    ssl_certificate /etc/letsencrypt/live/magellans.fr-0001/fullchain.pem;
-    ssl_certificate_key /etc/letsencrypt/live/magellans.fr-0001/privkey.pem;
+    ssl_certificate /etc/letsencrypt/live/magellans.fr/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/magellans.fr/privkey.pem;
 
     location /static/ {
         alias /app/staticfiles/;
@@ -57,8 +57,8 @@ server {
     listen [::]:443 ssl;
     server_name webmail.magellans.fr;
 
-    ssl_certificate /etc/letsencrypt/live/magellans.fr-0001/fullchain.pem;
-    ssl_certificate_key /etc/letsencrypt/live/magellans.fr-0001/privkey.pem;
+    ssl_certificate /etc/letsencrypt/live/magellans.fr/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/magellans.fr/privkey.pem;
 
     location / {
         proxy_pass http://roundcube:80;
@@ -80,8 +80,8 @@ server {
 #     proxy_pass_error_message on;
 
 #     ssl                 on;
-#     ssl_certificate /etc/letsencrypt/live/magellans.fr-0001/fullchain.pem;
-#     ssl_certificate_key /etc/letsencrypt/live/magellans.fr-0001/privkey.pem;
+#     ssl_certificate /etc/letsencrypt/live/magellans.fr/fullchain.pem;
+#     ssl_certificate_key /etc/letsencrypt/live/magellans.fr/privkey.pem;
 #     ssl_protocols       TLSv1 TLSv1.1 TLSv1.2;
 #     ssl_ciphers         HIGH:!aNULL:!MD5;
 #     ssl_session_cache   shared:SSL:10m;
