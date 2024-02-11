@@ -16,15 +16,6 @@ server {
 }
 
 server {
-    listen 443;
-    listen [::]:443;
-    server_name mail.magellans.fr;
-
-    return 301 https://magellans.fr;
-}
-
-
-server {
     listen 443 ssl;
     listen [::]:443 ssl;
     server_name magellans.fr;
