@@ -38,6 +38,7 @@ CSRF_TRUSTED_ORIGINS = ['http://localhost']
 if not DEBUG:
     SECRET_KEY = os.getenv("SECRET_KEY")
     ALLOWED_HOSTS += ["*"]
+    STATICFILES_DIRS = []
     STATIC_ROOT = BASE_DIR / 'assets'
 
 # Application definition
