@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Autodiscover xmlns="http://schemas.microsoft.com/exchange/autodiscover/responseschema/2006">
+  <Response xmlns="http://schemas.microsoft.com/exchange/autodiscover/outlook/responseschema/2006a">
+    <Account>
+      <AccountType>email</AccountType>
+      <Action>settings</Action>
+      <Protocol>
+        <Type>SMTP</Type>
+        <Server>mail.magellans.fr</Server>
+        <Port>587</Port>
+        <SSL>true</SSL>
+        <Auth>Basic</Auth>
+      </Protocol>
+      <Protocol>
+        <Type>IMAP</Type>
+        <Server>mail.magellans.fr</Server>
+        <Port>143</Port>
+        <SSL>true</SSL>
+      </Protocol>
+    </Account>
+  </Response>
+</Autodiscover>

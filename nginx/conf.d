@@ -7,6 +7,10 @@ server {
         alias /app/staticfiles/;
     }
 
+    location /media/ {
+        alias /app/staticfiles/media/;
+    }
+
     location / {
         proxy_set_header X-Forwarded-Host $host;
         proxy_set_header X-Forwarded-Server $host;

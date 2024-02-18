@@ -8,6 +8,23 @@ server {
 }
 
 server {
+    listen 80;
+    listen [::]:80;
+    server_name mail.magellans.fr;
+
+    return 301 https://magellans.fr;
+}
+
+server {
+    listen 443 ssl;
+    listen [::]:443 ssl;
+    server_name autodiscover.magellans.fr;
+
+    ssl_certificate /etc/letsencrypt/live/magellans.fr/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/magellans.fr/privkey.pem;
+}
+
+server {
     listen 443 ssl;
     listen [::]:443 ssl;
     server_name magellans.fr;
@@ -17,6 +34,10 @@ server {
 
     location /static/ {
         alias /app/staticfiles/;
+    }
+
+    location /media/ {
+        alias /app/staticfiles/media/;
     }
 
     location / {

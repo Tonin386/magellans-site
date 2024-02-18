@@ -1,121 +1,412 @@
 {% load static %}
+
 <!DOCTYPE html>
-<html>
-<head>
-    <title>Accueil - Magellans</title>
-    {% include "head.html" %}
-    <link rel="stylesheet" href="{% static 'css/home.css' %}">
-</head>
-<body class="d-flex mh-100 h-100 justify-content-center">
-    <div class="container-fluid p-0">
-        <video id="video-background" preload="auto" muted autoplay loop>
-            <source src="{% static 'media/video/presentation.webm' %}" type="video/webm">
-        </video>
-        
-        <div id="title" class="row no-gutters m-0 p-0 bg-light">
-            <div class="col-xl-7 align-items-center d-flex">
-                <img class="img-fluid" src="{% static 'media/img/logo.svg' %}" id="logo">
-                <h1 class="text-magellans-dark fs-2">Magellans</h1>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <meta name="description" content="Le site officiel de l'association d'audiovisuel MAGELLANS.">
+        <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+        <meta name="keywords" content="movie, social, network, cinema, films, association, magellans, projet, réseau">
+        <meta name="author" content="https://github.com/Tonin386">
+        <title>Magellans - Accueil</title>
+        <!-- Favicon-->
+        <link rel="shortcut icon" type="image/x-icon" href="{% static 'media/img/favicon.ico' %}">
+        <!-- Font Awesome icons (free version)-->
+        <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
+        <!-- Google fonts-->
+        <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet" type="text/css" />
+        <link href="https://fonts.googleapis.com/css?family=Roboto+Slab:400,100,300,700" rel="stylesheet" type="text/css" />
+        <!-- Core theme CSS (includes Bootstrap)-->
+        <link href="{% static 'css/styles.css' %}" rel="stylesheet" />
+    </head>
+    <body id="page-top">
+        <!-- Navigation-->
+        <nav class="navbar navbar-expand-lg navbar-dark fixed-top" id="mainNav">
+            <div class="container">
+                <a class="navbar-brand" href="#page-top">
+                    <img src="{% static 'img/logo.webp' %}" alt="..." /> Magellans
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+                    Menu
+                    <i class="fas fa-bars ms-1"></i>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarResponsive">
+                    <ul class="navbar-nav text-uppercase ms-auto py-4 py-lg-0">
+                        <li class="nav-item"><a class="nav-link" href="#services">Services</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#portfolio">Projets</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#about">A propos</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#team">Equipe</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#contact">Contact</a></li>
+                    </ul>
+                </div>
             </div>
-            <div class="col-xl-5 row align-items-center d-flex">
-                <div class="col-xl-3 d-flex align-items-center justify-content-center">
-                    <a href="{% url 'contact' %}" class="nav-link active p-1 text-magellans-dark fs-4">Accueil</a>
+        </nav>
+        <!-- Masthead-->
+        <header class="masthead">
+
+            <video id="video-background" preload="auto" muted autoplay loop>
+                <source src="{% static 'media/video/presentation.webm' %}" type="video/webm">
+            </video>
+            <div class="container">
+                <div class="masthead-subheading">Bienvenue dans Magellans !</div>
+                <div class="masthead-heading text-uppercase">Rejoins notre aventure</div>
+                <a class="btn btn-primary btn-xl text-uppercase" href="#services">Dites m'en plus</a>
+            </div>
+        </header>
+        <!-- Services-->
+        <section class="page-section" id="services">
+            <div class="container">
+                <div class="text-center">
+                    <h2 class="section-heading text-uppercase">Services</h2>
+                    <h3 class="section-subheading text-muted">Ce que nous savons faire chez Magellans.</h3>
                 </div>
-                <div class="col-xl-3 d-flex align-items-center justify-content-center">
-                    <a href="{% url 'contact' %}" class="nav-link p-1 text-magellans-dark fs-4">L'association</a>
-                </div>
-                <div class="col-xl-3 d-flex align-items-center justify-content-center">
-                    <a href="{% url 'projects' %}" class="nav-link p-1 text-magellans-dark fs-4">Projets</a>
-                </div>
-                <div class="col-xl-3 d-flex align-items-center justify-content-center">
-                    <a href="{% url 'join-us' %}" class="nav-link p-1 text-magellans-dark fs-4">Nous rejoindre</a>
+                <div class="row text-center">
+                    <div class="col-md-3">
+                        <span class="fa-stack fa-4x">
+                            <i class="fas fa-circle fa-stack-2x text-primary"></i>
+                            <i class="fas fa-address-book fa-stack-1x fa-inverse"></i>
+                        </span>
+                        <h4 class="my-3">Développe ton réseau</h4>
+                        <p class="text-muted">Rencontres de nouvelles personnes qui aiment aussi le cinéma et le monde de l'audiovisuel.</p>
+                    </div>
+                    <div class="col-md-3">
+                        <span class="fa-stack fa-4x">
+                            <i class="fas fa-circle fa-stack-2x text-primary"></i>
+                            <i class="fas fa-paper-plane fa-stack-1x fa-inverse"></i>
+                        </span>
+                        <h4 class="my-3">Propose ton projet</h4>
+                        <p class="text-muted">Soutien humain et financier dans vos projets personnels.</p>
+                    </div>
+                    <div class="col-md-3">
+                        <span class="fa-stack fa-4x">
+                            <i class="fas fa-circle fa-stack-2x text-primary"></i>
+                            <i class="fas fa-dolly fa-stack-1x fa-inverse"></i>
+                        </span>
+                        <h4 class="my-3">Location</h4>
+                        <p class="text-muted">Mise à disposition de matériel audiovisuel pour tous les membres. Gratuitement.</p>
+                    </div>
+                    <div class="col-md-3">
+                        <span class="fa-stack fa-4x">
+                            <i class="fas fa-circle fa-stack-2x text-primary"></i>
+                            <i class="fas fa-clapperboard fa-stack-1x fa-inverse"></i>
+                        </span>
+                        <h4 class="my-3">Captations</h4>
+                        <p class="text-muted">Réalisation de captations de spectacles et d'évènements de tout genre, partout en France.</p>
+                    </div>
                 </div>
             </div>
-        </div>
-        <div class="row m-0 p-0" id='main-panel'>
-            <div class="col-lg-12 text-center m-auto">
-                <h1 class="display-2 text-magellans-extra-light fw-bold">Projet Magellans</h1>
-                <h2 class="display-3 text-magellans-extra-light">Association d'audiovisuel et de cinéma.</h2>
+        </section>
+        <!-- Portfolio Grid-->
+        <section class="page-section bg-light" id="portfolio">
+            <div class="container">
+                <div class="text-center">
+                    <h2 class="section-heading text-uppercase">Projets</h2>
+                    <h3 class="section-subheading text-muted">Ce que nous avons fait chez Magellans.</h3>
+                </div>
+                <div class="row">
+                    <!-- ------------------------------------------------------------------------------------------- -->
+                    {% for projet in projets %}
+                    <div class="col-lg-4 col-sm-6 mb-4">
+                        <!-- Portfolio item 1-->
+                        <div class="portfolio-item">
+                            <a class="portfolio-link" data-bs-toggle="modal" href="#{{ projet.slug }}-modal">
+                                <div class="portfolio-hover">
+                                    <div class="portfolio-hover-content"><i class="fas fa-plus fa-3x"></i></div>
+                                </div>
+                                <img class="img-fluid" src="{{ MEDIA_URL }}{{ projet.poster.url }}" alt="{{ projet.name }} poster" /> <!-- Image projet -->
+                            </a> 
+                            <div class="portfolio-caption">
+                                <div class="portfolio-caption-heading">{{ projet.name }}</div>  <!-- Titre -->
+                                <div class="portfolio-caption-subheading text-muted">{{ projet.genre }}</div> <!-- Genre projet -->
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                    <!-- ------------------------------------------------------------------------------------------- -->
+                </div>
             </div>
-        </div>
-        <div class="row bg-light" id="second-panel">
-            <div class="p-5 col-lg-12">
-                <h3 class="display-3 text-light text-center fw-bold"> Rejoins-nous sur les réseaux. </h3>
-                <ul class="list-unstyled list-inline m-auto text-center">
-                    <li class="list-inline-item m-4">
-                        <a href="https://www.instagram.com/magellansproject/" target="_blank" class="text-decoration-none display-2">
-                            <i class="bi bi-instagram text-instagram"></i>
-                        </a>
+        </section>
+        <!-- About-->
+        <section class="page-section" id="about">
+            <div class="container">
+                <div class="text-center">
+                    <h2 class="section-heading text-uppercase">A propos</h2>
+                    <h3 class="section-subheading text-light-50">L'histoire de Magellans.</h3>
+                </div>
+                <ul class="timeline">
+                    <li>
+                        <div class="timeline-image"><img class="rounded-circle img-fluid" src="{% static 'img/about/1.jpg' %}" alt="..." /></div>
+                        <div class="timeline-panel">
+                            <div class="timeline-heading">
+                                <h4>Février 2020</h4>
+                                <h4 class="subheading">Création de Magellans</h4>
+                            </div>
+                            <div class="timeline-body"><p class="text-light-50">Ca y est, Magellans vient de naître grâce à Tristan PEUREY, Axelle SERVAT, Maël AUNAVE, S. OLIVIER, Aïmen CHAÏBI et Julien PARADIS</p></div>
+                        </div>
                     </li>
-                    <li class="list-inline-item m-4">
-                        <a href="https://vm.tiktok.com/ZM8R6VUjL/" target="_blank" class="text-decoration-none display-2 text-magellans-extra-light">
-                            <i class="bi bi-tiktok"></i>
-                        </a>
+                    <li class="timeline-inverted">
+                        <div class="timeline-image"><img class="rounded-circle img-fluid" src="{% static 'img/about/2.jpg' %}" alt="..." /></div>
+                        <div class="timeline-panel">
+                            <div class="timeline-heading">
+                                <h4>March 2011</h4>
+                                <h4 class="subheading">An Agency is Born</h4>
+                            </div>
+                            <div class="timeline-body"><p class="text-light-50">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Sunt ut voluptatum eius sapiente, totam reiciendis temporibus qui quibusdam, recusandae sit vero unde, sed, incidunt et ea quo dolore laudantium consectetur!</p></div>
+                        </div>
                     </li>
-                    <li class="list-inline-item m-4">
-                        <a href="https://www.twitch.tv/magellans_project" target="_blank" class="text-decoration-none display-2" style="color: blueviolet;">
-                            <i class="bi bi-twitch"></i>
-                        </a>
+                    <li>
+                        <div class="timeline-image"><img class="rounded-circle img-fluid" src="{% static 'img/about/3.jpg' %}" alt="..." /></div>
+                        <div class="timeline-panel">
+                            <div class="timeline-heading">
+                                <h4>December 2015</h4>
+                                <h4 class="subheading">Transition to Full Service</h4>
+                            </div>
+                            <div class="timeline-body"><p class="text-light-50">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Sunt ut voluptatum eius sapiente, totam reiciendis temporibus qui quibusdam, recusandae sit vero unde, sed, incidunt et ea quo dolore laudantium consectetur!</p></div>
+                        </div>
                     </li>
-                    <li class="list-inline-item m-4">
-                        <a href="https://www.youtube.com/channel/UCLU4qQfiuMThtss8TKoZx5Q" target="_blank" class="text-decoration-none display-2 text-danger">
-                            <i class="bi bi-youtube"></i>
-                        </a>
+                    <li class="timeline-inverted">
+                        <div class="timeline-image"><img class="rounded-circle img-fluid" src="{% static 'img/about/4.jpg' %}" alt="..." /></div>
+                        <div class="timeline-panel">
+                            <div class="timeline-heading">
+                                <h4>July 2020</h4>
+                                <h4 class="subheading">Phase Two Expansion</h4>
+                            </div>
+                            <div class="timeline-body"><p class="text-light-50">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Sunt ut voluptatum eius sapiente, totam reiciendis temporibus qui quibusdam, recusandae sit vero unde, sed, incidunt et ea quo dolore laudantium consectetur!</p></div>
+                        </div>
+                    </li>
+                    <li class="timeline-inverted">
+                        <div class="timeline-image">
+                            <h4>
+                                Ecris la
+                                <br />
+                                suite
+                                <br />
+                                avec nous !
+                            </h4>
+                        </div>
                     </li>
                 </ul>
             </div>
-        </div>
-        <div class="row bg-light pt-5" style="height: fit-content;">
-            <div class="w-75 m-auto container-fluid col-lg-12">
-                <div class="row mb-3">
-                    <div class="col-lg-12 mb-5">
-                        <h2 class="text-dark display-2 fw-bold text-center"> Notre dernier tournage </h2>
-                    </div>
-                    <div class="col-lg-5 d-flex justify-content-end pe-4">
-                        <img src="{% static 'img/last-project.jpeg' %}" class="img-fluid" style="max-height: 700px">
-                    </div>
-                    <div class="col-lg-7">
-                        <h3 class="display-5">Les Eclairés</h3>
-                        <br>
-                        <div class="fs-2 text-dark">
-                            <p>
-                                Phasellus accumsan sagittis ipsum eu dignissim. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Donec consectetur suscipit metus vel feugiat. Pellentesque tristique aliquet massa non gravida.
+        </section>
+        <!-- Team-->
+        <section class="page-section bg-light" id="team">
+            <div class="container">
+                <div class="text-center">
+                    <h2 class="section-heading text-uppercase">Notre conseil d'administration</h2>
+                    <h3 class="section-subheading text-muted">Les membres qui orchestrent tout Magellans.</h3>
+                </div>
+                <div class="row">
+                    <div class="col-lg-4">
+                        <div class="team-member">
+                            <img class="mx-auto rounded-circle" src="{% static 'img/ca/charlotte_sire.jpg' %}" alt="..." />
+                            <h4>Charlotte Sire</h4>
+                            <p class="text-muted m-0">Présidente</p>
+                            <p class="text-muted m-0">07 70 52 97 62</p>
+                            <p class="text-muted m-0 mb-2"> 
+                                <a href='mailto:charlotte.sire@magellans.fr'>
+                                    charlotte.sire@magellans.fr
+                                </a>
                             </p>
+                            <a class="btn btn-dark btn-social mx-2" target="_blank" href="https://www.instagram.com/charlotte.sre/" aria-label="Instagram de Charlotte Sire"><i class="fab fa-instagram"></i></a>
+                            <a class="btn btn-dark btn-social mx-2" target="_blank" href="https://www.facebook.com/profile.php?id=100009596946126" aria-label="Facebook de Charlotte Sire"><i class="fab fa-facebook-f"></i></a>
+                            <a class="btn btn-dark btn-social mx-2" target="_blank" href="https://www.linkedin.com/in/charlotte-sire-b51262182/" aria-label="LinkedIn de Charlotte Sire"><i class="fab fa-linkedin-in"></i></a>
                         </div>
-                        <div class="fs-3 text-dark">
-                            <p>
-                                Réalisation : Jade Ugnon-Fleury
-                                pour le Nikon film festival
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="team-member">
+                            <img class="mx-auto rounded-circle" src="{% static 'img/ca/lena_delaval.jpg' %}" alt="..." />
+                            <h4>Léna Delaval</h4>
+                            <p class="text-muted m-0">Secrétaire</p>
+                            <p class="text-muted m-0">06 51 57 32 68</p>
+                            <p class="text-muted m-0 mb-2"> 
+                                <a href='mailto:lena.delaval@magellans.fr'>
+                                    lena.delaval@magellans.fr
+                                </a>
                             </p>
+                            <a class="btn btn-dark btn-social mx-2" target="_blank" href="https://www.instagram.com/lenadelaval/" aria-label="Instagram de Léna Delaval"><i class="fab fa-instagram"></i></a>
+                            <a class="btn btn-dark btn-social mx-2" target="_blank" href="https://www.facebook.com/lena.delaval" aria-label="Facebook de Léna Delaval"><i class="fab fa-facebook-f"></i></a>
+                            <a class="btn btn-dark btn-social mx-2" target="_blank" href="https://www.linkedin.com/in/l%C3%A9na-delaval-038261251/" aria-label="LinkedIn de Léna Delaval"><i class="fab fa-linkedin-in"></i></a>
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="team-member">
+                            <img class="mx-auto rounded-circle" src="{% static 'img/ca/antonin_mathubert.jpg' %}" alt="..." />
+                            <h4>Antonin Mathubert</h4>
+                            <p class="text-muted m-0">Trésorier</p>
+                            <p class="text-muted m-0">07 82 92 98 96</p>
+                            <p class="text-muted m-0 mb-2"> 
+                                <a href='mailto:antonin.mathubert@magellans.fr'>
+                                    antonin.mathubert@magellans.fr
+                                </a>
+                            </p>
+                            <a class="btn btn-dark btn-social mx-2" target="_blank" href="https://www.instagram.com/antonin.mtb/" aria-label="Instagram de Antonin Mathubert"><i class="fab fa-instagram"></i></a>
+                            <a class="btn btn-dark btn-social mx-2" target="_blank" href="https://www.facebook.com/antonin.mathubert/" aria-label="Facebook de Antonin Mathubert"><i class="fab fa-facebook-f"></i></a>
+                            <a class="btn btn-dark btn-social mx-2" target="_blank" href="https://www.linkedin.com/in/antonin-mathubert-115246149/" aria-label="LinkedIn de Antonin Mathubert"><i class="fab fa-linkedin-in"></i></a>
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="team-member">
+                            <img class="mx-auto rounded-circle" src="{% static 'img/ca/axelle_servat.jpg' %}" alt="..." />
+                            <h4>Axelle Servat</h4>
+                            <p class="text-muted m-0">Responsable communication</p>
+                            <p class="text-muted m-0">06 51 67 79 32</p>
+                            <p class="text-muted m-0 mb-2"> 
+                                <a href='mailto:axelle.servat@magellans.fr'>
+                                    axelle.servat@magellans.fr
+                                </a>
+                            </p>
+                            <a class="btn btn-dark btn-social mx-2" target="_blank" href="https://www.instagram.com/axelleservat/" aria-label="Instagram de Axelle Servat"><i class="fab fa-instagram"></i></a>
+                            <a class="btn btn-dark btn-social mx-2" target="_blank" href="https://www.facebook.com/axelle.servat.3" aria-label="Facebook de Axelle Servat"><i class="fab fa-facebook-f"></i></a>
+                            <a class="btn btn-dark btn-social mx-2" target="_blank" href="https://www.linkedin.com/in/axelle-servat-441453165/" aria-label="LinkedIn de Axelle Servat"><i class="fab fa-linkedin-in"></i></a>
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="team-member">
+                            <img class="mx-auto rounded-circle" src="{% static 'img/ca/sarah_duvallet.jpg' %}" alt="..." />
+                            <h4>Sarah Duvallet</h4>
+                            <p class="text-muted m-0">Adjointe responsable communication</p>
+                            <p class="text-muted m-0">06 51 61 07 96</p>
+                            <p class="text-muted m-0 mb-2"> 
+                                <a href='mailto:sarah.duvallet@magellans.fr'>
+                                    sarah.duvallet@magellans.fr
+                                </a>
+                            </p>
+                            <a class="btn btn-dark btn-social mx-2" target="_blank" href="https://www.instagram.com/sarah.dvlt/" aria-label="Instagram de Sarah Duvallet"><i class="fab fa-instagram"></i></a>
+                            <a class="btn btn-dark btn-social mx-2" target="_blank" href="https://www.facebook.com/sarah.duvallet.330" aria-label="Facebook de Sarah Duvallet"><i class="fab fa-facebook-f"></i></a>
+                            <a class="btn btn-dark btn-social mx-2" target="_blank" href="https://www.linkedin.com/in/sarah-duvallet-68576b184/" aria-label="LinkedIn de Sarah Duvallet"><i class="fab fa-linkedin-in"></i></a>
+                        </div>
+                    </div>
+                </div>
+                <!-- <div class="row">
+                    <div class="col-lg-8 mx-auto text-center"><p class="large text-muted">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aut eaque, laboriosam veritatis, quos non quis ad perspiciatis, totam corporis ea, alias ut unde.</p></div>
+                </div> -->
+            </div>
+        </section>
+        <!-- Clients-->
+        <!-- <div class="py-5">
+            <div class="container">
+                <div class="row align-items-center">
+                    <div class="col-md-3 col-sm-6 my-3">
+                        <a href="#!"><img class="img-fluid img-brand d-block mx-auto" src="{% static 'img/logos/microsoft.svg' %}" alt="..." aria-label="Microsoft Logo" /></a>
+                    </div>
+                    <div class="col-md-3 col-sm-6 my-3">
+                        <a href="#!"><img class="img-fluid img-brand d-block mx-auto" src="{% static 'img/logos/google.svg' %}" alt="..." aria-label="Google Logo" /></a>
+                    </div>
+                    <div class="col-md-3 col-sm-6 my-3">
+                        <a href="#!"><img class="img-fluid img-brand d-block mx-auto" src="{% static 'img/logos/facebook.svg' %}" alt="..." aria-label="Facebook Logo" /></a>
+                    </div>
+                    <div class="col-md-3 col-sm-6 my-3">
+                        <a href="#!"><img class="img-fluid img-brand d-block mx-auto" src="{% static 'img/logos/ibm.svg' %}" alt="..." aria-label="IBM Logo" /></a>
+                    </div>
+                </div>
+            </div>
+        </div> -->
+        <!-- Contact-->
+        <section class="page-section" id="contact">
+            <div class="container">
+                <div class="text-center">
+                    <h2 class="section-heading text-uppercase">Contacte nous</h2>
+                    <h3 class="section-subheading text-muted">Nous lisons quotidiennement toutes les demandes, attends-toi à une réponse dans la semaine qui suit.</h3>
+                </div>
+                <form id="contactForm" method="post" action="{% url 'home' %}">
+                    {% csrf_token %}
+                    <div class="row align-items-stretch mb-5">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <!-- Name input-->
+                                <input class="form-control" name="{{form.name.name}}" id="{{form.name.id_for_label}}" type="text" placeholder="Votre nom *" required/>
+                                <div class="invalid-feedback" data-sb-feedback="name:required">Champ obligatoire.</div>
+                            </div>
+                            <div class="form-group">
+                                <!-- Email address input-->
+                                <input class="form-control" name="{{form.email.name}}" id="{{form.email.id_for_label}}" type="email" placeholder="Votre email *" required />
+                                <div class="invalid-feedback" data-sb-feedback="email:required">Champ obligatoire.</div>
+                                <div class="invalid-feedback" data-sb-feedback="email:email">L'email n'est pas valide.</div>
+                            </div>
+                            <div class="form-group mb-md-0">
+                                <!-- Phone number input-->
+                                <input class="form-control" name="{{form.phone.name}}" id="{{form.phone.id_for_label}}" type="tel" placeholder="Votre téléphone *" required />
+                                <div class="invalid-feedback" data-sb-feedback="phone:required">Champ obligatoire.</div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group form-group-textarea mb-md-0">
+                                <!-- Message input-->
+                                <textarea class="form-control" name="{{form.message.name}}" id="{{form.message.id_for_label}}" placeholder="Votre message *" required></textarea>
+                                <div class="invalid-feedback" data-sb-feedback="message:required">Champ obligatoire.</div>
+                            </div>
+                        </div>
+                    </div>
+                    {% for field in form %}
+                    {% if field.errors %}
+                        {{ field.name }} : {{ field.errors }}
+                    {% endif %}
+                    {% endfor %}
+                    <!-- Submit Button-->
+                    <div class="text-center"><button class="btn btn-primary btn-xl text-uppercase" id="submitButton" type="submit">Envoyer</button></div>
+                </form>
+            </div>
+        </section>
+        <!-- Footer-->
+        <footer class="footer py-4">
+            <div class="container">
+                <div class="row align-items-center">
+                    <div class="col-lg-4 text-lg-start">Copyright &copy; Magellans 2024</div>
+                    <div class="col-lg-4 my-3 my-lg-0">
+                        <a class="btn btn-dark btn-social mx-2" target="_blank" href="https://vm.tiktok.com/ZM8R6VUjL/" aria-label="Tiktok"><i class="fab fa-tiktok"></i></a>
+                        <a class="btn btn-dark btn-social mx-2" target="_blank" href="https://www.instagram.com/magellansproject/" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                        <a class="btn btn-dark btn-social mx-2" target="_blank" href="https://www.youtube.com/channel/UCLU4qQfiuMThtss8TKoZx5Q" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
+                        <a class="btn btn-dark btn-social mx-2" target="_blank" href="https://www.twitch.tv/magellans_project" aria-label="Twitch"><i class="fab fa-twitch"></i></a>
+                    </div>
+                    <div class="col-lg-4 text-lg-end">
+                        <a class="link-light text-decoration-none me-3" href="#!">Politique de confidentialité</a>
+                        <a class="link-light text-decoration-none" href="#!">Conditions d'utilisation</a>
+                    </div>
+                </div>
+            </div>
+        </footer>
+        <!-- Portfolio Modals-->
+        <!-- Portfolio item 1 modal popup-->
+        {% for projet in projets %}
+        <div class="portfolio-modal modal fade" id="{{ projet.slug }}-modal" tabindex="-1" role="dialog" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="close-modal" data-bs-dismiss="modal"><img src="{% static 'img/close-icon.svg' %}" alt="Close modal" /></div>
+                    <div class="container">
+                        <div class="row justify-content-center">
+                            <div class="col-lg-8">
+                                <div class="modal-body">
+                                    <!-- Project details-->
+                                    <h2 class="text-uppercase">{{ projet.name }}</h2>
+                                    <p class="item-intro text-muted">{{ projet.short_desc }}</p>
+                                    <img class="img-fluid d-block mx-auto" src="{{ MEDIA_URL }}{{ projet.poster.url }}" alt="{{ projet.name }} poster" />
+                                    <p>{{ projet.desc }}</p>
+                                    <ul class="list-inline">
+                                        <li>
+                                            <strong>Durée :</strong>
+                                            {{ projet.duration }}
+                                        </li>
+                                        <li>
+                                            <strong>Genre :</strong>
+                                            {{ projet.genre }}
+                                        </li>
+                                    </ul>
+                                    <button class="btn btn-primary btn-xl text-uppercase" data-bs-dismiss="modal" type="button">
+                                        <i class="fas fa-xmark me-1"></i>
+                                        Fermer projet
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="row bg-light pt-5" style="height: fit-content;">
-            <div class="w-75 m-auto container-fluid col-lg-12">
-                <div class="row mb-3">
-                    <div class="col-lg-12 mb-5">
-                        <h2 class="text-dark display-2 fw-bold text-center"> D'autres projets</h2>
-                    </div>
-                    <div class="col-lg-4 d-flex justify-content-end pe-4">
-                        <img src="{% static 'img/last-project.jpeg' %}" class="img-fluid" style="max-height: 700px">
-                    </div>
-                    <div class="col-lg-4 d-flex justify-content-end pe-4">
-                        <img src="{% static 'img/last-project.jpeg' %}" class="img-fluid" style="max-height: 700px">
-                    </div>
-                    <div class="col-lg-4 d-flex justify-content-end pe-4">
-                        <img src="{% static 'img/last-project.jpeg' %}" class="img-fluid" style="max-height: 700px">
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="row bg-extra-light py-3">
-            <div class="col-lg-12 fs-4 d-flex align-items-center text-magellans-dark justify-content-center">
-                &copy Magellans
-            </div>
-        </div>
-    </div>
-    <script src="{% static 'js/home.js' %}"></script>
-</body>
+        {% endfor %}
+        <!-- Bootstrap core JS-->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+        <!-- Core theme JS-->
+        <script src="{% static 'js/scripts_home.js' %}"></script>
+    </body>
 </html>
