@@ -18,6 +18,15 @@ server {
 server {
     listen 443 ssl;
     listen [::]:443 ssl;
+    server_name autodiscover.magellans.fr;
+
+    ssl_certificate /etc/letsencrypt/live/magellans.fr/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/magellans.fr/privkey.pem;
+}
+
+server {
+    listen 443 ssl;
+    listen [::]:443 ssl;
     server_name magellans.fr;
 
     ssl_certificate /etc/letsencrypt/live/magellans.fr/fullchain.pem;
