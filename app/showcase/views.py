@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
-from django.core.mail import send_mail
 from showcase.forms import ContactForm
+from django.core.mail import send_mail
+from dashboard.models import *
 from django.conf import settings
 from .forms import ContactForm
 
@@ -21,6 +22,8 @@ def home(request):
             print(subject, message_body, sender_email, recipient_list)
     else:
         form = ContactForm()
+        
+    projets = Project.objects.order_by("-shoot_date")[:6]
     
     if request.user.is_authenticated:
         redirect('/membres')
