@@ -46,7 +46,7 @@ if not DEBUG:
 
 INSTALLED_APPS = [
     'daphne',
-    'corsheaders'
+    'corsheaders',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
