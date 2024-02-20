@@ -45,8 +45,8 @@
         <!-- Masthead-->
         <header class="masthead">
 
-            <video id="video-background" preload="auto" muted autoplay loop>
-                <source src="{% static 'media/video/presentation.webm' %}" type="video/webm">
+            <video id="video-background" preload="auto" muted autoplay="autoplay" loop="loop" muted defaultMuted playsinline oncontextmenu="return false;">
+                <source src="{% static 'media/video/presentation.mp4' %}" type="video/mp4">
             </video>
             <div class="container">
                 <div class="masthead-subheading">Bienvenue dans Magellans !</div>
@@ -76,7 +76,7 @@
                             <i class="fas fa-paper-plane fa-stack-1x fa-inverse"></i>
                         </span>
                         <h4 class="my-3">Propose ton projet</h4>
-                        <p class="text-muted">Soutien humain et financier dans vos projets personnels.</p>
+                        <p class="text-muted">Soutien humain et financier dans vos projets personnels ou professionnels.</p>
                     </div>
                     <div class="col-md-3">
                         <span class="fa-stack fa-4x">
@@ -114,7 +114,7 @@
                                 <div class="portfolio-hover">
                                     <div class="portfolio-hover-content"><i class="fas fa-plus fa-3x"></i></div>
                                 </div>
-                                <img class="img-fluid" src="{{ MEDIA_URL }}{{ projet.poster.url }}" alt="{{ projet.name }} poster" /> <!-- Image projet -->
+                                <img class="img-fluid" style="aspect-ratio: 2/3;" src="{{ MEDIA_URL }}{{ projet.poster.url }}" alt="{{ projet.name }} poster" /> <!-- Image projet -->
                             </a> 
                             <div class="portfolio-caption">
                                 <div class="portfolio-caption-heading">{{ projet.name }}</div>  <!-- Titre -->
@@ -142,7 +142,7 @@
                                 <h4>Février 2020</h4>
                                 <h4 class="subheading">Création de Magellans</h4>
                             </div>
-                            <div class="timeline-body"><p class="text-light-50">Ca y est, Magellans vient de naître grâce à Tristan PEUREY, Axelle SERVAT, Maël AUNAVE, S. OLIVIER, Aïmen CHAÏBI et Julien PARADIS</p></div>
+                            <div class="timeline-body"><p class="text-light-50">Ca y est, Magellans vient de naître grâce à Tristan PEUREY, Axelle SERVAT, Maël AUNAVE, Solène OLIVIER, Aïmen CHAÏBI et Julien PARADIS</p></div>
                         </div>
                     </li>
                     <li class="timeline-inverted">
@@ -193,7 +193,7 @@
         <section class="page-section bg-light" id="team">
             <div class="container">
                 <div class="text-center">
-                    <h2 class="section-heading text-uppercase">Notre conseil d'administration</h2>
+                    <h2 class="section-heading text-uppercase">Notre conseil administratif</h2>
                     <h3 class="section-subheading text-muted">Les membres qui orchestrent tout Magellans.</h3>
                 </div>
                 <div class="row">
@@ -202,7 +202,6 @@
                             <img class="mx-auto rounded-circle" src="{% static 'img/ca/charlotte_sire.jpg' %}" alt="..." />
                             <h4>Charlotte Sire</h4>
                             <p class="text-muted m-0">Présidente</p>
-                            <p class="text-muted m-0">07 70 52 97 62</p>
                             <p class="text-muted m-0 mb-2"> 
                                 <a href='mailto:charlotte.sire@magellans.fr'>
                                     charlotte.sire@magellans.fr
@@ -218,7 +217,6 @@
                             <img class="mx-auto rounded-circle" src="{% static 'img/ca/lena_delaval.jpg' %}" alt="..." />
                             <h4>Léna Delaval</h4>
                             <p class="text-muted m-0">Secrétaire</p>
-                            <p class="text-muted m-0">06 51 57 32 68</p>
                             <p class="text-muted m-0 mb-2"> 
                                 <a href='mailto:lena.delaval@magellans.fr'>
                                     lena.delaval@magellans.fr
@@ -234,7 +232,6 @@
                             <img class="mx-auto rounded-circle" src="{% static 'img/ca/antonin_mathubert.jpg' %}" alt="..." />
                             <h4>Antonin Mathubert</h4>
                             <p class="text-muted m-0">Trésorier</p>
-                            <p class="text-muted m-0">07 82 92 98 96</p>
                             <p class="text-muted m-0 mb-2"> 
                                 <a href='mailto:antonin.mathubert@magellans.fr'>
                                     antonin.mathubert@magellans.fr
@@ -250,7 +247,6 @@
                             <img class="mx-auto rounded-circle" src="{% static 'img/ca/axelle_servat.jpg' %}" alt="..." />
                             <h4>Axelle Servat</h4>
                             <p class="text-muted m-0">Responsable communication</p>
-                            <p class="text-muted m-0">06 51 67 79 32</p>
                             <p class="text-muted m-0 mb-2"> 
                                 <a href='mailto:axelle.servat@magellans.fr'>
                                     axelle.servat@magellans.fr
@@ -266,7 +262,6 @@
                             <img class="mx-auto rounded-circle" src="{% static 'img/ca/sarah_duvallet.jpg' %}" alt="..." />
                             <h4>Sarah Duvallet</h4>
                             <p class="text-muted m-0">Adjointe responsable communication</p>
-                            <p class="text-muted m-0">06 51 61 07 96</p>
                             <p class="text-muted m-0 mb-2"> 
                                 <a href='mailto:sarah.duvallet@magellans.fr'>
                                     sarah.duvallet@magellans.fr

@@ -1,4 +1,5 @@
 Django
+django-cors-headers
 gunicorn
 uvicorn[standard]
 psycopg2-binary

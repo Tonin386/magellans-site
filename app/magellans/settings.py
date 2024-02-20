@@ -38,7 +38,7 @@ CSRF_TRUSTED_ORIGINS = ['http://localhost']
 if not DEBUG:
     SECRET_KEY = os.getenv("SECRET_KEY")
     ALLOWED_HOSTS += ["*"]
-    CSRF_TRUSTED_ORIGINS = ['*']
+    CSRF_TRUSTED_ORIGINS = ['https://*.magellans.fr', "https://magellans.fr"]
     STATICFILES_DIRS = []
     STATIC_ROOT = BASE_DIR / 'assets'
 
@@ -46,6 +46,7 @@ if not DEBUG:
 
 INSTALLED_APPS = [
     'daphne',
+    'corsheaders',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -70,6 +71,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware'
 ]
 
 ROOT_URLCONF = 'magellans.urls'
