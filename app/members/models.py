@@ -1,5 +1,7 @@
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from django.db import models
+import secrets
+import string
 
 ROLE_CHOICES = [
     ('P', "Président.e"),
@@ -22,7 +24,8 @@ class MemberManager(BaseUserManager):
         if not username:
             raise ValueError('The username field must be set')
         # username = self.normalize_username(username)
-        user = self.model(username=username, **extra_fields)
+        token = ''.join(secrets.choice(string.ascii_letters + string.digits) for _ in range(128))
+        user = self.model(username=username, api_token=token, **extra_fields)
         user.set_password(password)
         user.save(using=self._db)
         return user
@@ -51,6 +54,7 @@ class Member(AbstractBaseUser, PermissionsMixin):
     account = models.FloatField(default=0, verbose_name="Statut compte")
     role = models.CharField(max_length=1, choices=ROLE_CHOICES, default='M', verbose_name="Role")
     gender = models.CharField(max_length=1, choices=GENDER_CHOICES, blank=True, verbose_name="Sexe")
+    api_token = models.CharField(max_length=128, null=True, blank=True, editable=False)
 
     objects = MemberManager()
 

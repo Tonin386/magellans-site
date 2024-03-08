@@ -24,6 +24,8 @@ AUTH_USER_MODEL = 'members.Member'
 
 LOGIN_REDIRECT_URL = '/membres/mon-profil'
 
+LOGIN_URL = '/connexion/'
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 

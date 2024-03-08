@@ -3,6 +3,7 @@ from django.shortcuts import render, HttpResponse
 from django.views.generic import DetailView
 from .models import Member
 
+@login_required
 def members(request):
     return render(request, "members.html", locals())
 

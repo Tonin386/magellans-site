@@ -1,102 +1,49 @@
 {% load static %}
-  
-  <nav class="navbar navbar-light navbar-expand-lg bg-light">
-    <div class="container-fluid">
-      <a class="navbar-brand" href="{% url 'home' %}">
-        <img src="{% static 'media/img/logo.webp' %}" alt="Magellans" width="50" height="50">
-      </a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse justify-content-end" id="navbarSupportedContent">
-        <ul class="navbar-nav">
-          <li class="nav-item">
-            <a class="nav-link p-1 text-magellans-dark fs-4" href="{% url 'home' %}">
-              Accueil
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link p-1 text-magellans-dark fs-4" href="{% url 'contact' %}">
-              L'association
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link p-1 text-magellans-dark fs-4" href="{% url 'projects' %}">
-              Projets
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link p-1 text-magellans-dark fs-4" href="{% url 'join-us' %}">
-              Nous rejoindre
-            </a>
-          </li>
 
-          {% if request.user.is_authenticated %}
-          <li class="nav-item dropdown">
-            <a class="nav-link p-1 text-magellans-dark fs-4 dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-              Espace membres
-            </a>
-            <ul class="dropdown-menu">
-              <li>
-                <a class="dropdown-item fs-4" href="{% url 'warehouse' %}">
-                  Location de matériel
-                </a>
-              </li>
-              <li>
-                <a class="dropdown-item fs-4" href="{% url 'my-profile' %}">
-                  Mon profil
-                </a>
-              </li>
-            </ul>
-          </li>
-          {% endif %}
-          
-          {% if request.user.is_staff %}
-          <li class="nav-item dropdown">
-            <a class="nav-link p-1 text-magellans-dark fs-4 dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-              Dashboard administration
-            </a>
-            <ul class="dropdown-menu">
-              <li>
-                <a class="dropdown-item fs-4" href="{% url 'warehouse' %}">
-                  Magasin
-                </a>
-              </li>
-              <li>
-                <a class="dropdown-item fs-4" href="{% url 'bank' %}">
-                  Trésorerie
-                </a>
-              </li>
-              <li>
-                <a class="dropdown-item fs-4" href="{% url 'members' %}">
-                  Membres
-                </a>
-              </li>
-              <li>
-                <a class="dropdown-item fs-4" href="{% url 'dashboard' %}">
-                  Projets
-                </a>
-              </li>
-              {% if request.user.is_superuser %}
-              <li><hr class="dropdown-divider"></li>
-              <li>
-                <a class="dropdown-item fs-4" href="{% url 'admin:index' %}">
-                  Administration site
-                </a>
-              </li>
-              {% endif %} 
-            </ul>
-          </li>
-          {% endif %}
-          {% if not request.user.is_authenticated %}
-          <li class="nav-item">
-            <a class="nav-link p-1 text-magellans-dark fs-4" href="{% url 'login' %}?next={{ request.path }}">
-              Se connecter
-            </a>
-          </li>
-          {% endif %}
-        </ul>
-      </div>
+<nav class="navbar navbar-expand-lg navbar-dark fixed-top" id="mainNav" style="background-color: #212529;">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="{% url 'home' %}">
+      <img src="{% static 'media/img/logo.webp' %}" alt="Magellans"> Magellans
+    </a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse justify-content-end" id="navbarResponsive">
+      <ul class="navbar-nav">
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'home' %}">
+            Accueil
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'warehouse' %}">
+            Magasin
+          </a>
+        </li>
+        
+        {% if request.user.is_authenticated %}
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'my-profile' %}">
+            Mon profil
+          </a>
+        </li>
+        {% else %}
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'login' %}?next={{ request.path }}">
+            Se connecter
+          </a>
+        </li>
+        {% endif %}
+
+        {% if request.user.is_superuser %}
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'admin:index' %}">
+            Administration site
+          </a>
+        </li>
+        {% endif %} 
+      </ul>
     </div>
-  </nav>
+  </div>
+</nav>
 </div>
