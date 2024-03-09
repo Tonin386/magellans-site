@@ -10,6 +10,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Static files (CSS, JavaScript, images)
 STATIC_URL = '/static/'
 
+DATA_UPLOAD_MAX_MEMORY_SIZE = 26214400
+
 # Additional directories where Django will look for static files
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_DIRS = [
