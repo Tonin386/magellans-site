@@ -31,7 +31,7 @@ def register(request):
             
             token = default_token_generator.make_token(new_user)
             uidb64 = urlsafe_base64_encode(force_bytes(new_user.pk))
-            activation_url = "https://magellans.fr/membres/activation/{}/{}".format(uidb64, token)
+            activation_url = "https://magellans.fr/membres/activate/{}/{}".format(uidb64, token)
             
             subject = "Activation de votre compte magellans.fr"
             message = render_to_string('registration/activation_email.html', {'user': new_user, 'activation_url': activation_url})
