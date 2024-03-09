@@ -34,9 +34,9 @@ def register(request):
             activation_url = "https://magellans.fr/membres/activation/{}/{}".format(uidb64, token)
             
             subject = "Activation de votre compte magellans.fr"
-            html_message = render_to_string('registration/activation_email.html', {'user': new_user, 'activation_url': activation_url})
-            send_mail(subject, '', settings.DEFAULT_FROM_EMAIL, [new_user.email], html_message=html_message)
-            
+            message = render_to_string('registration/activation_email.html', {'user': new_user, 'activation_url': activation_url})
+            send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [new_user.email])
+
             messages.success(request, 'Vous avez reçu un email pour activer votre compte.')
             
     return render(request, "registration/register.html", locals())

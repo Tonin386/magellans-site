@@ -7,5 +7,6 @@ urlpatterns = [
     path('mon-profil', my_profile, name="my-profile"),
     path('inscription/', register, name="register"),
     path('activation-reussie', activation_done, name="activation_done"),
-    path('activation-echec', activation_failed, name='activation_failed')
+    path('activation-echec', activation_failed, name='activation_failed'),
+    path('activate/<str:uidb64>/<str:token>/', activate, name='activate'),
 ]
