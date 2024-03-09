@@ -10,11 +10,11 @@
 <body>
   {% include 'nav.html' %}
 
-  <div class="content">
+  <section class="base-section">
     {% block content %}
     <!-- This is where content from child templates will be inserted -->
     {% endblock %}
-  </div>
+  </section>
   
   {% include "footer.html" %}
 </body>

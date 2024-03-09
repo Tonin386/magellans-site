@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block title %}
+Déconnexion
+{% endblock %}
+
+{% block nav %}
+{% include "nav.html" %}
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row m-auto">
+        <h1 class="display-3 mt-3 text-magellans-dark">Déconnecté.</h1>
+        <div class="alert alert-info">
+            Vous avez bien été déconnecté du site.
+        </div>
+        
+        <a class="btn btn-primary m-auto" href="{% url 'login' %}">Se reconnecter</a>
+    </div>
+</div>
+{% endblock %}

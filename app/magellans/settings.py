@@ -24,6 +24,8 @@ AUTH_USER_MODEL = 'members.Member'
 
 LOGIN_REDIRECT_URL = '/membres/mon-profil'
 
+LOGIN_URL = '/connexion/'
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
@@ -178,3 +180,4 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
 EMAIL_RECEIVER = os.getenv("EMAIL_RECEIVER")
+DEFAULT_FROM_EMAIL = f'"Contact Magellans" <{EMAIL_RECEIVER}>'
