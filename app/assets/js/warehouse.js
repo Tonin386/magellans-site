@@ -86,7 +86,7 @@ async function addItem() {
     }
     else if(response.status == "error") {
         const toastItemError = document.querySelector("#addItemError");
-        const toastBootstrap = bootstrap.Toast.getOrCreateInstance(toastItemSuccess);
+        const toastBootstrap = bootstrap.Toast.getOrCreateInstance(toastItemError);
         toastBootstrap.show();
     }
 }
@@ -136,7 +136,7 @@ async function addTag() {
     }
     else if(response.status == "error") {
         const toastTagError = document.querySelector("#addTagError");
-        const toastBootstrap = bootstrap.Toast.getOrCreateInstance(toastTagSuccess);
+        const toastBootstrap = bootstrap.Toast.getOrCreateInstance(toastTagError);
         toastBootstrap.show();
     }
 }

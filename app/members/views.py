@@ -11,6 +11,8 @@ from django.contrib import messages
 from django.conf import settings
 from .forms import RegisterForm
 from .models import Member
+import secrets
+import string
 
 
 @login_required
@@ -27,6 +29,10 @@ def register(request):
         if form.is_valid():
             new_user = form.save()
             new_user.is_active = False
+            
+            token = ''.join(secrets.choice(string.ascii_letters + string.digits) for _ in range(128))
+            new_user.api_token = token
+            
             new_user.save()
             
             token = default_token_generator.make_token(new_user)

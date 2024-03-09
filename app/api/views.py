@@ -9,6 +9,7 @@ import json
 
 def verify_token_permissions(request):
     token = json.loads(request.body.decode("utf-8")).get("token", "undefined")
+    print(token)
     permissions = {
         'bank': [],
         'dashboard': [],
@@ -21,10 +22,13 @@ def verify_token_permissions(request):
     try:
         user = Member.objects.get(api_token=token)
     except Member.DoesNotExist:
+        print("No user uses this token")
         pass
     
     if token == "undefined" or user == None:
         permissions['warehouse'] = ['read']
+        print(token)
+        print("BIG ERROR")
         return permissions
         
     if user.is_staff:
@@ -44,7 +48,7 @@ def verify_token_permissions(request):
         
     if user.is_superuser:
         permissions['fullpower'] = ['read', 'write']
-    
+        
     return permissions
 
 def api_bank(request):
