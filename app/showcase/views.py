@@ -14,14 +14,12 @@ def home(request):
             phone = form.cleaned_data['phone']
             message = form.cleaned_data['message']
 
-            subject = 'Contact Form Submission'
-            message_body = f'Name: {name}\nEmail: {email}\nPhone: {phone}\n\nMessage:\n{message}'
+            subject = f'Nouveau formulaire reçu de {email}'
+            message_body = f'{message}\n\n--------------------\n{name}\n{email}{phone}'
             sender_email = settings.EMAIL_HOST_USER
-            recipient_list = [settings.EMAIL_RECEIVER]
+            recipient_list = [settings.EMAIL_RECEIVER, 'magellans.pro@gmail.com', 'magellans.contact@gmail.com']
             
-            send_mail(subject, message, sender_email, recipient_list)
-
-            print(subject, message_body, sender_email, recipient_list)
+            send_mail(subject, message_body, sender_email, recipient_list)
     else:
         form = ContactForm()
         
