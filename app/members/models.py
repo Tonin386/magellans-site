@@ -20,17 +20,17 @@ GENDER_CHOICES = [
 ]
 
 class MemberManager(BaseUserManager):
-    def create_user(self, username, password=None, **extra_fields):
-        if not username:
-            raise ValueError('The username field must be set')
-        # username = self.normalize_username(username)
+    def create_user(self, email, password=None, **extra_fields):
+        if not email:
+            raise ValueError('The email field must be set')
+        # email = self.normalize_email(email)
         token = ''.join(secrets.choice(string.ascii_letters + string.digits) for _ in range(128))
-        user = self.model(username=username, api_token=token, **extra_fields)
+        user = self.model(email=email, api_token=token, **extra_fields)
         user.set_password(password)
         user.save(using=self._db)
         return user
 
-    def create_superuser(self, username, password=None, **extra_fields):
+    def create_superuser(self, email, password=None, **extra_fields):
         extra_fields.setdefault('is_staff', True)
         extra_fields.setdefault('is_superuser', True)
 
@@ -39,11 +39,10 @@ class MemberManager(BaseUserManager):
         if extra_fields.get('is_superuser') is not True:
             raise ValueError('Superuser must have is_superuser=True.')
 
-        return self.create_user(username, password, **extra_fields)
+        return self.create_user(email, password, **extra_fields)
 
 class Member(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(unique=True, verbose_name="Courriel")
-    username  = models.CharField(unique=True, verbose_name="Nom d'utilisateur")
     first_name = models.CharField(max_length=30, blank=True, verbose_name="Prénom")
     last_name = models.CharField(max_length=30, blank=True, verbose_name="Nom")
     is_active = models.BooleanField(default=True, verbose_name="Actif")
@@ -58,7 +57,7 @@ class Member(AbstractBaseUser, PermissionsMixin):
 
     objects = MemberManager()
 
-    USERNAME_FIELD = 'username'
+    USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
     
     class Meta:
@@ -66,7 +65,7 @@ class Member(AbstractBaseUser, PermissionsMixin):
         verbose_name_plural = "Membres"
 
     def __str__(self):
-        return "%s %s (%s)" % (self.first_name, self.last_name, self.username)
+        return "%s %s (%s)" % (self.first_name, self.last_name, self.email)
     
     def phone_formatted(self):
         return ' '.join(self.phone[i:i+2] for i in range(0, len(self.phone), 2))

@@ -11,51 +11,52 @@ Profil
 {% block content %}
 <div class="container mt-3">
     <div class="box">
-        <h1 class="title is-3">Détails de {{ object.first_name }} {{ object.last_name }}</h1>
-        <div class="content">
-            <div class="columns">
-                <div class="column">
-                    <table class="table is-bordered is-stripped is-narrow is-hoverable">
-                        <tr>
-                            <th>Nom</th>
-                            <td>{{ object.last_name }}</td>
-                        </tr>
-                        <tr>
-                            <th>Email</th>
-                            <td>{{ object.email }}</td>
-                        </tr>
-                        <tr>
-                            <th>Rôle</th>
-                            <td>{{ object.get_role_display }}</td>
-                        </tr>
-                        <tr class="{% if object.account >= 0 %}has-background-success{% else %}has-background-danger{% endif %}">
-                            <th>Compte</th>
-                            <td>{{ object.account_formatted }}</td>
-                        </tr>
-                    </table>
-                </div>
-                <div class="column">
-                    <table class="table is-bordered is-stripped is-narrow is-hoverable">
-                        <tr>
-                            <th>Prénom</th>
-                            <td>{{ object.first_name }}</td>
-                        </tr>
-                        <tr>
-                            <th>Téléphone</th>
-                            <td>{{ object.phone_formatted }}</td>
-                        </tr>
-                        <tr>
-                            <th>Sexe</th>
-                            <td>{{ object.get_gender_display }}</td>
-                        </tr>
-                        <tr class="{% if object.donation > 0 %}has-background-success{% else %}has-background-warning{% endif %}">
-                            <th>Donation</th>
-                            <td>{{ object.donation_formatted }}</td>
-                        </tr>
-                    </table>
-                </div>
+        <h1 class="title fs-3">Détails de {{ object.first_name }} {{ object.last_name }}</h1>
+        <div class="row">
+            <div class="col-lg-6">
+                <table class="table table-border table-striped">
+                    <tr>
+                        <th>Nom</th>
+                        <td>{{ object.last_name }}</td>
+                    </tr>
+                    <tr>
+                        <th>Email</th>
+                        <td>{{ object.email }}</td>
+                    </tr>
+                    <tr>
+                        <th>Rôle</th>
+                        <td>{{ object.get_role_display }}</td>
+                    </tr>
+                    <tr class="{% if object.account >= 0 %}bg-success{% else %}bg-danger{% endif %}">
+                        <th>Compte</th>
+                        <td>{{ object.account_formatted }}</td>
+                    </tr>
+                </table>
+            </div>
+            <div class="col-lg-6">
+                <table class="table table-border table-striped">
+                    <tr>
+                        <th>Prénom</th>
+                        <td>{{ object.first_name }}</td>
+                    </tr>
+                    <tr>
+                        <th>Téléphone</th>
+                        <td>{{ object.phone_formatted }}</td>
+                    </tr>
+                    <tr>
+                        <th>Sexe</th>
+                        <td>{{ object.get_gender_display }}</td>
+                    </tr>
+                    <tr class="{% if object.donation > 0 %}bg-success{% else %}bg-warning{% endif %}">
+                        <th>Donation</th>
+                        <td>{{ object.donation_formatted }}</td>
+                    </tr>
+                </table>
             </div>
         </div>
     </div>
 </div>
+<script>
+    let table = Datatable
+</script>
 {% endblock %}

@@ -15,7 +15,7 @@ def home(request):
             message = form.cleaned_data['message']
 
             subject = f'Nouveau formulaire reçu de {email}'
-            message_body = f'{message}\n\n--------------------\n{name}\n{email}{phone}'
+            message_body = f'{message}\n\n--------------------\n{name}\n{email}\n{phone}'
             sender_email = settings.EMAIL_HOST_USER
             recipient_list = [settings.EMAIL_RECEIVER, 'magellans.pro@gmail.com', 'magellans.contact@gmail.com']
             

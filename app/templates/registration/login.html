@@ -5,25 +5,31 @@ Se connecter
 {% endblock %}
 
 {% block content %}
-<section class="section">
-    <div class="container">
-        <div class="row m-auto">
-            <h1 class="display-3 mt-3 text-magellans-dark">Se connecter</h1>
-            <form method="post">
-                {% csrf_token %}
-                <div class="input-group input-group-lg col-12 mt-3">
-                    <span class="input-group-text bg-primary col-2" id="email-span">Courriel</span>
-                    <input class="form-control" type="text" name="username" placeholder="Courriel" aria-describedby="email-span">
-                </div>
-                <div class="input-group input-group-lg col-12 mt-3">
-                    <span class="input-group-text bg-primary col-2" id="password-span">Mot de passe</span>
-                    <input class="form-control" type="password" name="password" placeholder="Mot de passe" aria-describedby="password-span">
-                </div>
-                <div class="input-group input-group-lg mt-3">
-                    <button class="btn btn-primary m-auto" type="submit">Se connecter</button>
-                </div>
-            </form>
+<div class="container">
+    <div class="row m-auto">
+        <h1 class="display-3 mt-3 text-magellans-dark">Se connecter</h1>
+        {% for field, errors in form.errors.items %}
+        <div class="alert alert-danger">
+            {{ errors }}
         </div>
+        {% endfor %}
+        <form method="post">
+            {% csrf_token %}
+            <div class="input-group input-group-lg col-12 mt-3">
+                <span class="input-group-text bg-primary col-2" id="email-span">Courriel</span>
+                <input class="form-control" type="text" name="username" placeholder="Courriel" aria-describedby="email-span">
+            </div>
+            <div class="input-group input-group-lg col-12 mt-3">
+                <span class="input-group-text bg-primary col-2" id="password-span">Mot de passe</span>
+                <input class="form-control" type="password" name="password" placeholder="Mot de passe" aria-describedby="password-span">
+            </div>
+            <div class="col-12 mt-1">
+                <a href="{% url 'forgot-password' %}" class="link float-end">Mot de passe oublié ?</a>
+            </div>
+            <div class="input-group input-group-lg mt-1">
+                <button class="btn btn-primary m-auto" type="submit">Se connecter</button>
+            </div>
+        </form>
     </div>
-</section>
+</div>
 {% endblock %}
