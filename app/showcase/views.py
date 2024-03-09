@@ -18,6 +18,8 @@ def home(request):
             message_body = f'Name: {name}\nEmail: {email}\nPhone: {phone}\n\nMessage:\n{message}'
             sender_email = settings.EMAIL_HOST_USER
             recipient_list = [settings.EMAIL_RECEIVER]
+            
+            send_mail(subject, message, sender_email, recipient_list)
 
             print(subject, message_body, sender_email, recipient_list)
     else:
