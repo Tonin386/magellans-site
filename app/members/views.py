@@ -29,10 +29,10 @@ def forgot_password(request):
                 user = Member.objects.get(email=email)
                 uid = urlsafe_base64_encode(force_bytes(user.pk))
                 token = default_token_generator.make_token(user)
-                reset_link = 'https://magellans.fr/reset_password/{}/{}/'.format(uid, token)
+                reset_link = 'https://magellans.fr/auth/reset_password/{}/{}/'.format(uid, token)
 
                 email_subject = 'Réinitialisation mot de passe magellans.fr'
-                email_body = render_to_string('reset_password_email.html', {
+                email_body = render_to_string('registration/reset_password_email.html', {
                     'reset_link': reset_link,
                 })
                 send_mail(email_subject, '', settings.EMAIL_HOST_USER, [email], html_message=email_body)
