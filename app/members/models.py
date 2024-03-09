@@ -23,7 +23,7 @@ class MemberManager(BaseUserManager):
     def create_user(self, email, password=None, **extra_fields):
         if not email:
             raise ValueError('The email field must be set')
-        # email = self.normalize_email(email)
+        email = self.normalize_email(email)
         token = ''.join(secrets.choice(string.ascii_letters + string.digits) for _ in range(128))
         user = self.model(email=email, api_token=token, **extra_fields)
         user.set_password(password)
@@ -51,7 +51,7 @@ class Member(AbstractBaseUser, PermissionsMixin):
     donation = models.FloatField(default=0, verbose_name="Montant donation")
     phone = models.CharField(max_length=15, blank=True, verbose_name="N° téléphone")
     account = models.FloatField(default=0, verbose_name="Statut compte")
-    role = models.CharField(max_length=1, choices=ROLE_CHOICES, default='M', verbose_name="Role")
+    role = models.CharField(max_length=1, choices=ROLE_CHOICES, default='E', verbose_name="Role")
     gender = models.CharField(max_length=1, choices=GENDER_CHOICES, blank=True, verbose_name="Sexe")
     api_token = models.CharField(max_length=128, null=True, blank=True, editable=False)
 

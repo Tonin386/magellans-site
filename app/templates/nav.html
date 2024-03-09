@@ -38,6 +38,11 @@
             Se connecter
           </a>
         </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'register' %}">
+            S'inscrire
+          </a>
+        </li>
         {% endif %}
 
         {% if request.user.is_superuser %}

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 if [ "$#" -ne 1 ]; then
-  echo "Usage: $0 <up|down>"
+  echo "Wrong usage."
   exit 1
 fi
 
@@ -20,7 +20,7 @@ elif [ "$1" = "db" ]; then
   docker exec -it magellans-django python manage.py makemigrations
   docker exec -it magellans-django python manage.py migrate
 else
-  echo "Invalid argument. Usage: $0 <up|down>"
+  echo "Invalid argument."
   exit 1
 fi
 

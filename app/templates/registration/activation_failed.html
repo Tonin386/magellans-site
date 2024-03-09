@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block title %}
+Activation de compte
+{% endblock %}
+
+{% block nav %}
+{% include "nav.html" %}
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row m-auto">
+        <h1 class="display-3 mt-3 text-magellans-dark">Echec activation.</h1>
+
+        <div class="alert alert-danger">
+            L'activation de votre compte a échoué. Veuillez réessayer. En cas d'échec répété, merci de contacter un administrateur <a href="mailto:contact@magellans.fr">Magellans Contact</a>.
+        </div>
+    </div>
+</div>
+{% endblock %}

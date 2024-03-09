@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block title %}
+Activation de compte
+{% endblock %}
+
+{% block nav %}
+{% include "nav.html" %}
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row m-auto">
+        <h1 class="display-3 mt-3 text-magellans-dark">Compte activé.</h1>
+
+        <div class="alert alert-success">
+            Félicitations, vous êtes désormais inscrit sur le site de Magellans. Vous pouvez désormais vous connecter
+        </div>
+        <a class="btn btn-primary" href="{% url 'login' %}">Se connecter</a>
+    </div>
+</div>
+{% endblock %}

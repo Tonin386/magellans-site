@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+
+{% block title %}
+Se connecter
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row m-auto">
+        <h1 class="display-3 mt-3 text-magellans-dark">S'inscrire</h1>
+        <div class="col-lg-12">
+            <div class="alert alert-warning fs-5">
+                Attention ! Vous inscrire sur le site ne fait pas de vous (pour le moment) un membre de l'association.<br>
+                Si vous voulez devenir membre, merci de vous inscrire sur <a href="https://www.helloasso.com/associations/magellans" target="_blank" class="link text-info">HelloAsso</a>.
+            </div>
+        </div>
+    
+        {% for field, errors in form.errors.items %}
+        <div class="alert alert-danger">
+            {{ field }}: {{ errors }}
+        </div>
+        {% endfor %}
+
+        {% for message in messages %}
+        {% if message.tags == 'error' %}
+        <div class="alert alert-danger">
+            {{ message }}
+        </div>
+        {% elif message.tags == 'success' %}
+        <div class="alert alert-success">
+            {{ message }}
+        </div>
+        {% else %}
+        <div class="alert alert-info">
+            {{ message }}
+        </div>
+        {% endif %}
+        {% endfor %}
+
+        <form method="post">
+            {% csrf_token %}
+            <div class="input-group input-group-lg col-lg-12 mt-3">
+                <span class="input-group-text bg-primary col-2" id="email-span">Courriel</span>
+                <input class="form-control" type="text" name="email" placeholder="Courriel" aria-describedby="email-span">
+            </div>
+            <div class="input-group input-group-lg col-lg-12 mt-3">
+                <span class="input-group-text bg-primary col-2" id="password1-span">Mot de passe</span>
+                <input class="form-control" type="password" name="password1" placeholder="Mot de passe" aria-describedby="password1-span">
+                <input class="form-control" type="password" name="password2" placeholder="Confirmez votre  mot de passe">
+            </div>
+            <div class="input-group input-group-lg col-lg-12 mt-3">
+                <span class="input-group-text bg-primary col-2" id="name-span">Prénom/Nom</span>
+                <input class="form-control" type="text" name="first_name" placeholder="Prénom" aria-describedby="name-span">
+                <input class="form-control" type="text" name="last_name" placeholder="Nom de famille">
+            </div>
+            <div class="input-group input-group-lg col-lg-12 mt-3">
+                <span class="input-group-text bg-primary col-2" id="phone-span">Téléphone</span>
+                <input class="form-control" type="text" name="phone" placeholder="Téléphone" aria-describedby="phone-span">
+            </div>
+            <div class="input-group input-group-lg col-lg-12 mt-3">
+                <span class="input-group-text bg-primary col-2" id="gender-span">Sexe</span>
+                <select class="form-control" name="gender" aria-describedby="gender-span">
+                    <option value="">Choisir...</option>
+                    <option value="F">Femme</option>
+                    <option value="M">Homme</option>
+                    <option value="O">Autre</option>
+                </select>
+            </div>
+            <div class="input-group input-group-lg mt-3">
+                <button class="btn btn-primary m-auto" type="submit">S'inscrire</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
