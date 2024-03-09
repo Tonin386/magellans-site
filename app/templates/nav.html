@@ -1,4 +1,5 @@
 {% load static %}
+{% load logout_tags %}
 
 <nav class="navbar navbar-expand-lg navbar-dark fixed-top" id="mainNav" style="background-color: #212529;">
   <div class="container-fluid">
@@ -25,6 +26,10 @@
         <li class="nav-item">
           <a class="nav-link" href="{% url 'my-profile' %}">
             Mon profil
+          </a>
+        </li>
+        <li class="nav-item">
+            {% logout_form %}
           </a>
         </li>
         {% else %}

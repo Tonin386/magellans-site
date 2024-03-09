@@ -1,4 +1,4 @@
 from django import forms
 
-class ForgotPasswordForm(forms.Form):
-    email = forms.EmailField()
+class LogoutForm(forms.Form):
+    pass
