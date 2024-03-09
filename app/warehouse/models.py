@@ -18,6 +18,7 @@ AVAILABILITY_CHOICES = [
 
 class Tag(models.Model):
     name = models.CharField("Tag", max_length=20)
+    color = models.CharField("Couleur")
     
 class Item(models.Model):
     name = models.CharField("Nom", max_length=255)

@@ -29,6 +29,8 @@ server {
     listen [::]:443 ssl;
     server_name magellans.fr;
 
+    client_max_body_size 25M;
+
     ssl_certificate /etc/letsencrypt/live/magellans.fr/fullchain.pem;
     ssl_certificate_key /etc/letsencrypt/live/magellans.fr/privkey.pem;
 
@@ -92,30 +94,3 @@ server {
         error_log /var/log/nginx/error_backend.log;
     }
 }
-
-# worker_processes auto;
-# mail {
-#     server_name mail.magellans.fr;
-#     auth_http   mail-server/cgi-bin/nginxauth.cgi;
-
-#     proxy_pass_error_message on;
-
-#     ssl                 on;
-#     ssl_certificate /etc/letsencrypt/live/magellans.fr/fullchain.pem;
-#     ssl_certificate_key /etc/letsencrypt/live/magellans.fr/privkey.pem;
-#     ssl_protocols       TLSv1 TLSv1.1 TLSv1.2;
-#     ssl_ciphers         HIGH:!aNULL:!MD5;
-#     ssl_session_cache   shared:SSL:10m;
-#     ssl_session_timeout 10m;
-
-#     server {
-#         listen     587;
-#         protocol   smtp;
-#         smtp_auth  login plain cram-md5;
-#     }
-
-#     server {
-#         listen   993;
-#         protocol imap;
-#     }
-# }

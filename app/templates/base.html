@@ -1,15 +1,17 @@
 {% load static %}
 <!DOCTYPE html>
-<html>
+<html data-bs-theme="dark">
 <head>
   <title>{% block title %}{% endblock %} - Magellans</title>
   {% include "head.html" %}
   {% block scripts %}
   {% endblock %}
+  {% block extra_head %}
+  {% endblock %}
 </head>
 <body>
   {% include 'nav.html' %}
-
+  
   <section class="base-section">
     {% block content %}
     <!-- This is where content from child templates will be inserted -->
@@ -17,5 +19,10 @@
   </section>
   
   {% include "footer.html" %}
+  
+  <script>
+    let api_token = "{{ request.user.api_token }}" || "default";
+  </script>
 </body>
+
 </html>

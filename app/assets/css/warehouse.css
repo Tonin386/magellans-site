@@ -1,0 +1,12 @@
+.sticky-add-button {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 1000;
+}
+
+.card-img-top {
+    max-height: 150px;
+    width: auto;
+    object-fit: contain;
+}

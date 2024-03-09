@@ -170,4 +170,5 @@ video/
 projets/
 volumes/
 migrations/
+items/
 !migrations/__init__.py

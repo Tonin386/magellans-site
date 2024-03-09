@@ -1,7 +1,12 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block title %}
 Magasin
+{% endblock %}
+
+{% block extra_head %}
+<link href="{% static 'css/warehouse.css' %}" rel="stylesheet" />
 {% endblock %}
 
 {% block nav %}
@@ -9,4 +14,205 @@ Magasin
 {% endblock %}
 
 {% block content %}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="input-group mb-3 w-50 w-lg-25 m-auto">
+                <input type="text" class="form-control" placeholder="Rechercher un objet, une catégorie..." aria-label="Search" aria-describedby="basic-addon2">
+                <div class="input-group-append">
+                    <button class="btn btn-outline-primary ms-1" type="button">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        {% for item in items %}
+        <div class="col-xl-2 col-lg-4 col-md-6 my-1">
+            <div class="card">
+                <img src="/static/media/{{item.image}}" class="card-img-top">
+                <div class="card-body">
+                    <h5 class="card-title">{{ item.name }} ({{item.max_stock}})</h5>
+                    <p class="card-text">Etat : {{ item.get_state_display }}</p>
+                    {% for tag in item.tags.all %}
+                    <button class="btn text-light" style="background-color: {{ tag.color }};"> {{ tag.name }} </button>
+                    {% endfor %}
+                    {% if request.user.is_staff %}
+                    <button class="btn btn-danger float-end mx-1"><i class="fa-solid fa-trash"></i></button>
+                    <button class="btn btn-info float-end"><i class="fa-solid fa-edit"></i></button>
+                    {% endif %}
+                </div>
+                {% if item.availability == 1 %}
+                <div class="card-footer bg-success text-light">
+                    Disponible
+                </div>
+                {% elif item.availability == 0 %}
+                <div class="card-footer bg-danger text-light">
+                    Indisponible
+                </div>
+                {% else %}
+                <div class="card-footer bg-warning text-light">
+                    Location en cours
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+{% if request.user.is_staff %}
+<button class="sticky-add-button btn btn-success" type="button" data-bs-toggle="modal" data-bs-target="#addItemForm">
+    <i class="fa-solid fa-plus"></i>
+    Ajouter un objet au magasin
+</button>
+{% endif %}
+
+<!-- ADD ITEM MODAL -->
+<div class="modal fade" id="addItemForm" data-bs-backdrop="static" data-bs-keyboard="true" tabindex="-1" aria-labelledby="addItemModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="addItemModalLabel">Ajouter un objet au magasin</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Annuler"></button>
+            </div>
+            <div class="modal-body">
+                <div class="input-group input-group-lg mt-3">
+                    <span class="input-group-text col-2 bg-primary text-light" id="span_item_name">Nom de l'objet</span>
+                    <input aria-describedby="span_item_name" type="text" class="form-control" id="item_name" placeholder="Nom de l'objet">
+                </div>
+                <div class="input-group input-group-lg mt-3">
+                    <span class="input-group-text col-2 bg-primary text-light" id="span_tags">Tags</span>
+                    <div aria-describedby="span_tags" class="form-control" id="tag_list">
+                        {% for tag in tags %}
+                        <div class="form-check form-check-inline">
+                            <input type="checkbox" value="{{ tag.pk }}" class="tag-checkbox form-check-input" id="tag{{tag.pk}}">
+                            <label class="btn form-check-label" for="tag{{tag.pk}}" style="background-color: {{ tag.color }}; color: white;">{{ tag.name }}</label>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                
+                <button type="button" class="btn btn-success mt-3" data-bs-toggle="modal" data-bs-target="#addTagForm">Créer un tag</button>
+                <div class="input-group input-group-lg mt-3">
+                    <span class="input-group-text col-2 bg-primary text-light" id="span_image">Image</span>
+                    <input aria-describedby="span_image" type="file" class="form-control" id="image">
+                </div>
+                <div class="input-group input-group-lg mt-3">
+                    <span class="input-group-text col-2 bg-primary text-light" id="span_max_stock">Stock maximum</span>
+                    <input aria-describedby="span_max_stock" type="number" class="form-control" id="max_stock" placeholder="Nombre d'objets disponibles au maximum">
+                </div>
+                <div class="input-group input-group-lg mt-3">
+                    <span class="input-group-text col-2 bg-primary text-light" id="span_state">Etat</span>
+                    <select class="form-control" id="state" aria-describedby="span_state">
+                        <option value="5">Neuf</option>
+                        <option value="4">Très bon état</option>
+                        <option value="3">Bon état</option>
+                        <option value="2">Etat moyen</option>
+                        <option value="1">Mauvais état</option>
+                        <option value="0">En maintenance</option>
+                        <option value="-1">Ne fonctionne pas</option>
+                    </select>
+                </div>
+                <div class="input-group input-group-lg mt-3">
+                    <span class="input-group-text col-2 bg-primary text-light" id="span_availability">Disponibilité</span>
+                    <select class="form-control" id="availability" aria-describedby="span_availability">
+                        <option value="1">Disponible</option>
+                        <option value="0">Indisponible</option>
+                        <option value="2">En cours de location</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Annuler</button>
+                <button type="button" class="btn btn-success" onclick="addItem()" data-bs-dismiss="modal">Ajouter au magasin</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ADD TAG MODAL -->
+<div class="modal fade" id="addTagForm" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="addTagModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="addTagModalLabel">Ajouter un tag</h1>
+            </div>
+            <div class="modal-body">
+                <div class="input-group input-group-lg mt-3">
+                    <span class="input-group-text col-2 bg-primary text-light" id="span_tag_name">Nom du tag</span>
+                    <input aria-describedby="span_tag_name" type="text" class="form-control" id="tag_name" placeholder="Nom du tag">
+                </div>
+                <div class="input-group input-group-lg mt-3">
+                    <span class="input-group-text col-2 bg-primary text-light" id="span_tag_color">Couleur du tag</span>
+                    <input aria-describedby="span_tag_color" type="color" class="form-control form-control-color" id="tag_color" placeholder="Couleur du tag">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" data-bs-target="#addItemForm" data-bs-toggle="modal" class="btn btn-danger">Annuler</button>
+                    <button type="button" data-bs-target="#addItemForm" data-bs-toggle="modal" class="btn btn-success" onclick="addTag()">Ajouter le tag</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="toast-container position-fixed bottom-0 end-0 p-3">
+    <div id="addTagSuccess" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-header">
+            <strong class="me-auto">Ajout de tag</strong>
+            <small>succès</small>
+            <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body bg-success">
+            Le tag a bien été ajouté.
+        </div>
+    </div>
+</div>
+
+<div class="toast-container position-fixed bottom-0 end-0 p-3">
+    <div id="addTagError" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-header">
+            <strong class="me-auto">Ajout de tag</strong>
+            <small>erreur</small>
+            <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body bg-danger">
+            Une erreur est survenue. Le tag n'a pas été ajouté.
+        </div>
+    </div>
+</div>
+
+<div class="toast-container position-fixed bottom-0 end-0 p-3">
+    <div id="addItemSuccess" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-header">
+            <strong class="me-auto">Ajout d'objet</strong>
+            <small>succès</small>
+            <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body bg-success">
+            L'objet a bien été ajouté.
+        </div>
+    </div>
+</div>
+
+<div class="toast-container position-fixed bottom-0 end-0 p-3">
+    <div id="addTagError" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-header">
+            <strong class="me-auto">Ajout d'objet</strong>
+            <small>erreur</small>
+            <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body bg-danger">
+            Une erreur est survenue. L'objet n'a pas été ajouté.
+        </div>
+    </div>
+</div>
+
+<div id="csrf" class="d-none">
+    {% csrf_token %}
+</div>
+<script src="{% static 'js/warehouse.js' %}"></script>
+
 {% endblock %}

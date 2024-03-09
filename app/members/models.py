@@ -6,6 +6,7 @@ import string
 ROLE_CHOICES = [
     ('P', "Président.e"),
     ('C', "Communication"),
+    ('G', "Gestionnaire magasin"),
     ('T', "Trésorier.ère"),
     ('S', "Secrétaire"),
     ('M', "Membre"),
