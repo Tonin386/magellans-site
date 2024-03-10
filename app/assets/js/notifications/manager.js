@@ -33,37 +33,42 @@ function createNotification(id, title, application, text, status) {
 function closeNotification(id) {
     $(id).toast('hide');
 }
+try {
+    var unsecureNotificationSocket = new WebSocket("ws://" + window.location.host + "/ws/notifications/");
 
-var secureNotificationSocket = new WebSocket("wss://" + window.location.host + "/ws/notifications/");
-var unsecureNotificationSocket = new WebSocket("ws://" + window.location.host + "/ws/notifications/");
+    unsecureNotificationSocket.onerror = () => {
+        console.log("Failed to use unsecure protocol.");
+        unsecureNotificationSocket.close();
+    }
+    unsecureNotificationSocket.onopen = () => {
+        console.log("Unsecure notification socket connected")
+    }
+    unsecureNotificationSocket.onmessage = (event) => {
+        let json_data = JSON.parse(event.data).notification;
+        let notification = createNotification(json_data.id, json_data.title, json_data.application, json_data.message, json_data.status);
+    }
+    unsecureNotificationSocket.onclose = () => {
+        console.log("Unsecure notification socket closed.");
+    }
+}
+catch(error) {
 
-secureNotificationSocket.onerror = () => {
-    console.log("Failed to use secure protocol.");
-    secureNotificationSocket.close();
-}
-secureNotificationSocket.onopen = () => {
-    console.log("Secure notification socket connected")
-}
-secureNotificationSocket.onmessage = (event) => {
-    let json_data = JSON.parse(event.data).notification;
-    let notification = createNotification(json_data.id, json_data.title, json_data.application, json_data.message, json_data.status);
-}
-secureNotificationSocket.onclose = () => {
-    console.log("Secure notification socket closed.");
+    var secureNotificationSocket = new WebSocket("wss://" + window.location.host + "/ws/notifications/");
+
+    secureNotificationSocket.onerror = () => {
+        console.log("Failed to use secure protocol.");
+        secureNotificationSocket.close();
+    }
+    secureNotificationSocket.onopen = () => {
+        console.log("Secure notification socket connected")
+    }
+    secureNotificationSocket.onmessage = (event) => {
+        let json_data = JSON.parse(event.data).notification;
+        let notification = createNotification(json_data.id, json_data.title, json_data.application, json_data.message, json_data.status);
+    }
+    secureNotificationSocket.onclose = () => {
+        console.log("Secure notification socket closed.");
+    }
 }
 
 
-unsecureNotificationSocket.onerror = () => {
-    console.log("Failed to use unsecure protocol.");
-    unsecureNotificationSocket.close();
-}
-unsecureNotificationSocket.onopen = () => {
-    console.log("Unsecure notification socket connected")
-}
-unsecureNotificationSocket.onmessage = (event) => {
-    let json_data = JSON.parse(event.data).notification;
-    let notification = createNotification(json_data.id, json_data.title, json_data.application, json_data.message, json_data.status);
-}
-unsecureNotificationSocket.onclose = () => {
-    console.log("Unsecure notification socket closed.");
-}
