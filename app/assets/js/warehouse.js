@@ -78,16 +78,33 @@ async function addItem() {
     });
     
     let response = await sendApiRequest(params);
-    
-    if(response.status == "success") {
-        const toastItemSuccess = document.querySelector("#addItemSuccess");
-        const toastBootstrap = bootstrap.Toast.getOrCreateInstance(toastItemSuccess);
-        toastBootstrap.show();
+}
+
+async function editItem(params) {
+    params['action'] = "edit-item";
+    params['token'] = api_token;
+
+    let response = await sendApiRequest(params);
+}
+
+async function confirmDeleteItem(pk) {
+    $('#confirmDeleteItemBtn').attr("value", pk);
+    $('#confirmDeleteItemModal').modal('show');
+}
+
+async function deleteItem(pk) {
+    let action = "del-item";
+    let params = {
+        token: api_token,
+        action: action,
+        pk: pk,
     }
-    else if(response.status == "error") {
-        const toastItemError = document.querySelector("#addItemError");
-        const toastBootstrap = bootstrap.Toast.getOrCreateInstance(toastItemError);
-        toastBootstrap.show();
+    
+    let response = await sendApiRequest(params);
+    if(response.status == "success") {
+        var itemList = document.querySelector("#item-list");
+        let element = document.querySelector("#item" + pk.toString());
+        itemList.removeChild(element);    
     }
 }
 
@@ -103,16 +120,13 @@ async function addTag() {
     let response = await sendApiRequest(params);
     
     if(response.status == "success") {
-        const toastTagSuccess = document.querySelector("#addTagSuccess");
-        const toastBootstrap = bootstrap.Toast.getOrCreateInstance(toastTagSuccess);
-        toastBootstrap.show();
+        let tagList = document.querySelector("#tag-list");
         
-        let tagList = document.querySelector("#tag_list");
-
         let pk = response.created_pk;
-
+        
         const div = document.createElement('div');
         div.classList.add('form-check', 'form-check-inline');
+        div.id = `tag-group${pk}`;
         
         const input = document.createElement('input');
         input.type = 'checkbox';
@@ -134,9 +148,87 @@ async function addTag() {
         // Append the div to the tagList
         tagList.appendChild(div);
     }
-    else if(response.status == "error") {
-        const toastTagError = document.querySelector("#addTagError");
-        const toastBootstrap = bootstrap.Toast.getOrCreateInstance(toastTagError);
-        toastBootstrap.show();
+}
+
+async function confirmDeleteTags() {
+    $('#confirmDeleteTagsModal').modal('show');
+}
+
+async function deleteTags() {
+    let tagsBoxes = document.querySelectorAll("input.tag-checkbox");
+    let selectedTags = [];
+    
+    tagsBoxes.forEach(tagBox => {
+        if(tagBox.checked) {
+            selectedTags.push(tagBox.value);
+        }
+    });
+    
+    let params = {
+        token: api_token,
+        action: "del-tag",
+        pks: selectedTags
+    }
+    
+    let response = await sendApiRequest(params);
+    if(response.status == "success") {
+        var tagList = document.querySelector("#tag-list");
+        selectedTags.forEach(tag => {
+            let element = document.querySelector("#tag-group" + tag.toString());
+            tagList.removeChild(element);    
+        });
     }
 }
+
+function colorAvailability(id = -1) {
+    id = parseInt(id) || -1;
+    var availabilitySelectors = document.querySelectorAll(".availability-selector");
+    availabilitySelectors.forEach(selector => {
+
+        let itemPk = selector.id.replace("stockSelectorItem", "");
+        let value = selector.value;
+        let max = selector.max;
+
+        if(value >= max/2) {
+            selector.parentElement.classList.remove("bg-warning");
+            selector.parentElement.classList.remove("bg-danger");
+            selector.parentElement.classList.add("bg-success");
+        }
+        else if(value < max/2 && value > 0) {
+            selector.parentElement.classList.remove("bg-success");
+            selector.parentElement.classList.remove("bg-danger");
+            selector.parentElement.classList.add("bg-warning");
+        }
+        else if(value == 0) {
+            selector.parentElement.classList.remove("bg-warning");
+            selector.parentElement.classList.remove("bg-success");
+            selector.parentElement.classList.add("bg-danger");
+        }
+
+        params = {
+            now_available: value,
+            pk: itemPk
+        }
+
+        if(id == itemPk) {
+            editItem(params);
+        }
+    });
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    
+    var confirmDeleteItemBtn = $('#confirmDeleteItemBtn');
+    $(confirmDeleteItemBtn).click(function (e) {
+        deleteItem($(confirmDeleteItemBtn).attr("value"));
+    });
+    
+    var availabilitySelectors = document.querySelectorAll(".availability-selector");
+    availabilitySelectors.forEach(selector => {
+        selector.addEventListener("input", function(event) {
+            colorAvailability(selector.id.replace("stockSelectorItem", ""));
+        });
+    });
+
+    colorAvailability();
+});
