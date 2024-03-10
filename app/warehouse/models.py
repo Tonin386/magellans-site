@@ -26,6 +26,7 @@ class Item(models.Model):
     image = models.ImageField("Image", upload_to="img/items/", default="/img/items/default.png")
     max_stock = models.PositiveSmallIntegerField("Nombre possédés", default=1)
     state = models.IntegerField("Etat", choices=STATUS_CHOICES)
-    buy_price = models.PositiveIntegerField("Prix d'achat", blank=True, null=True)
+    buy_price = models.FloatField("Prix d'achat", blank=True, null=True)
     owner = models.CharField("Propriétaire", blank=True, null=True) #A changer...
     availability = models.IntegerField("Disponibilité", choices=AVAILABILITY_CHOICES)
+    now_available = models.PositiveIntegerField("Nombre disponible", default=0)
