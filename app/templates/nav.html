@@ -16,6 +16,13 @@
             Accueil
           </a>
         </li>
+        {% if request.user.is_authenticated %}
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'members' %}">
+            Accueil membres
+          </a>
+        </li>
+        {% endif %}
         <li class="nav-item">
           <a class="nav-link" href="{% url 'warehouse' %}">
             Magasin
