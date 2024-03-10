@@ -39,26 +39,26 @@ S'inscrire
 
         <form method="post">
             {% csrf_token %}
-            <div class="input-group input-group-lg col-lg-12 mt-3">
-                <span class="input-group-text bg-primary col-2" id="email-span">Courriel</span>
+            <div class="input-group input-group-md col-lg-12 mt-3">
+                <span class="input-group-text bg-primary col-md-2" id="email-span">Courriel</span>
                 <input class="form-control" type="text" name="email" placeholder="Courriel" aria-describedby="email-span">
             </div>
-            <div class="input-group input-group-lg col-lg-12 mt-3">
-                <span class="input-group-text bg-primary col-2" id="password1-span">Mot de passe</span>
+            <div class="input-group input-group-md col-lg-12 mt-3">
+                <span class="input-group-text bg-primary col-md-2" id="password1-span">Mot de passe</span>
                 <input class="form-control" type="password" name="password1" placeholder="Mot de passe" aria-describedby="password1-span">
                 <input class="form-control" type="password" name="password2" placeholder="Confirmez votre  mot de passe">
             </div>
-            <div class="input-group input-group-lg col-lg-12 mt-3">
-                <span class="input-group-text bg-primary col-2" id="name-span">Prénom/Nom</span>
+            <div class="input-group input-group-md col-lg-12 mt-3">
+                <span class="input-group-text bg-primary col-md-2" id="name-span">Prénom/Nom</span>
                 <input class="form-control" type="text" name="first_name" placeholder="Prénom" aria-describedby="name-span">
                 <input class="form-control" type="text" name="last_name" placeholder="Nom de famille">
             </div>
-            <div class="input-group input-group-lg col-lg-12 mt-3">
-                <span class="input-group-text bg-primary col-2" id="phone-span">Téléphone</span>
+            <div class="input-group input-group-md col-lg-12 mt-3">
+                <span class="input-group-text bg-primary col-md-2" id="phone-span">Téléphone</span>
                 <input class="form-control" type="text" name="phone" placeholder="Téléphone" aria-describedby="phone-span">
             </div>
-            <div class="input-group input-group-lg col-lg-12 mt-3">
-                <span class="input-group-text bg-primary col-2" id="gender-span">Sexe</span>
+            <div class="input-group input-group-md col-lg-12 mt-3">
+                <span class="input-group-text bg-primary col-md-2" id="gender-span">Sexe</span>
                 <select class="form-control" name="gender" aria-describedby="gender-span">
                     <option value="">Choisir...</option>
                     <option value="F">Femme</option>
@@ -66,7 +66,7 @@ S'inscrire
                     <option value="O">Autre</option>
                 </select>
             </div>
-            <div class="input-group input-group-lg mt-3">
+            <div class="input-group input-group-md mt-3">
                 <button class="btn btn-primary m-auto" type="submit">S'inscrire</button>
             </div>
         </form>

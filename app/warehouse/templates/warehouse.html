@@ -15,7 +15,7 @@ Magasin
 
 {% block content %}
 
-<div class="container-fluid">
+<div class="container-fluid mt-3">
     <div class="row">
         <div class="col-md-12">
             <div class="input-group mb-3 w-50 w-lg-25 m-auto">
@@ -41,8 +41,8 @@ Magasin
                 {% endif %}
                 <img src="/static/media/{{item.image}}" class="card-img-top">
                 <div class="card-body">
-                    <h5 class="card-title">{{ item.name }} ({{item.max_stock}})</h5>
-                    <p class="card-text">Etat : {{ item.get_state_display }}</p>
+                    <h5 class="card-title fs-5">{{ item.name }} ({{item.max_stock}})</h5>
+                    <p class="card-text">{{ item.get_state_display }}</p>
                     {% for tag in item.tags.all %}
                     <button class="btn text-light" style="background-color: {{ tag.color }};"> {{ tag.name }} </button>
                     {% endfor %}
@@ -83,11 +83,11 @@ Magasin
             </div>
             <div class="modal-body">
                 <div class="input-group input-group-lg mt-3">
-                    <span class="input-group-text col-2 bg-primary text-light" id="span_item_name">Nom de l'objet</span>
+                    <span class="input-group-text col-xl-2 bg-primary text-light" id="span_item_name">Nom de l'objet</span>
                     <input aria-describedby="span_item_name" type="text" class="form-control" id="item_name" placeholder="Nom de l'objet">
                 </div>
                 <div class="input-group input-group-lg mt-3">
-                    <span class="input-group-text col-2 bg-primary text-light" id="span_tags">Tags</span>
+                    <span class="input-group-text col-xl-2 bg-primary text-light" id="span_tags">Tags</span>
                     <div aria-describedby="span_tags" class="form-control" id="tag_list">
                         {% for tag in tags %}
                         <div class="form-check form-check-inline">
@@ -100,15 +100,15 @@ Magasin
                 
                 <button type="button" class="btn btn-success mt-3" data-bs-toggle="modal" data-bs-target="#addTagForm">Créer un tag</button>
                 <div class="input-group input-group-lg mt-3">
-                    <span class="input-group-text col-2 bg-primary text-light" id="span_image">Image</span>
+                    <span class="input-group-text col-xl-2 bg-primary text-light" id="span_image">Image</span>
                     <input aria-describedby="span_image" type="file" class="form-control" id="image">
                 </div>
                 <div class="input-group input-group-lg mt-3">
-                    <span class="input-group-text col-2 bg-primary text-light" id="span_max_stock">Stock maximum</span>
+                    <span class="input-group-text col-xl-2 bg-primary text-light" id="span_max_stock">Stock maximum</span>
                     <input aria-describedby="span_max_stock" type="number" class="form-control" id="max_stock" placeholder="Nombre d'objets disponibles au maximum">
                 </div>
                 <div class="input-group input-group-lg mt-3">
-                    <span class="input-group-text col-2 bg-primary text-light" id="span_state">Etat</span>
+                    <span class="input-group-text col-xl-2 bg-primary text-light" id="span_state">Etat</span>
                     <select class="form-control" id="state" aria-describedby="span_state">
                         <option value="5">Neuf</option>
                         <option value="4">Très bon état</option>
@@ -120,7 +120,7 @@ Magasin
                     </select>
                 </div>
                 <div class="input-group input-group-lg mt-3">
-                    <span class="input-group-text col-2 bg-primary text-light" id="span_availability">Disponibilité</span>
+                    <span class="input-group-text col-xl-2 bg-primary text-light" id="span_availability">Disponibilité</span>
                     <select class="form-control" id="availability" aria-describedby="span_availability">
                         <option value="1">Disponible</option>
                         <option value="0">Indisponible</option>
@@ -145,11 +145,11 @@ Magasin
             </div>
             <div class="modal-body">
                 <div class="input-group input-group-lg mt-3">
-                    <span class="input-group-text col-2 bg-primary text-light" id="span_tag_name">Nom du tag</span>
+                    <span class="input-group-text col-xl-2 bg-primary text-light" id="span_tag_name">Nom du tag</span>
                     <input aria-describedby="span_tag_name" type="text" class="form-control" id="tag_name" placeholder="Nom du tag">
                 </div>
                 <div class="input-group input-group-lg mt-3">
-                    <span class="input-group-text col-2 bg-primary text-light" id="span_tag_color">Couleur du tag</span>
+                    <span class="input-group-text col-xl-2 bg-primary text-light" id="span_tag_color">Couleur du tag</span>
                     <input aria-describedby="span_tag_color" type="color" class="form-control form-control-color" id="tag_color" placeholder="Couleur du tag">
                 </div>
                 <div class="modal-footer">
