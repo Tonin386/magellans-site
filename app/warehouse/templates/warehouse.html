@@ -72,16 +72,16 @@ Magasin
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Annuler"></button>
             </div>
             <div class="modal-body">
-                <div class="input-group input-group-lg mt-3">
+                <div class="input-group input-group-md mt-3">
                     <span class="input-group-text col-xl-2 bg-primary text-dark" id="span_item_name">Nom de l'objet</span>
                     <input aria-describedby="span_item_name" type="text" class="form-control" id="item_name" placeholder="Nom de l'objet">
                 </div>
-                <div class="input-group input-group-lg mt-3">
+                <div class="input-group input-group-md mt-3">
                     <span class="input-group-text col-xl-2 bg-primary text-dark" id="span_tags">Tags</span>
                     <div aria-describedby="span_tags" class="form-control" id="tag-list">
                         {% for tag in tags %}
                         <div class="form-check form-check-inline" id="tag-group{{ tag.pk }}">
-                            <input type="checkbox" value="{{ tag.pk }}" class="tag-checkbox form-check-input" id="tag{{tag.pk}}">
+                            <input type="checkbox" value="{{ tag.pk }}" class="tag-checkbox form-check-input" id="tag{{tag.pk}}" style="margin-top: 1vh;">
                             <label class="btn form-check-label" for="tag{{tag.pk}}" style="background-color: {{ tag.color }}; color: white;">{{ tag.name }}</label>
                         </div>
                         {% endfor %}
@@ -90,15 +90,15 @@ Magasin
                 
                 <button type="button" class="btn btn-success mt-3" data-bs-toggle="modal" data-bs-target="#addTagForm">Créer un tag</button>
                 <button type="button" class="btn btn-danger mt-3" onclick="confirmDeleteTags()">Supprimer les tags sélectionnés</button>
-                <div class="input-group input-group-lg mt-3">
+                <div class="input-group input-group-md mt-3">
                     <span class="input-group-text col-xl-2 bg-primary text-dark" id="span_image">Image</span>
                     <input aria-describedby="span_image" type="file" class="form-control" id="image">
                 </div>
-                <div class="input-group input-group-lg mt-3">
+                <div class="input-group input-group-md mt-3">
                     <span class="input-group-text col-xl-2 bg-primary text-dark" id="span_max_stock">Stock maximum</span>
                     <input aria-describedby="span_max_stock" type="number" class="form-control" id="max_stock" placeholder="Nombre d'objets disponibles au maximum">
                 </div>
-                <div class="input-group input-group-lg mt-3">
+                <div class="input-group input-group-md mt-3">
                     <span class="input-group-text col-xl-2 bg-primary text-dark" id="span_state">Etat</span>
                     <select class="form-control" id="state" aria-describedby="span_state">
                         <option value="5">Neuf</option>
@@ -110,7 +110,7 @@ Magasin
                         <option value="-1">Ne fonctionne pas</option>
                     </select>
                 </div>
-                <div class="input-group input-group-lg mt-3">
+                <div class="input-group input-group-md mt-3">
                     <span class="input-group-text col-xl-2 bg-primary text-dark" id="span_availability">Disponibilité</span>
                     <select class="form-control" id="availability" aria-describedby="span_availability">
                         <option value="1">Disponible</option>
@@ -135,11 +135,11 @@ Magasin
                 <h1 class="modal-title fs-5" id="addTagModalLabel">Ajouter un tag</h1>
             </div>
             <div class="modal-body">
-                <div class="input-group input-group-lg mt-3">
+                <div class="input-group input-group-md mt-3">
                     <span class="input-group-text col-xl-2 bg-primary text-dark" id="span_tag_name">Nom du tag</span>
                     <input aria-describedby="span_tag_name" type="text" class="form-control" id="tag_name" placeholder="Nom du tag">
                 </div>
-                <div class="input-group input-group-lg mt-3">
+                <div class="input-group input-group-md mt-3">
                     <span class="input-group-text col-xl-2 bg-primary text-dark" id="span_tag_color">Couleur du tag</span>
                     <input aria-describedby="span_tag_color" type="color" class="form-control form-control-color" id="tag_color" placeholder="Couleur du tag">
                 </div>

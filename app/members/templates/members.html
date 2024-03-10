@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block title %}
 Gestion des membres
@@ -9,4 +10,29 @@ Gestion des membres
 {% endblock %}
 
 {% block content %}
+
+<div class="container-fluid p-3">
+    <h1 class="display-3 text-center">Espace membre de Magellans</h1>
+    <div class="row mt-5 pt-5">
+        <div class="card border-0  col-lg-4 m-auto mt-3">
+            <div class="card-body text-center hoverable-card">
+                <div class="team-member">
+                    <img src="{% static 'img/icons/warehouse-solid.svg' %}" class="rounded-pill bg-primary" alt="Icône magasin">
+                </div>
+                <h4>Magasin</h4>
+                <a href="{% url 'warehouse' %}" class="stretched-link"></a>
+            </div>
+        </div>
+        <div class="card border-0  col-lg-4 m-auto mt-3">
+            <div class="card-body text-center hoverable-card">
+                <div class="team-member">
+                    <img src="{% static 'img/icons/id-card-solid.svg' %}" class="rounded-pill bg-primary" alt="Icône magasin">
+                </div>
+                <h4>Mon profil</h4>
+                <a href="{% url 'my-profile' %}" class="stretched-link"></a>
+            </div>
+        </div>
+    </div>
+</div>
+
 {% endblock %}

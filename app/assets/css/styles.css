@@ -11328,3 +11328,14 @@ footer {
   z-index: -1000;
   margin: auto;
 }
+
+.hoverable-card {
+  background-color: inherit!important;
+  color: inherit!important;
+  transition: all 1s cubic-bezier(0.075, 0.82, 0.165, 1);
+}
+
+.hoverable-card:hover {
+  background-color: var(--bs-primary)!important;
+  color: white!important;
+}

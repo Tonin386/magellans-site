@@ -24,9 +24,6 @@ def home(request):
         form = ContactForm()
         
     projets = Project.objects.order_by("-shoot_date")[:6]
-    
-    if request.user.is_authenticated:
-        redirect('/membres')
         
     return render(request, 'home.html', locals())
 
