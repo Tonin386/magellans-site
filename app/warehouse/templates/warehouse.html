@@ -28,38 +28,28 @@ Magasin
             </div>
         </div>
     </div>
-    <div class="row">
+    <div class="row" id="item-list">
         {% for item in items %}
-        <div class="col-xl-2 col-lg-4 col-md-6 my-1">
+        <div class="col-xl-2 col-lg-4 col-md-6 my-1" id="item{{item.pk}}">
             <div class="card">
-
+                
                 {% if request.user.is_staff %}
                 <div class="card-header">
-                    <button class="btn btn-danger float-end mx-1"><i class="fa-solid fa-trash"></i></button>
-                    <button class="btn btn-info float-end"><i class="fa-solid fa-edit"></i></button>
+                    <button class="btn btn-danger float-end mx-1" onclick="confirmDeleteItem({{ item.pk }})"><i class="fa-solid fa-trash"></i></button>
+                    <!-- <button class="btn btn-info float-end"><i class="fa-solid fa-edit"></i></button> -->
                 </div>
                 {% endif %}
                 <img src="/static/media/{{item.image}}" class="card-img-top">
                 <div class="card-body">
-                    <h5 class="card-title fs-5">{{ item.name }} ({{item.max_stock}})</h5>
+                    <h5 class="card-title fs-5">{{ item.name }}</h5>
                     <p class="card-text">{{ item.get_state_display }}</p>
                     {% for tag in item.tags.all %}
                     <button class="btn text-light" style="background-color: {{ tag.color }};"> {{ tag.name }} </button>
                     {% endfor %}
                 </div>
-                {% if item.availability == 1 %}
-                <div class="card-footer bg-success text-light">
-                    Disponible
+                <div class="card-footer text-light d-inline-flex align-items-center">
+                   <input type="number" class="form-control availability-selector w-25 me-4 {% if not request.user.is_staff %} d-none {% endif %}" id="stockSelectorItem{{ item.pk }}" value="{{ item.now_available }}" min="0" max="{{ item.max_stock }}"> {% if not request.user.is_staff %} {{ item.now_available }} {% endif %} / {{ item.max_stock}} disponibles
                 </div>
-                {% elif item.availability == 0 %}
-                <div class="card-footer bg-danger text-light">
-                    Indisponible
-                </div>
-                {% else %}
-                <div class="card-footer bg-warning text-light">
-                    Location en cours
-                </div>
-                {% endif %}
             </div>
         </div>
         {% endfor %}
@@ -83,14 +73,14 @@ Magasin
             </div>
             <div class="modal-body">
                 <div class="input-group input-group-lg mt-3">
-                    <span class="input-group-text col-xl-2 bg-primary text-light" id="span_item_name">Nom de l'objet</span>
+                    <span class="input-group-text col-xl-2 bg-primary text-dark" id="span_item_name">Nom de l'objet</span>
                     <input aria-describedby="span_item_name" type="text" class="form-control" id="item_name" placeholder="Nom de l'objet">
                 </div>
                 <div class="input-group input-group-lg mt-3">
-                    <span class="input-group-text col-xl-2 bg-primary text-light" id="span_tags">Tags</span>
-                    <div aria-describedby="span_tags" class="form-control" id="tag_list">
+                    <span class="input-group-text col-xl-2 bg-primary text-dark" id="span_tags">Tags</span>
+                    <div aria-describedby="span_tags" class="form-control" id="tag-list">
                         {% for tag in tags %}
-                        <div class="form-check form-check-inline">
+                        <div class="form-check form-check-inline" id="tag-group{{ tag.pk }}">
                             <input type="checkbox" value="{{ tag.pk }}" class="tag-checkbox form-check-input" id="tag{{tag.pk}}">
                             <label class="btn form-check-label" for="tag{{tag.pk}}" style="background-color: {{ tag.color }}; color: white;">{{ tag.name }}</label>
                         </div>
@@ -99,16 +89,17 @@ Magasin
                 </div>
                 
                 <button type="button" class="btn btn-success mt-3" data-bs-toggle="modal" data-bs-target="#addTagForm">Créer un tag</button>
+                <button type="button" class="btn btn-danger mt-3" onclick="confirmDeleteTags()">Supprimer les tags sélectionnés</button>
                 <div class="input-group input-group-lg mt-3">
-                    <span class="input-group-text col-xl-2 bg-primary text-light" id="span_image">Image</span>
+                    <span class="input-group-text col-xl-2 bg-primary text-dark" id="span_image">Image</span>
                     <input aria-describedby="span_image" type="file" class="form-control" id="image">
                 </div>
                 <div class="input-group input-group-lg mt-3">
-                    <span class="input-group-text col-xl-2 bg-primary text-light" id="span_max_stock">Stock maximum</span>
+                    <span class="input-group-text col-xl-2 bg-primary text-dark" id="span_max_stock">Stock maximum</span>
                     <input aria-describedby="span_max_stock" type="number" class="form-control" id="max_stock" placeholder="Nombre d'objets disponibles au maximum">
                 </div>
                 <div class="input-group input-group-lg mt-3">
-                    <span class="input-group-text col-xl-2 bg-primary text-light" id="span_state">Etat</span>
+                    <span class="input-group-text col-xl-2 bg-primary text-dark" id="span_state">Etat</span>
                     <select class="form-control" id="state" aria-describedby="span_state">
                         <option value="5">Neuf</option>
                         <option value="4">Très bon état</option>
@@ -120,7 +111,7 @@ Magasin
                     </select>
                 </div>
                 <div class="input-group input-group-lg mt-3">
-                    <span class="input-group-text col-xl-2 bg-primary text-light" id="span_availability">Disponibilité</span>
+                    <span class="input-group-text col-xl-2 bg-primary text-dark" id="span_availability">Disponibilité</span>
                     <select class="form-control" id="availability" aria-describedby="span_availability">
                         <option value="1">Disponible</option>
                         <option value="0">Indisponible</option>
@@ -145,72 +136,60 @@ Magasin
             </div>
             <div class="modal-body">
                 <div class="input-group input-group-lg mt-3">
-                    <span class="input-group-text col-xl-2 bg-primary text-light" id="span_tag_name">Nom du tag</span>
+                    <span class="input-group-text col-xl-2 bg-primary text-dark" id="span_tag_name">Nom du tag</span>
                     <input aria-describedby="span_tag_name" type="text" class="form-control" id="tag_name" placeholder="Nom du tag">
                 </div>
                 <div class="input-group input-group-lg mt-3">
-                    <span class="input-group-text col-xl-2 bg-primary text-light" id="span_tag_color">Couleur du tag</span>
+                    <span class="input-group-text col-xl-2 bg-primary text-dark" id="span_tag_color">Couleur du tag</span>
                     <input aria-describedby="span_tag_color" type="color" class="form-control form-control-color" id="tag_color" placeholder="Couleur du tag">
                 </div>
                 <div class="modal-footer">
                     <button type="button" data-bs-target="#addItemForm" data-bs-toggle="modal" class="btn btn-danger">Annuler</button>
-                    <button type="button" data-bs-target="#addItemForm" data-bs-toggle="modal" class="btn btn-success" onclick="addTag()">Ajouter le tag</button>
+                    <button type="button" data-bs-target="#addItemForm" data-bs-toggle="modal" class="btn btn-success" onclick="addTag()" data-bs-dismiss="modal">Ajouter le tag</button>
                 </div>
             </div>
         </div>
     </div>
 </div>
 
-<div class="toast-container position-fixed bottom-0 end-0 p-3">
-    <div id="addTagSuccess" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
-        <div class="toast-header">
-            <strong class="me-auto">Ajout de tag</strong>
-            <small>succès</small>
-            <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
-        </div>
-        <div class="toast-body bg-success">
-            Le tag a bien été ajouté.
-        </div>
-    </div>
-</div>
-
-<div class="toast-container position-fixed bottom-0 end-0 p-3">
-    <div id="addTagError" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
-        <div class="toast-header">
-            <strong class="me-auto">Ajout de tag</strong>
-            <small>erreur</small>
-            <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
-        </div>
-        <div class="toast-body bg-danger">
-            Une erreur est survenue. Le tag n'a pas été ajouté.
+<!-- CONFIRM DELETE ITEM -->
+<div class="modal fade" id="confirmDeleteItemModal" tabindex="-1" role="dialog" aria-labelledby="confirmDeleteItemModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="confirmDeleteItemModalLabel">Confirmer suppression</h5>
+            </div>
+            <div class="modal-body">
+                Êtes-vous sûr.e de vouloir supprimer cet objet ?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                <button type="button" class="btn btn-danger" id="confirmDeleteItemBtn" value="0" data-bs-dismiss="modal">Supprimer</button>
+            </div>
         </div>
     </div>
 </div>
 
-<div class="toast-container position-fixed bottom-0 end-0 p-3">
-    <div id="addItemSuccess" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
-        <div class="toast-header">
-            <strong class="me-auto">Ajout d'objet</strong>
-            <small>succès</small>
-            <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
-        </div>
-        <div class="toast-body bg-success">
-            L'objet a bien été ajouté.
+<!-- CONFIRM DELETE TAGS -->
+<div class="modal fade" id="confirmDeleteTagsModal" tabindex="-1" role="dialog" aria-labelledby="confirmDeleteTagsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="confirmDeleteTagsModalLabel">Confirmer suppression</h5>
+            </div>
+            <div class="modal-body">
+                Êtes-vous sûr.e de vouloir supprimer ces tags ?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                <button type="button" class="btn btn-danger" id="confirmDeleteTagsBtn" data-bs-dismiss="modal" onclick="deleteTags()">Supprimer</button>
+            </div>
         </div>
     </div>
 </div>
 
-<div class="toast-container position-fixed bottom-0 end-0 p-3">
-    <div id="addTagError" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
-        <div class="toast-header">
-            <strong class="me-auto">Ajout d'objet</strong>
-            <small>erreur</small>
-            <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
-        </div>
-        <div class="toast-body bg-danger">
-            Une erreur est survenue. L'objet n'a pas été ajouté.
-        </div>
-    </div>
+<!-- NOTIFICATIONS -->
+<div class="toast-container position-fixed bottom-0 end-0 p-3" id="notificationContainer">
 </div>
 
 <div id="csrf" class="d-none">
