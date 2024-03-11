@@ -48,3 +48,8 @@ class Notification(models.Model):
                 )
             }
         )
+        
+    def __str__(self):
+        return self.time.strftime("%Y-%m-%d %H:%M:%S") + f" {self.title} - {self.application} ({self.status})"    
+    class Meta:
+        pass
