@@ -170,5 +170,6 @@ video/
 projets/
 volumes/
 migrations/
-items/
+app/assets/media/img/items/*
+!app/assets/media/img/items/default.png
 !migrations/__init__.py

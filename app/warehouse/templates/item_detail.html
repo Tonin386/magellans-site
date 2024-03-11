@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}
+Magasin - {{ item.name }}
+{% endblock %}
+
+{% block extra_head %}
+{% endblock %}
+
+{% block nav %}
+{% include "nav.html" %}
+{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid mt-3">
+    <h1 class="display-6">{{ item.name }}</h1>
+    <div class="row">
+    </div>
+</div>
+
+
+{% endblock %}

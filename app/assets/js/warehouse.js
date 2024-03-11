@@ -83,7 +83,7 @@ async function addItem() {
 async function editItem(params) {
     params['action'] = "edit-item";
     params['token'] = api_token;
-
+    
     let response = await sendApiRequest(params);
 }
 
@@ -184,11 +184,11 @@ function colorAvailability(id = -1) {
     id = parseInt(id) || -1;
     var availabilitySelectors = document.querySelectorAll(".availability-selector");
     availabilitySelectors.forEach(selector => {
-
+        
         let itemPk = selector.id.replace("stockSelectorItem", "");
         let value = selector.value;
         let max = selector.max;
-
+        
         if(value >= max/2) {
             selector.parentElement.classList.remove("bg-warning");
             selector.parentElement.classList.remove("bg-danger");
@@ -204,19 +204,110 @@ function colorAvailability(id = -1) {
             selector.parentElement.classList.remove("bg-success");
             selector.parentElement.classList.add("bg-danger");
         }
-
+        
         params = {
             now_available: value,
             pk: itemPk
         }
-
+        
         if(id == itemPk) {
             editItem(params);
         }
     });
 }
 
+function filterSearchItems(text) {
+    itemsMatchingSearch = [];
+    text = text.toLowerCase();
+    itemDatabase.forEach(item => {
+        if(text == "") {
+            itemsMatchingSearch.push(item.id);
+        }
+        else if(item.completeText.includes(text)) {
+            itemsMatchingSearch.push(item.id);
+        }
+    });
+    
+    displayItems();
+}
+
+function filterTagItems() {
+    var hiddenTags = [];
+    itemsMatchingTags = [];
+    tagSelectButtons.forEach(tagSelectButton => {
+        if(!tagSelectButton.checked) {
+            hiddenTags.push($(tagSelectButton).attr('value'));
+        }
+    });
+
+    itemDatabase.forEach(item => {
+        if(hiddenTags.length == 0) {
+            itemsMatchingTags.push(item.id);
+            return;
+        }
+
+        var matchesOneTag = false;
+
+        hiddenTags.forEach(hiddenTag => {
+            if(item.tagNames.includes(hiddenTag)) {
+                matchesOneTag = true;
+                return;
+            }
+        });
+
+        if(!matchesOneTag) {
+            itemsMatchingTags.push(item.id);
+        }
+    });
+    
+    displayItems();
+}
+
+function displayItems() {
+    itemDatabase.forEach(item => {
+        if(itemsMatchingSearch.includes(item.id) && itemsMatchingTags.includes(item.id)) {
+            item.parentElement.classList.remove("d-none");
+        }
+        else {
+            if(!item.parentElement.classList.contains("d-none")) {
+                item.parentElement.classList.add("d-none");
+            }
+        }
+    });
+}
+
+var tagSelectButtons = [];
+var itemsCards = [];
+var itemDatabase = [];
+var itemsMatchingSearch = [];
+var itemsMatchingTags = [];
+
 document.addEventListener('DOMContentLoaded', function() {
+    
+    tagSelectButtons = document.querySelectorAll(".selectedTag-checkbox");
+    itemsCards = document.querySelectorAll(".tag-card");
+    
+    itemsCards.forEach(itemCard => {
+        let parentElement = itemCard.parentElement;
+        let title = itemCard.querySelector(".card-title").innerText;
+        let tagNames = [];
+        let completeText = title;
+        itemCard.querySelectorAll(".badge").forEach(btn => {
+            tagNames.push(btn.innerText);
+            completeText += " " + btn.innerText;
+        });
+        
+        itemDatabase.push({
+            id:  parentElement.id,
+            parentElement: parentElement,
+            title: title,
+            tagNames: tagNames,
+            completeText: completeText.toLowerCase()
+        });
+        
+        itemsMatchingSearch.push(parentElement.id);
+        itemsMatchingTags.push(parentElement.id);
+    });
     
     var confirmDeleteItemBtn = $('#confirmDeleteItemBtn');
     $(confirmDeleteItemBtn).click(function (e) {
@@ -229,6 +320,17 @@ document.addEventListener('DOMContentLoaded', function() {
             colorAvailability(selector.id.replace("stockSelectorItem", ""));
         });
     });
-
+    
+    tagSelectButtons.forEach(button => {
+        button.addEventListener("change", function(event) {
+            filterTagItems();
+        })
+    });
+    
+    var searchBar = document.querySelector("#searchBar");
+    searchBar.addEventListener("input", function(event) {
+        filterSearchItems(event.target.value);
+    });
+    
     colorAvailability();
 });
