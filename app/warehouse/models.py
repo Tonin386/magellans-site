@@ -18,7 +18,13 @@ AVAILABILITY_CHOICES = [
 
 class Tag(models.Model):
     name = models.CharField("Tag", max_length=20)
-    color = models.CharField("Couleur")
+    color = models.CharField("Couleur", default="#000", max_length=10)
+    
+    def __str__(self):
+        return f"{self.name}"
+    
+    class Meta:
+        verbose_name = "Catégorie"
     
 class Item(models.Model):
     name = models.CharField("Nom", max_length=255)
@@ -30,3 +36,9 @@ class Item(models.Model):
     owner = models.CharField("Propriétaire", blank=True, null=True) #A changer...
     availability = models.IntegerField("Disponibilité", choices=AVAILABILITY_CHOICES)
     now_available = models.PositiveIntegerField("Nombre disponible", default=0)
+    
+    def __str__(self):
+        return f"{self.name}"
+    
+    class Meta:
+        verbose_name = "Objet"
