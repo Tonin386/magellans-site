@@ -17,9 +17,9 @@ Magasin
 
 <div class="container-fluid mt-3">
     <div class="row">
-        <div class="col-md-12">
-            <div class="input-group mb-3 w-50 w-lg-25 m-auto">
-                <input type="text" class="form-control" placeholder="Rechercher un objet, une catégorie..." aria-label="Search" aria-describedby="basic-addon2">
+        <div class="col-lg-4 m-auto">
+            <div class="input-group mb-3 m-auto">
+                <input id="searchBar" type="text" class="form-control" placeholder="Rechercher un objet, une catégorie..." aria-label="Search" aria-describedby="basic-addon2">
                 <div class="input-group-append">
                     <button class="btn btn-outline-primary ms-1" type="button">
                         <i class="fas fa-search"></i>
@@ -27,11 +27,19 @@ Magasin
                 </div>
             </div>
         </div>
+        <div class="row text-center">
+            <div class="col-md-12" id="selectedTagsGroup">
+                {% for tag in tags %}
+                <input type="checkbox" value="{{ tag.name }}" class="selectedTag-checkbox btn-check" id="selectedTag{{tag.pk}}" checked>
+                <label class="btn btn-outline-primary selectedTag-btn mb-2" for="selectedTag{{tag.pk}}" style="--bs-btn-color: {{ tag.color }}; --bs-btn-active-bg: {{ tag.color }}; --bs-btn-border-color: {{ tag.color }}; --bs-btn-active-border-color: {{ tag.color }};">{{ tag.name }}</label>
+                {% endfor %}
+            </div>
+        </div>
     </div>
     <div class="row" id="item-list">
         {% for item in items %}
         <div class="col-xl-2 col-lg-4 col-md-6 my-1" id="item{{item.pk}}">
-            <div class="card">
+            <div class="card tag-card">
                 
                 {% if request.user.is_staff %}
                 <div class="card-header">
@@ -41,14 +49,25 @@ Magasin
                 {% endif %}
                 <img src="/static/media/{{item.image}}" class="card-img-top">
                 <div class="card-body">
-                    <h5 class="card-title fs-5">{{ item.name }}</h5>
-                    <p class="card-text">{{ item.get_state_display }}</p>
+                    <h5 class="card-title fs-5 text-center">
+                        {{ item.name }}
+                        <br>
+                        {% if item.state >= 3 %}
+                        <span class="badge rounded-pill text-bg-success mt-1">{{ item.get_state_display }}</span>
+                        {% elif item.state < 3 and item.state >= 1%}
+                        <span class="badge rounded-pill text-bg-warning mt-1">{{ item.get_state_display }}</span>
+                        {% else %}
+                        <span class="badge rounded-pill text-bg-danger mt-1">{{ item.get_state_display }}</span>
+                        {% endif %}
+                    </h5>
+                    <br>
                     {% for tag in item.tags.all %}
-                    <button class="btn text-light" style="background-color: {{ tag.color }};"> {{ tag.name }} </button>
+                    <span class="badge text-light fs-6" style="background-color: {{ tag.color }};"> {{ tag.name }} </span>
                     {% endfor %}
+                    <!-- <a href="{% url 'item-detail' pk=item.pk %}" class="stretched-link" target="_blank"></a> -->
                 </div>
                 <div class="card-footer text-light d-inline-flex align-items-center">
-                   <input type="number" class="form-control availability-selector w-25 me-4 {% if not request.user.is_staff %} d-none {% endif %}" id="stockSelectorItem{{ item.pk }}" value="{{ item.now_available }}" min="0" max="{{ item.max_stock }}"> {% if not request.user.is_staff %} {{ item.now_available }} {% endif %} / {{ item.max_stock}} disponibles
+                    <input type="number" class="form-control availability-selector w-25 me-4 {% if not request.user.is_staff %} d-none {% endif %}" id="stockSelectorItem{{ item.pk }}" value="{{ item.now_available }}" min="0" max="{{ item.max_stock }}"> {% if not request.user.is_staff %} {{ item.now_available }} {% endif %} / {{ item.max_stock}} disponibles
                 </div>
             </div>
         </div>
