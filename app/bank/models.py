@@ -20,10 +20,10 @@ STATUS = [
 class Operation(models.Model):
     id = models.CharField(primary_key=True, max_length=100, unique=True, verbose_name="ID Opération", editable=False)
     desc = models.TextField(verbose_name="Description")
-    direction = models.CharField(max_length=1, choices=OPE_TYPES, default="D", verbose_name="Type d'opération")
+    type = models.CharField(max_length=1, choices=OPE_TYPES, default="D", verbose_name="Type d'opération")
     src = models.OneToOneField(Member, on_delete=models.DO_NOTHING, verbose_name="Emetteur de l'opération", related_name="source_operation")
     dest = models.OneToOneField(Member, on_delete=models.DO_NOTHING, verbose_name="Receveur de l'opération", related_name="destination_operation")
-    amout = models.FloatField(verbose_name="Montant")
+    amount = models.FloatField(verbose_name="Montant")
     date_added = models.DateTimeField(auto_now_add=True, verbose_name="Date d'ajout", editable=False)
     date = models.DateTimeField(verbose_name="Date")
     status = models.CharField(max_length=1, choices=STATUS, default="J", verbose_name="Statut")
@@ -41,6 +41,9 @@ class Operation(models.Model):
             else:
                 self.id = 'OPE-1'
         super().save(*args, **kwargs)
+        
+    def __str__(self):
+        return f"{self.type} {self.date.strftime('%Y-%m-%d')} - {self.id} ({self.amount})"
         
     class Meta:
         verbose_name="Opération"

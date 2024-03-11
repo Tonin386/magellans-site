@@ -20,6 +20,9 @@ class MemberAdmin(admin.ModelAdmin):
     account_formatted.short_description = "Statut compte"
     donation_formatted.short_description = "Montant donation"
     
-    list_display = ('__str__', 'phone_formatted', 'is_active', 'account_formatted', 'donation_formatted')
+    list_display = ('date_joined', 'email', 'last_name', 'first_name', 'is_staff', 'role', 'is_active', 'phone_formatted', 'account_formatted', 'donation_formatted', 'gender')
+    list_filter = ('role', 'is_active', 'is_staff', 'gender')
+    search_fields =  ('date_joined', 'email', 'last_name', 'first_name', 'is_staff', 'role', 'is_active', 'phone_formatted', 'account_formatted', 'donation_formatted', 'gender')
+    ordering = ('-date_joined', 'email', 'last_name', 'first_name', 'is_staff')
 
 admin.site.register(Member, MemberAdmin)
