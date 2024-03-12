@@ -32,3 +32,13 @@ class EditTagForm(forms.ModelForm):
     class Meta:
         model = Tag
         fields = ['name', 'color']
+        
+class PlaceOrderForm(forms.Form):
+    start_date = forms.DateField()
+    end_date = forms.DateField()
+    message = forms.CharField()
+    order_text = forms.HiddenInput()
+    
+    required = {
+        'message': False
+    }
