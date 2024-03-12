@@ -30,12 +30,12 @@ class Item(models.Model):
     name = models.CharField("Nom", max_length=255)
     tags = models.ManyToManyField(Tag)
     image = models.ImageField("Image", upload_to="img/items/", default="/img/items/default.png")
-    max_stock = models.PositiveSmallIntegerField("Nombre possédés", default=1)
+    max_stock = models.PositiveSmallIntegerField("Maximum disponible", default=1)
+    now_available = models.PositiveIntegerField("Disponible(s)", default=0)
     state = models.IntegerField("Etat", choices=STATUS_CHOICES)
     buy_price = models.FloatField("Prix d'achat", blank=True, null=True)
     owner = models.CharField("Propriétaire", blank=True, null=True) #A changer...
     availability = models.IntegerField("Disponibilité", choices=AVAILABILITY_CHOICES)
-    now_available = models.PositiveIntegerField("Nombre disponible", default=0)
     
     def __str__(self):
         return f"{self.name}"

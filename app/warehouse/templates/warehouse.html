@@ -44,10 +44,10 @@ Magasin
                 {% if request.user.is_staff %}
                 <div class="card-header">
                     <button class="btn btn-danger float-end mx-1" onclick="confirmDeleteItem({{ item.pk }})"><i class="fa-solid fa-trash"></i></button>
-                    <!-- <button class="btn btn-info float-end"><i class="fa-solid fa-edit"></i></button> -->
+                    <a class="btn btn-warning float-end" href="{% url 'edit-item-detail' pk=item.pk %}" target="_blank"><i class="fa-solid fa-edit"></i></a>
                 </div>
                 {% endif %}
-                <img src="/static/media/{{item.image}}" class="card-img-top">
+                <img src="/static/media{{item.image}}" class="card-img-top m-2">
                 <div class="card-body">
                     <h5 class="card-title fs-5 text-center">
                         {{ item.name }}
@@ -62,13 +62,18 @@ Magasin
                     </h5>
                     <br>
                     {% for tag in item.tags.all %}
-                    <span class="badge text-light fs-6" style="background-color: {{ tag.color }};"> {{ tag.name }} </span>
+                    <span class="badge text-light fs-6" style="background-color: {{ tag.color }};"> {{ tag.name }} {% if request.user.is_staff %} <a href="{% url 'edit-tag-detail' pk=tag.pk %}" target="_blank"><i class="fa-solid fa-edit text-white"></i></a> {% endif %}</span>
                     {% endfor %}
-                    <!-- <a href="{% url 'item-detail' pk=item.pk %}" class="stretched-link" target="_blank"></a> -->
                 </div>
+                {% if item.availability == 1 %}
                 <div class="card-footer text-light d-inline-flex align-items-center">
-                    <input type="number" class="form-control availability-selector w-25 me-4 {% if not request.user.is_staff %} d-none {% endif %}" id="stockSelectorItem{{ item.pk }}" value="{{ item.now_available }}" min="0" max="{{ item.max_stock }}"> {% if not request.user.is_staff %} {{ item.now_available }} {% endif %} / {{ item.max_stock}} disponibles
+                    <input type="number" class="form-control availability-selector w-25 me-4 {% if not request.user.is_staff %} d-none {% endif %}" id="stockSelectorItem{{ item.pk }}" value="{{ item.now_available }}" min="0" max="{{ item.max_stock }}"> {% if not request.user.is_staff %} {{ item.now_available }} {% endif %} / {{ item.max_stock}} disponible(s)
                 </div>
+                {% else %}
+                <div class="card-footer text-light d-inline-flex align-items-center bg-danger">
+                    Temporairement indisponible
+                </div>
+                {% endif %}
             </div>
         </div>
         {% endfor %}

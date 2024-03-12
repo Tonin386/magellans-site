@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}
+Magasin - {{ tag.name }}
+{% endblock %}
+
+{% block extra_head %}
+{% endblock %}
+
+{% block nav %}
+{% include "nav.html" %}
+{% endblock %}
+
+{% block content %}
+
+{% if request.user.is_staff %}
+<div class="container-fluid mt-3">
+    <h1 class="display-6 text-center"><i class="fa-solid fa-edit" class="bg-primary"></i> Edition de  <span class="btn btn-large text-light fs-3 p-2" style="background-color: {{ tag.color }};"> {{ tag.name }} </span></h1>
+    <form method="post" class="row justify-content-center">
+        {% csrf_token %}
+        {% for field in form %}
+        <div class="col-lg-10 my-2">
+            <div class="input-group input-group-lg">
+                <span class="input-group-text bg-primary text-light col-xl-2 fw-bold">{{ field.label }}</span>
+                {{ field }}
+            </div>
+        </div>
+        {% endfor %}
+        <div class="col-md-3">
+            <button type="submit" class="btn btn-success btn-large p-3 fs-4 w-100 my-1">Enregistrer</button>
+        </div>
+        <div class="col-md-3">
+            <a class="btn btn-danger btn-large w-100 p-3 fs-4 my-1" href="{% url 'warehouse' %}">Annuler</a>
+        </div>
+    </form>
+</div>
+{% else %}
+
+<div class="container-fluid mt-3">
+    <div class="card m-auto text-center col-xl-6 border-danger border-4 rounded-4">
+        <div class="card-header bg-danger text-light fs-3">Interdit</div>
+        <div class="card-body">
+            <h5 class="card-title">
+                Vous n'êtes pas censé.e être ici.
+            </h5>
+            <p class="card-text">Veuillez cliquer sur le bouton ci-dessous pour retourner au magasin</p>
+            <a class="btn btn-primary btn-xl fs-4" href="{% url 'warehouse' %}">Retour au magasin</a>
+        </div>
+        <div class="card-footer bg-danger fs-4 text-light">
+            Espace réservé aux administrateurs
+        </div>
+    </div>
+</div>
+{% endif %}
+
+{% endblock %}

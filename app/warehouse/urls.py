@@ -3,5 +3,6 @@ from .views import *
 
 urlpatterns = [
     path("", warehouse, name="warehouse"),
-    path("objet/<int:pk>/", ItemDetailView.as_view(), name="item-detail"),
+    path("objet/modifier/<int:pk>/", EditItemDetailView.as_view(), name="edit-item-detail"),
+    path("tag/modifier/<int:pk>/", EditTagDetailView.as_view(), name="edit-tag-detail"),
 ]
