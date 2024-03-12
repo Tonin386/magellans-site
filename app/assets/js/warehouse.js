@@ -276,11 +276,34 @@ function displayItems() {
     });
 }
 
+function updateOrder() {
+    let totalItems = 0;
+    let pks = [];
+    let values = [];
+
+    for(itemPk in orderedItems) {
+        totalItems += parseInt(orderedItems[itemPk]);
+        pks.push(itemPk);
+        values.push(orderedItems[itemPk]);
+    }
+
+    document.querySelector("#nbOrderedItems").innerText = totalItems;
+
+
+    let params = new URLSearchParams();
+    params.append("pks", pks);
+    params.append("values", values);
+
+    let orderLink = document.querySelector("#orderButton");
+    orderLink.href = `/magasin/commande?${params.toString()}`;
+}
+
 var tagSelectButtons = [];
 var itemsCards = [];
 var itemDatabase = [];
 var itemsMatchingSearch = [];
 var itemsMatchingTags = [];
+var orderedItems = {};
 
 document.addEventListener('DOMContentLoaded', function() {
     
@@ -331,6 +354,15 @@ document.addEventListener('DOMContentLoaded', function() {
     searchBar.addEventListener("input", function(event) {
         filterSearchItems(event.target.value);
     });
-    
+
+    var inputOrders = document.querySelectorAll(".place-order-input");
+    inputOrders.forEach(inputOrder => {
+        inputOrder.addEventListener("change", function(event) {
+            let pk = inputOrder.id.replace("itemOrder", "");
+            orderedItems[pk] = event.target.value;
+            updateOrder();
+        })
+    });
+
     colorAvailability();
 });

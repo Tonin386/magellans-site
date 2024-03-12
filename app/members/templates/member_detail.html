@@ -11,7 +11,7 @@ Profil
 {% block content %}
 <div class="container mt-3">
     <div class="box">
-        <h1 class="title fs-3">Détails de {{ object.first_name }} {{ object.last_name }}</h1>
+        <h1 class="title fs-3">Détails du compte {{ object.email }}</h1>
         <div class="row">
             <div class="col-lg-6">
                 <table class="table table-border table-striped">
@@ -55,8 +55,40 @@ Profil
             </div>
             <div class="col-lg-12 text-center">
                 <a href="{% url 'password_change' %}" class="btn btn-secondary w-25"><i class="fa-solid fa-gear"></i> Changer de mot de passe</a>
+                <button class="btn btn-warning w-25" data-bs-target="#editProfileForm" data-bs-toggle="modal"><i class="fa-solid fa-edit"></i> Modifier mon profil</>
             </div>
         </div>
     </div>
 </div>
+
+<!-- EDIT PROFILE MODAL -->
+<div class="modal fade" id="editProfileForm" data-bs-keyboard="true" tabindex="-1" aria-labelledby="editProfileLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="editProfileLabel">Modifier mon profil</h1>
+            </div>
+            <div class="modal-body">
+                <form method="post" class="row justify-content-center">
+                    {% csrf_token %}
+                    {% for field in form %}
+                    <div class="col-lg-11 my-2">
+                        <div class="input-group">
+                            <span class="input-group-text bg-primary text-light col-xl-2 fw-bold">{{ field.label }}</span>
+                            {{ field }}
+                        </div>
+                    </div>
+                    {% endfor %}
+                    <div class="col-md-3">
+                        <button type="submit" class="btn btn-success btn-large w-100 p-2 fs-5 my-1">Enregistrer</button>
+                    </div>
+                    <div class="col-md-3">
+                        <a class="btn btn-danger btn-large w-100 p-2 fs-5 my-1" data-bs-dismiss="modal">Annuler</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
 {% endblock %}
