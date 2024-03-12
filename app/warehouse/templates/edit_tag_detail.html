@@ -20,18 +20,18 @@ Magasin - {{ tag.name }}
     <form method="post" class="row justify-content-center">
         {% csrf_token %}
         {% for field in form %}
-        <div class="col-lg-10 my-2">
-            <div class="input-group input-group-lg">
+        <div class="col-lg-11 my-2">
+            <div class="input-group">
                 <span class="input-group-text bg-primary text-light col-xl-2 fw-bold">{{ field.label }}</span>
                 {{ field }}
             </div>
         </div>
         {% endfor %}
         <div class="col-md-3">
-            <button type="submit" class="btn btn-success btn-large p-3 fs-4 w-100 my-1">Enregistrer</button>
+            <button type="submit" class="btn btn-success btn-large w-100 p-2 fs-5 my-1">Enregistrer</button>
         </div>
         <div class="col-md-3">
-            <a class="btn btn-danger btn-large w-100 p-3 fs-4 my-1" href="{% url 'warehouse' %}">Annuler</a>
+            <a class="btn btn-danger btn-large w-100 p-2 fs-5 my-1" href="{% url 'warehouse' %}">Annuler</a>
         </div>
     </form>
 </div>

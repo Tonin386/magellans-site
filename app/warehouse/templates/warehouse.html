@@ -31,7 +31,7 @@ Magasin
             <div class="col-md-12" id="selectedTagsGroup">
                 {% for tag in tags %}
                 <input type="checkbox" value="{{ tag.name }}" class="selectedTag-checkbox btn-check" id="selectedTag{{tag.pk}}" checked>
-                <label class="btn btn-outline-primary selectedTag-btn mb-2" for="selectedTag{{tag.pk}}" style="--bs-btn-color: {{ tag.color }}; --bs-btn-active-bg: {{ tag.color }}; --bs-btn-border-color: {{ tag.color }}; --bs-btn-active-border-color: {{ tag.color }};">{{ tag.name }}</label>
+                <label class="btn btn-outline-primary selectedTag-btn mb-2" for="selectedTag{{tag.pk}}" style="--bs-btn-color: {{ tag.color }}; --bs-btn-active-bg: {{ tag.color }}; --bs-btn-border-color: {{ tag.color }}; --bs-btn-active-border-color: {{ tag.color }};">{{ tag.name }} {% if request.user.is_staff %} <a href="{% url 'edit-tag-detail' pk=tag.pk %}" target="_blank" style="vertical-align: middle;"><i class="fa-solid fa-edit bg-dark text-white rounded-2 p-1"></i></a> {% endif %}</label>
                 {% endfor %}
             </div>
         </div>
@@ -62,7 +62,7 @@ Magasin
                     </h5>
                     <br>
                     {% for tag in item.tags.all %}
-                    <span class="badge text-light fs-6" style="background-color: {{ tag.color }};"> {{ tag.name }} {% if request.user.is_staff %} <a href="{% url 'edit-tag-detail' pk=tag.pk %}" target="_blank"><i class="fa-solid fa-edit text-white"></i></a> {% endif %}</span>
+                    <span class="badge text-light fs-6" style="background-color: {{ tag.color }};"> {{ tag.name }}</span>
                     {% endfor %}
                 </div>
                 {% if item.availability == 1 %}
