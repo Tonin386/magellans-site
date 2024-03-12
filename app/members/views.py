@@ -11,6 +11,7 @@ from django.contrib import messages
 from django.conf import settings
 from .forms import RegisterForm
 from .models import Member
+from .forms import *
 import secrets
 import string
 
@@ -21,7 +22,17 @@ def members(request):
 
 @login_required
 def my_profile(request):
-    return render(request, 'member_detail.html', {'object': request.user})
+    form = EditProfileForm()
+    if request.method == "POST":
+        form = EditProfileForm(request.POST)
+        if form.is_valid():
+            request.user.first_name = form.cleaned_data['first_name']
+            request.user.last_name = form.cleaned_data['last_name']
+            request.user.phone = form.cleaned_data['phone']
+            request.user.gender = form.cleaned_data['gender']
+            request.user.save()
+            
+    return render(request, 'member_detail.html', {'object': request.user, 'form': form})
 
 def register(request):
     form = RegisterForm(request.POST or None)

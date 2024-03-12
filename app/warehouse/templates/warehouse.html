@@ -16,55 +16,80 @@ Magasin
 {% block content %}
 
 <div class="container-fluid mt-3">
-    <div class="row">
-        <div class="col-lg-4 m-auto">
-            <div class="input-group mb-3 m-auto">
-                <input id="searchBar" type="text" class="form-control" placeholder="Rechercher un objet, une catégorie..." aria-label="Search" aria-describedby="basic-addon2">
-                <div class="input-group-append">
-                    <button class="btn btn-outline-primary ms-1" type="button">
-                        <i class="fas fa-search"></i>
-                    </button>
-                </div>
-            </div>
-        </div>
-        <div class="row text-center">
-            <div class="col-md-12" id="selectedTagsGroup">
-                {% for tag in tags %}
-                <input type="checkbox" value="{{ tag.name }}" class="selectedTag-checkbox btn-check" id="selectedTag{{tag.pk}}" checked>
-                <label class="btn btn-outline-primary selectedTag-btn mb-2" for="selectedTag{{tag.pk}}" style="--bs-btn-color: {{ tag.color }}; --bs-btn-active-bg: {{ tag.color }}; --bs-btn-border-color: {{ tag.color }}; --bs-btn-active-border-color: {{ tag.color }};">{{ tag.name }} {% if request.user.is_staff %} <a href="{% url 'edit-tag-detail' pk=tag.pk %}" target="_blank" style="vertical-align: middle;"><i class="fa-solid fa-edit bg-dark text-white rounded-2 p-1"></i></a> {% endif %}</label>
-                {% endfor %}
+    {% if not request.user.is_authenticated or not completeProfile %}
+    <div class="alert alert-warning m-auto text-center col-lg-10 mb-3">
+        <h4 class="alert-heading">Utilisation du magasin</h4>
+        <hr>
+        <p>
+            Attention, pour pouvoir faire une réservation au magasin de Magellans vous devez être connecté et compléter les informations de votre profil.
+            Si vous voyez ce message, vous n'êtes pas connecté ou n'avez pas renseigné tous les champs de votre profil.
+        </p>
+        {% if not completeProfile %}
+        <a class="btn btn-primary" href="{% url 'my-profile' %}">Compléter mon profil</a>
+        {% elif not request.user.is_authenticated %}
+        <a class="btn btn-primary" href="{% url 'login' %}">Me connecter</a>
+        {% endif %}
+    </div>
+</div>
+{% endif %}
+<div class="row">
+    <div class="col-lg-4 m-auto">
+        <div class="input-group mb-3 m-auto">
+            <input id="searchBar" type="text" class="form-control" placeholder="Rechercher un objet, une catégorie..." aria-label="Search" aria-describedby="basic-addon2">
+            <div class="input-group-append">
+                <button class="btn btn-outline-primary ms-1" type="button">
+                    <i class="fas fa-search"></i>
+                </button>
             </div>
         </div>
     </div>
-    <div class="row" id="item-list">
-        {% for item in items %}
-        <div class="col-xl-2 col-lg-4 col-md-6 my-1" id="item{{item.pk}}">
-            <div class="card tag-card">
-                
-                {% if request.user.is_staff %}
-                <div class="card-header">
-                    <button class="btn btn-danger float-end mx-1" onclick="confirmDeleteItem({{ item.pk }})"><i class="fa-solid fa-trash"></i></button>
-                    <a class="btn btn-warning float-end" href="{% url 'edit-item-detail' pk=item.pk %}" target="_blank"><i class="fa-solid fa-edit"></i></a>
-                </div>
-                {% endif %}
-                <img src="/static/media{{item.image}}" class="card-img-top m-2">
-                <div class="card-body">
-                    <h5 class="card-title fs-5 text-center">
-                        {{ item.name }}
-                        <br>
-                        {% if item.state >= 3 %}
-                        <span class="badge rounded-pill text-bg-success mt-1">{{ item.get_state_display }}</span>
-                        {% elif item.state < 3 and item.state >= 1%}
-                        <span class="badge rounded-pill text-bg-warning mt-1">{{ item.get_state_display }}</span>
-                        {% else %}
-                        <span class="badge rounded-pill text-bg-danger mt-1">{{ item.get_state_display }}</span>
-                        {% endif %}
-                    </h5>
+    <div class="row text-center">
+        <div class="col-md-12" id="selectedTagsGroup">
+            {% for tag in tags %}
+            <input type="checkbox" value="{{ tag.name }}" class="selectedTag-checkbox btn-check" id="selectedTag{{tag.pk}}" checked>
+            <label class="btn btn-outline-primary selectedTag-btn mb-2" for="selectedTag{{tag.pk}}" style="--bs-btn-color: {{ tag.color }}; --bs-btn-active-bg: {{ tag.color }}; --bs-btn-border-color: {{ tag.color }}; --bs-btn-active-border-color: {{ tag.color }};">{{ tag.name }} {% if request.user.is_staff %} <a href="{% url 'edit-tag-detail' pk=tag.pk %}" target="_blank" style="vertical-align: middle;"><i class="fa-solid fa-edit bg-primary text-white rounded-2 p-1"></i></a> {% endif %}</label>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+<div class="row" id="item-list">
+    {% for item in items %}
+    <div class="col-xl-2 col-lg-4 col-md-6 my-1" id="item{{item.pk}}">
+        <div class="card tag-card">
+            
+            {% if request.user.is_staff %}
+            <div class="card-header">
+                <button class="btn btn-danger float-end mx-1" onclick="confirmDeleteItem({{ item.pk }})"><i class="fa-solid fa-trash"></i></button>
+                <a class="btn btn-warning float-end" href="{% url 'edit-item-detail' pk=item.pk %}" target="_blank"><i class="fa-solid fa-edit"></i></a>
+            </div>
+            {% endif %}
+            <img src="/static/media{{item.image}}" class="card-img-top m-2">
+            <div class="card-body">
+                <h5 class="card-title fs-5 text-center">
+                    {{ item.name }}
                     <br>
+                    {% if item.state >= 3 %}
+                    <span class="badge rounded-pill text-bg-success mt-1">{{ item.get_state_display }}</span>
+                    {% elif item.state < 3 and item.state >= 1%}
+                    <span class="badge rounded-pill text-bg-warning mt-1">{{ item.get_state_display }}</span>
+                    {% else %}
+                    <span class="badge rounded-pill text-bg-danger mt-1">{{ item.get_state_display }}</span>
+                    {% endif %}
+                </h5>
+                <br>
+            </div>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item">
                     {% for tag in item.tags.all %}
-                    <span class="badge text-light fs-6" style="background-color: {{ tag.color }};"> {{ tag.name }}</span>
+                    <span class="badge text-light fs-6 my-1" style="background-color: {{ tag.color }};"> {{ tag.name }}</span>
                     {% endfor %}
-                </div>
+                </li>              
+                <li class="list-group-item">
+                    <div class="input-group input-group-md">
+                        <input aria-describedby="place-order" type="number" class="form-control place-order-input" id="itemOrder{{item.pk}}" value=0 min="0" max="{{ item.max_stock }}" {% if item.now_available == 0 or item.availability != 1 %} disabled {% endif %}>
+                        <span class="input-group-text col-sm-8 bg-light" id="place-order"> réservé(s)</span>
+                    </div>
+                </li>
                 {% if item.availability == 1 %}
                 <div class="card-footer text-light d-inline-flex align-items-center">
                     <input type="number" class="form-control availability-selector w-25 me-4 {% if not request.user.is_staff %} d-none {% endif %}" id="stockSelectorItem{{ item.pk }}" value="{{ item.now_available }}" min="0" max="{{ item.max_stock }}"> {% if not request.user.is_staff %} {{ item.now_available }} {% endif %} / {{ item.max_stock}} disponible(s)
@@ -74,18 +99,27 @@ Magasin
                     Temporairement indisponible
                 </div>
                 {% endif %}
-            </div>
+            </ul>
         </div>
-        {% endfor %}
     </div>
+    {% endfor %}
+</div>
 </div>
 
-{% if request.user.is_staff %}
-<button class="sticky-add-button btn btn-success" type="button" data-bs-toggle="modal" data-bs-target="#addItemForm">
-    <i class="fa-solid fa-plus"></i>
-    Ajouter un objet au magasin
-</button>
-{% endif %}
+<div class="sticky-bottom-buttons">
+    <a class="btn btn-info position-relative {% if not request.user.is_authenticated or not completeProfile %} disabled {% endif %}" id="orderButton" href="/magasin/commande">
+        <i class="fa-solid fa-basket-shopping"></i>
+        Voir ma réservation
+        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="nbOrderedItems">0</span>
+    </a>
+    
+    {% if request.user.is_staff %}
+    <button class="btn btn-success" type="button" data-bs-toggle="modal" data-bs-target="#addItemForm">
+        <i class="fa-solid fa-plus"></i>
+        Ajouter un objet au magasin
+    </button>
+    {% endif %}
+</div>
 
 <!-- ADD ITEM MODAL -->
 <div class="modal fade" id="addItemForm" data-bs-backdrop="static" data-bs-keyboard="true" tabindex="-1" aria-labelledby="addItemModalLabel" aria-hidden="true">

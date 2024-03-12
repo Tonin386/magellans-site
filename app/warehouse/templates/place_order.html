@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}
+Magasin - Réservation
+{% endblock %}
+
+{% block nav %}
+{% include "nav.html" %}
+{% endblock %}
+
+{% block content %}
+
+{% if tooManyOrders %}
+<div class="alert alert-danger w-75 my-3 mx-auto">
+    <p>
+        Votre demande n'a pas été prise en compte car vous avez passée une commande il y a moins d'une heure. Veuillez réessayer plus tard.
+        <hr>
+        Nous nous excusons pour la gêne occasionée.
+    </p>
+</div>
+{% elif success %}
+<div class="alert alert-success w-75 my-3 mx-auto">
+    <p>Votre demande a bien été envoyée à Magellans. Vous avez reçu un email avec le récapitualif de votre demande. </p>
+    {{ startDate }} {{ endDate }} {{ message }} {{ orderText }}
+</div>
+{% else %}
+<div class="alert alert-danger w-75 my-3 mx-auto">
+    <p>
+        Votre demande n'a pas aboutie pour une raison inconnue. Veuillez revenir en arrière et réessayer. Si cela ne fonctionne pas, contactez <a href="mailto:contact@magellans.fr" class="text-info">contact@magellans.fr</a> directement. 
+        <hr>
+        Nous nous excusons pour la gêne occasionée.
+    </p>
+</div>
+{% endif %}
+
+{% endblock %}
