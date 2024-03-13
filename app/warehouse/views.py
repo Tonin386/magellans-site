@@ -2,6 +2,7 @@ from django.views.decorators.http import require_POST
 from django.template.loader import render_to_string
 from django.views.generic.edit import UpdateView
 from django.db.models.base import Model as Model
+from django.utils.safestring import mark_safe
 from django.db.models.query import QuerySet
 from datetime import datetime, timedelta
 from django.core.mail import send_mail
@@ -43,7 +44,7 @@ def placeOrder(request):
     if 'lastOrder' in request.COOKIES:
         lastOrderTime = datetime.strptime(request.COOKIES['lastOrder'], "%Y-%m-%d %H:%M:%S")
         timePassed = datetime.now() - lastOrderTime
-        if not timePassed > 3600:
+        if not timePassed.seconds > 3600:
             tooManyOrders = True
             return render(request, "place_order.html", locals())
     
@@ -51,7 +52,7 @@ def placeOrder(request):
         try:
             startDate = form.cleaned_data['start_date'].strftime("%d/%m/%Y")
             endDate = form.cleaned_data['end_date'].strftime("%d/%m/%Y")
-            message = request.POST.get('message')
+            message = mark_safe(request.POST.get('message'))
             orderText = request.POST.get('order_text').replace("\\n", "\n")
             
             subject = "Demande de réservation de matériel"
