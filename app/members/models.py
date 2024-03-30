@@ -9,8 +9,8 @@ ROLE_CHOICES = [
     ('G', "Gestionnaire magasin"),
     ('T', "Trésorier.ère"),
     ('S', "Secrétaire"),
-    ('M', "Membre"),
-    ('E', "Externe"),
+    ('M', "Membre Magellans"),
+    ('E', "Inscrit site"),
     ('O', 'Organisation') #Association, partenaire, entreprise...
 ]
 
@@ -19,14 +19,14 @@ GENDER_CHOICES = [
     ('F', 'Femme'),
     ('O', 'Autre'),
 ]
-
 class MemberManager(BaseUserManager):
     def create_user(self, email, password=None, **extra_fields):
         if not email:
             raise ValueError('The email field must be set')
         email = self.normalize_email(email)
         token = ''.join(secrets.choice(string.ascii_letters + string.digits) for _ in range(128))
-        user = self.model(email=email, api_token=token, **extra_fields)
+        profile = Person.objects.create(email=email, **extra_fields)
+        user = self.model(email=email, api_token=token, person=profile, **extra_fields)
         user.set_password(password)
         user.save(using=self._db)
         return user
@@ -41,19 +41,19 @@ class MemberManager(BaseUserManager):
             raise ValueError('Superuser must have is_superuser=True.')
 
         return self.create_user(email, password, **extra_fields)
-
+    
 class Member(AbstractBaseUser, PermissionsMixin):
+    first_name = models.CharField(max_length=30, null=True, blank=True, verbose_name="Prénom")
+    last_name = models.CharField(max_length=30, null=True, blank=True, verbose_name="Nom")
+    phone = models.CharField(max_length=15, blank=True, verbose_name="N° téléphone")
+    gender = models.CharField(max_length=1, choices=GENDER_CHOICES, null=True, blank=True, verbose_name="Sexe")
     email = models.EmailField(unique=True, verbose_name="Courriel")
-    first_name = models.CharField(max_length=30, blank=True, verbose_name="Prénom")
-    last_name = models.CharField(max_length=30, blank=True, verbose_name="Nom")
     is_active = models.BooleanField(default=True, verbose_name="Actif")
     is_staff = models.BooleanField(default=False, verbose_name="CA")
     date_joined = models.DateTimeField(auto_now_add=True, verbose_name="Date d'inscription")
     donation = models.FloatField(default=0, verbose_name="Montant donation")
-    phone = models.CharField(max_length=15, blank=True, verbose_name="N° téléphone")
     account = models.FloatField(default=0, verbose_name="Statut compte")
     role = models.CharField(max_length=1, choices=ROLE_CHOICES, default='E', verbose_name="Role")
-    gender = models.CharField(max_length=1, choices=GENDER_CHOICES, blank=True, verbose_name="Sexe")
     api_token = models.CharField(max_length=128, null=True, blank=True, editable=False)
 
     objects = MemberManager()
@@ -65,11 +65,22 @@ class Member(AbstractBaseUser, PermissionsMixin):
         verbose_name = "Membre"
         verbose_name_plural = "Membres"
 
+    def save(self, *args, **kwargs):
+        created = False
+        if not hasattr(self, "site_person"):
+            site_person = Person.objects.create(first_name="Inconnu", last_name="Inconnu", email="Inconnu", gender="O")
+            self.site_person = site_person
+            created = True
+        super().save(*args, **kwargs)
+        if created:
+            site_person.site_profile = self
+            site_person.save()
+
     def __str__(self):
-        return "%s %s (%s)" % (self.first_name, self.last_name, self.email)
+        return "%s %s (%s)" % (self.site_person.first_name, self.site_person.last_name, self.email)
     
     def phone_formatted(self):
-        return ' '.join(self.phone[i:i+2] for i in range(0, len(self.phone), 2))
+        return ' '.join(self.site_person.phone[i:i+2] for i in range(0, len(self.site_person.phone), 2))
     
     def account_formatted(self):
         if self.account == 0:
@@ -80,3 +91,55 @@ class Member(AbstractBaseUser, PermissionsMixin):
         if self.donation == 0:
             return "±0.00€"
         return "+%.2f€" % self.donation if self.donation > 0 else "-%.2f€" % abs(self.donation)
+    
+    def first_name(self):
+        return self.site_person.first_name
+    
+    def last_name(self):
+        return self.site_person.last_name
+    
+    def gender(self):
+        return self.site_person.get_gender_display()
+    
+    def phone(self):
+        return self.site_person.phone
+    
+class UnregisteredMember(models.Model):
+    class Meta:
+        verbose_name = "Externe site"
+        verbose_name_plural = "Externes site"
+
+    def __str__(self):
+        return "%s %s (%s)" % (self.ext_person.first_name, self.ext_person.last_name, self.ext_person.email)
+    
+    def phone_formatted(self):
+        return ' '.join(self.ext_person.phone[i:i+2] for i in range(0, len(self.ext_person.phone), 2))
+
+    def first_name(self):
+        return self.ext_person.first_name
+    
+    def last_name(self):
+        return self.ext_person.last_name
+    
+    def gender(self):
+        return self.ext_person.get_gender_display()
+    
+    def phone(self):
+        return self.ext_person.phone
+    
+    def email(self):
+        return self.ext_person.email
+
+class Person(models.Model):
+    email = models.EmailField(verbose_name="Courriel", null=True, blank=True)
+    first_name = models.CharField(max_length=30, null=True, blank=True, verbose_name="Prénom")
+    last_name = models.CharField(max_length=30, null=True, blank=True, verbose_name="Nom")
+    phone = models.CharField(max_length=15, blank=True, verbose_name="N° téléphone")
+    gender = models.CharField(max_length=1, choices=GENDER_CHOICES, null=True, blank=True, verbose_name="Sexe")
+    site_profile = models.OneToOneField(Member, on_delete=models.CASCADE, null=True, blank=True, verbose_name="Profil site lié", related_name="site_person")
+    ext_profile = models.OneToOneField(UnregisteredMember, on_delete=models.CASCADE, null=True, blank=True, verbose_name="Profil externe lié", related_name="ext_person")
+    class Meta:
+        verbose_name = "Personne"
+        
+    def __str__(self):
+        return "%s %s (%s)" % (self.first_name, self.last_name, self.email)

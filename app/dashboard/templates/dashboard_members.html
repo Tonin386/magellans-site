@@ -1,0 +1,151 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}
+Dashboard utilisateurs
+{% endblock %}
+
+{% block nav %}
+{% include "nav.html" %}
+{% endblock %}
+
+{% block content %}
+
+<!-- Callbacks function -->
+<script>
+    var callback_addExtUser = function(response) {};
+    var callback_delExtUser = function(response) {};
+</script>
+
+<div class="container-fluid p-3">
+    <h1 class="display-5 text-center">Dashboard utilisateurs</h1>
+    <div class="row mt-5 pt-5">
+        <div class="col-lg-12">
+            <table class="table table-striped align-middle display responsive nowrap" id="members-table">
+                <thead>
+                    <tr>
+                        <th scope="col" style="max-width: 80px;;"></th>
+                        <th scope="col" style="max-width: 100px;">ID Membre</th>
+                        <th scope="col">Nom</th>
+                        <th scope="col">Prénom</th>
+                        <th scope="col">Email</th>
+                        <th scope="col">Phone</th>
+                        <th scope="col">Rôle</th>
+                        <th scope="col">Sexe</th>
+                    </tr>
+                </thead>
+                <tbody class="table-group-divider">
+                    
+                    {% for member in members %}
+                    <tr id="member{{member.pk}}">
+                        <td>
+                            <a class="btn btn-warning" href="{% url 'member-detail' pk=member.pk %}"><i class="fa-eye fa-solid text-light"></i></a>
+                        </td>
+                        <td>{{ member.pk }}</td>
+                        <td>{{ member.last_name }}</td>
+                        <td>{{ member.first_name }}</td>
+                        <td>{{ member.email }}</td>
+                        <td>{{ member.phone_formatted }}</td>
+                        <td {% if member.is_staff %} class="bg-success" {% elif member.role == 'M' %} class="bg-primary" {% elif member.role == 'E' %} class="bg-info" {% endif %}>{{ member.get_role_display }}</td>
+                        <td>{{ member.gender }}</td>
+                    </tr>
+                    {% endfor %}
+                    
+                    {% for ext_user in external_users %}
+                    <tr id="extUser{{ext_user.pk}}">
+                        <td>
+                            <a class="btn btn-warning" href="{% url 'member-detail' pk=ext_user.pk %}">
+                                <i class="fa-eye fa-solid text-light"></i>
+                            </a>
+                            <button class="btn btn-danger" onclick="deleteExtUser({{ ext_user.pk }}, callback_delExtUser)">
+                                <i class="fa-trash fa-solid text-light"></i>
+                            </button>
+                        </td>
+                        <td>X</td>
+                        <td>{{ ext_user.last_name }}</td>
+                        <td>{{ ext_user.first_name }}</td>
+                        <td>{{ ext_user.email }}</td>
+                        <td>{{ ext_user.phone }}</td>
+                        <td class="bg-danger">Externe site</td>
+                        <td>{{ ext_user.gender }}</td>
+                    </tr>
+                    {% endfor %}
+                    
+                </tbody>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+
+<div class="sticky-bottom-buttons">
+    <button class="btn btn-success" type="button" data-bs-toggle="modal" data-bs-target="#addExtUserForm">
+        <i class="fa-solid fa-plus"></i>
+        Ajouter un profil externe
+    </button>
+</div>
+
+<!-- ADD EXTERNAL USER MODAL -->
+<div class="modal fade" id="addExtUserForm" data-bs-backdrop="static" data-bs-keyboard="true" tabindex="-1" aria-labelledby="addExtUserModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-md">
+        <div class="modal-content">
+            <div class="modal-header bg-primary">
+                <h1 class="modal-title fs-5" id="addExtUserModalLabel">Ajouter un profil d'utilisateur externe</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Annuler"></button>
+            </div>
+            <div class="modal-body">
+                <div class="input-group input-group-md mt-3">
+                    <input type="text" class="form-control" id="ext-user_first_name" placeholder="Prénom">
+                </div>
+                <div class="input-group input-group-md mt-3">
+                    <input type="text" class="form-control" id="ext-user_last_name" placeholder="Nom">
+                </div>
+                <div class="input-group input-group-md mt-3">
+                    <input type="email" class="form-control" id="ext-user_email" placeholder="Email">
+                </div>
+                <div class="input-group input-group-md mt-3">
+                    <input type="text" class="form-control" id="ext-user_phone" placeholder="Téléphone">
+                </div>
+                <div class="input-group input-group-md mt-3">
+                    <select class="form-control" id="ext-user_gender" >
+                        <option value="">Sexe...</option>
+                        <option value="F">Femme</option>
+                        <option value="M">Homme</option>
+                        <option value="O">Autre</option>
+                    </select>
+                    
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Annuler</button>
+                    <button type="button" class="btn btn-success" onclick="addExtUser(callback_addExtUser)" data-bs-dismiss="modal">Ajouter l'utilisateur</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function() {
+        var table = new DataTable('#members-table', {
+            order: [[1, "asc"]],
+            columnDefs: [
+                {responsivePriority: 1, targets: 0},
+                {responsivePriority: 1, targets: 2},
+                {responsivePriority: 1, targets: 3},
+                {responsivePriority: 2, targets: 4},
+            ]
+        });
+        
+        callback_addExtUser = function(response) {
+            window.location.reload();
+        };
+        
+        callback_delExtUser = function(response) {
+            let id = response.id_row;
+            table.row(id).remove().draw(false);
+        };
+    });
+</script>
+<script src="{% static 'js/api/api.js' %}"></script>
+<script src="{% static 'js/dashboard/members.js' %}"></script>
+
+{% endblock %}

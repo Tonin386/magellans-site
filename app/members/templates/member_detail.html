@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block title %}
 Profil
@@ -25,7 +26,26 @@ Profil
                     </tr>
                     <tr>
                         <th>Rôle</th>
-                        <td>{{ object.get_role_display }}</td>
+                        <td>
+                            <div class="input-group input-group-md">
+                                <div class="form-control"> 
+                                    <select style="width: 100%;" id="select_role" pk="{{ object.pk }}">
+                                        <optgroup label="CA">
+                                            <option value="P" {% if object.role == "P" %} selected {% endif %}>Président.e</option>
+                                            <option value="C" {% if object.role == "C" %} selected {% endif %}>Communication</option>
+                                            <option value="G" {% if object.role == "G" %} selected {% endif %}>Gestionnaire magasin</option>
+                                            <option value="T" {% if object.role == "T" %} selected {% endif %}>Trésorier.ère</option>
+                                            <option value="S" {% if object.role == "S" %} selected {% endif %}>Secrétaire</option>
+                                        </optgroup>
+                                        <optgroup label="Membres & autres">
+                                            <option value="M" {% if object.role == "M" %} selected {% endif %}>Membre Magellans</option>
+                                            <option value="E" {% if object.role == "E" %} selected {% endif %}>Inscrit site (par défaut)</option>
+                                            <option value="O" {% if object.role == "O" %} selected {% endif %}>Organisation</option>
+                                        </optgroup>
+                                    </select>
+                                </div>
+                            </div>
+                        </td>
                     </tr>
                     <tr class="{% if object.account >= 0 %}bg-success{% else %}bg-danger{% endif %}">
                         <th>Compte</th>
@@ -53,42 +73,23 @@ Profil
                     </tr>
                 </table>
             </div>
-            <div class="col-lg-12 text-center">
-                <a href="{% url 'password_change' %}" class="btn btn-secondary w-25"><i class="fa-solid fa-gear"></i> Changer de mot de passe</a>
-                <button class="btn btn-warning w-25" data-bs-target="#editProfileForm" data-bs-toggle="modal"><i class="fa-solid fa-edit"></i> Modifier mon profil</>
-            </div>
         </div>
     </div>
 </div>
 
-<!-- EDIT PROFILE MODAL -->
-<div class="modal fade" id="editProfileForm" data-bs-keyboard="true" tabindex="-1" aria-labelledby="editProfileLabel" aria-hidden="true">
-    <div class="modal-dialog modal-xl">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h1 class="modal-title fs-5" id="editProfileLabel">Modifier mon profil</h1>
-            </div>
-            <div class="modal-body">
-                <form method="post" class="row justify-content-center">
-                    {% csrf_token %}
-                    {% for field in form %}
-                    <div class="col-lg-11 my-2">
-                        <div class="input-group">
-                            <span class="input-group-text bg-primary text-light col-xl-2 fw-bold">{{ field.label }}</span>
-                            {{ field }}
-                        </div>
-                    </div>
-                    {% endfor %}
-                    <div class="col-md-3">
-                        <button type="submit" class="btn btn-success btn-large w-100 p-2 fs-5 my-1">Enregistrer</button>
-                    </div>
-                    <div class="col-md-3">
-                        <a class="btn btn-danger btn-large w-100 p-2 fs-5 my-1" data-bs-dismiss="modal">Annuler</a>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
+<script src="{% static 'js/api/api.js' %}"></script>
+<script src="{% static 'js/dashboard/members.js' %}"></script>
+<script>
+    $(document).ready(function() {
+        var select_role = $('#select_role').select2();
+
+        select_role.on("change", function() {
+            var value = $(this).val();
+            var pk = $(this).attr("pk");
+
+            editUserRole(pk, value);
+        })
+    });
+</script>
 
 {% endblock %}

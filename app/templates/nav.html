@@ -11,17 +11,40 @@
     </button>
     <div class="collapse navbar-collapse justify-content-end" id="navbarResponsive">
       <ul class="navbar-nav text-center">
+        {% if request.user.is_superuser %}
         <li class="nav-item">
-          <a class="nav-link" href="{% url 'home' %}">
-            Accueil
+          <a class="nav-link" href="{% url 'admin:index' %}">
+            Administration site
           </a>
         </li>
+        {% endif %} 
         {% if request.user.is_authenticated %}
         <li class="nav-item">
           <a class="nav-link" href="{% url 'members' %}">
-            Accueil membres
+            Espace membres
           </a>
         </li>
+        {% if request.user.is_staff %}
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            Outils CA
+          </a>
+          <ul class="dropdown-menu">
+            <li>
+              <a class="dropdown-item" href="{% url 'dashboard-home' %}">Dashboard</a>
+            </li>
+            <li>
+              <a class="dropdown-item" href="{% url 'dashboard-members' %}">Gestion des profils utilisateurs</a>
+            </li>
+            <li>
+              <a class="dropdown-item" href="{% url 'dashboard-projects' %}">Gestion des projets</a>
+            </li>
+            <li>
+              <a class="dropdown-item" href="{% url 'bank' %}">Trésorerie</a>
+            </li>
+          </ul>
+        </li>
+        {% endif %}
         {% endif %}
         <li class="nav-item">
           <a class="nav-link" href="{% url 'warehouse' %}">
@@ -35,9 +58,21 @@
             Mon profil
           </a>
         </li>
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            Formulaires
+          </a>
+          <ul class="dropdown-menu">
+            <li>
+              <a class="dropdown-item" href="{% url 'create-invoice' %}">Editer une note de frais</a>
+            </li>
+            <li>
+              <a class="dropdown-item" href="{% url 'create-funding-request' %}">Demande d'aide à projet</a>
+            </li>
+          </ul>
+        </li>
         <li class="nav-item">
             {% logout_form %}
-          </a>
         </li>
         {% else %}
         <li class="nav-item">
@@ -51,14 +86,6 @@
           </a>
         </li>
         {% endif %}
-
-        {% if request.user.is_superuser %}
-        <li class="nav-item">
-          <a class="nav-link" href="{% url 'admin:index' %}">
-            Administration site
-          </a>
-        </li>
-        {% endif %} 
       </ul>
     </div>
   </div>

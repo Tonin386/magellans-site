@@ -1,7 +1,8 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block title %}
-Gestionnaire de projets
+Dashboard
 {% endblock %}
 
 {% block nav %}
@@ -9,4 +10,38 @@ Gestionnaire de projets
 {% endblock %}
 
 {% block content %}
+
+<div class="container-fluid p-3">
+    <h1 class="display-3 text-center">Dashboard de Magellans</h1>
+    <div class="row mt-5 pt-5">
+        <div class="card border-0 col-xl-2 m-auto mt-3">
+            <div class="card-body text-center hoverable-card">
+                <div class="team-member">
+                    <img src="{% static 'img/icons/users-gear-solid.svg' %}" class="rounded-pill bg-primary" alt="Icône magasin">
+                </div>
+                <h4 class="fs-5">Gestion des profils utilisateurs</h4>
+                <a href="{% url 'dashboard-members' %}" class="stretched-link"></a>
+            </div>
+        </div>
+        <div class="card border-0 col-xl-2 m-auto mt-3">
+            <div class="card-body text-center hoverable-card">
+                <div class="team-member">
+                    <img src="{% static 'img/icons/diagram-project-solid.svg' %}" class="rounded-pill bg-primary" alt="Icône magasin">
+                </div>
+                <h4 class="fs-5">Gestion des projets</h4>
+                <a href="{% url 'dashboard-projects' %}" class="stretched-link"></a>
+            </div>
+        </div>
+        <div class="card border-0 col-xl-2 m-auto mt-3">
+            <div class="card-body text-center hoverable-card">
+                <div class="team-member">
+                    <img src="{% static 'img/icons/money-check-dollar-solid.svg' %}" class="rounded-pill bg-primary" alt="Icône magasin">
+                </div>
+                <h4 class="fs-5">Trésorerie</h4>
+                <a href="{% url 'bank' %}" class="stretched-link"></a>
+            </div>
+        </div>
+    </div>
+</div>
+
 {% endblock %}

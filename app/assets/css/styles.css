@@ -521,12 +521,12 @@ header.masthead .masthead-heading {
   }
 }
 .team-member {
-  margin-bottom: 3rem;
+  margin-bottom: 2rem;
   text-align: center;
 }
 .team-member img {
-  width: 14rem;
-  height: 14rem;
+  width: 10rem;
+  height: 10rem;
   border: 0.5rem solid rgba(0, 0, 0, 0.1);
 }
 .team-member h4, .team-member .h4 {
@@ -627,4 +627,57 @@ footer {
 .hoverable-card:hover {
   background-color: var(--bs-primary)!important;
   color: white!important;
+}
+
+.dropdown-menu {
+  --bs-dropdown-link-active-bg: #ffc800!important;
+}
+
+.sticky-bottom-buttons {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 1000;
+}
+
+.active>.page-link {
+  --bs-pagination-active-bg: #ffc800;
+  --bs-pagination-active-border-color: #ffc800;
+}
+
+.btn-outline-primary {
+  --bs-btn-color: #ffc800;
+  --bs-btn-border-color: #ffc800;
+  --bs-btn-hover-bg: #ffc800;
+  --bs-btn-hover-border-color: #ffc800;
+  --bs-btn-active-bg: #ffc800;
+  --bs-btn-disabled-color:#ffc800;
+  --bs-btn-disabled-border-color:#ffc800;
+}
+
+.form-check-input:checked {
+  background-color: var(--bs-primary);
+  border-color: var(--bs-primary);
+}
+
+.background-text {
+  position: relative;
+  background-color: #fff;
+  color: rgba(0, 0, 0, 0.5);
+}
+
+.background-text::before {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+}
+
+.hidden-file-input {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  opacity: 0;
 }

@@ -170,6 +170,11 @@ video/
 projets/
 volumes/
 migrations/
+app/assets/media/funding_requests/
 app/assets/media/img/items/*
 !app/assets/media/img/items/default.png
+app/assets/media/img/projects/*
+!app/assets/media/img/projects/default.png
+app/assets/media/img/proofs/*
+!app/assets/media/img/proofs/default.png
 !migrations/__init__.py

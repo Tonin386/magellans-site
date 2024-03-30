@@ -1,0 +1,246 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}
+Projet {{ object.name }}
+{% endblock %}
+
+{% block nav %}
+{% include "nav.html" %}
+{% endblock %}
+
+{% block content %}
+
+<script>
+    var callback_addExtUser = function(response) {};
+    var callback_editProject = function(response) {};
+</script>
+
+<div class="container p-3">
+    <h1 class="display-5 text-center mb-2"> Projet {{object.name}}</h1>
+    <div class="row">
+        <div class="col-xl-4 my-2">
+            <img class="img-fluid d-block mx-auto" src="{{ MEDIA_URL }}{{ object.poster.url }}" alt="{{ object.name }} poster" />
+        </div>
+        <div class="col-xl-8 my-2 text-xl-start text-sm-center">
+            <p>
+                {{ object.short_desc }}
+            </p>
+            <hr>
+            <p>
+                {{ object.desc }}
+            </p>
+            <hr>
+            <ul class="list-group">
+                <li class="list-group-item">
+                     Genre : <strong>{{ object.genre }}</strong>
+                </li>
+                <li class="list-group-item">
+                     Réalisateur.ice : <strong>{{ object.director }}</strong>
+                </li>
+                <li class="list-group-item">
+                     Responsable financier : <strong>{{ object.money_handler }}</strong>
+                </li>
+                <li class="list-group-item">
+                     Date tournage : <strong>{{ object.shoot_date }}</strong>
+                </li>
+                <li class="list-group-item">
+                     Date sortie : <strong>{{ object.release_date }}</strong>
+                </li>
+                <li class="list-group-item">
+                    Confidentialité : <strong>{% if project.public %} Public {% else %} Privée {% endif %}</strong>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+
+{% if request.user.is_staff %}
+
+<div class="sticky-bottom-buttons">
+    <button class="btn btn-warning" type="button" data-bs-toggle="modal" data-bs-target="#editProjectForm">
+        <i class="fa-solid fa-edit"></i>
+        Modifier le projet
+    </button>
+</div>
+
+<!-- ADD EXTERNAL USER MODAL -->
+<div class="modal fade" id="addExtUserForm" data-bs-backdrop="static" data-bs-keyboard="true" tabindex="-1" aria-labelledby="addExtUserModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-md">
+        <div class="modal-content">
+            <div class="modal-header bg-primary">
+                <h1 class="modal-title fs-5" id="addExtUserModalLabel">Ajouter un profil d'utilisateur externe</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Annuler"></button>
+            </div>
+            <div class="modal-body">
+                <div class="input-group input-group-md mt-3">
+                    <input type="text" class="form-control" id="ext-user_first_name" placeholder="Prénom">
+                </div>
+                <div class="input-group input-group-md mt-3">
+                    <input type="text" class="form-control" id="ext-user_last_name" placeholder="Nom">
+                </div>
+                <div class="input-group input-group-md mt-3">
+                    <input type="email" class="form-control" id="ext-user_email" placeholder="Email">
+                </div>
+                <div class="input-group input-group-md mt-3">
+                    <input type="text" class="form-control" id="ext-user_phone" placeholder="Téléphone">
+                </div>
+                <div class="input-group input-group-md mt-3">
+                    <select class="form-control" id="ext-user_gender" >
+                        <option value="">Sexe...</option>
+                        <option value="F">Femme</option>
+                        <option value="M">Homme</option>
+                        <option value="O">Autre</option>
+                    </select>
+                    
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-bs-target="#editProjectForm" data-bs-toggle="modal" data-bs-dismiss="modal">Annuler</button>
+                    <button type="button" class="btn btn-success" onclick="addExtUser(callback_addExtUser)" data-bs-target="#editProjectForm" data-bs-toggle="modal" data-bs-dismiss="modal">Ajouter l'utilisateur</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- EDIT PROJECT MODAL -->
+<div class="modal fade" id="editProjectForm" data-bs-backdrop="static" data-bs-keyboard="true" tabindex="-1" aria-labelledby="editProjectModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header bg-primary">
+                <h1 class="modal-title fs-5" id="editProjectModalLabel">Modifier le projet</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Annuler"></button>
+            </div>
+            <div class="modal-body">
+                <div class="input-group input-group-md mt-3">
+                    <input type="text" class="form-control" id="project_name" placeholder="Nom" value="{{object.name}}">
+                </div>
+                <div class="input-group input-group-md mt-3">
+                    <span class="input-group-text col-xl-2 text-dark" id="span_select_director">Réalisateur.ice</span>
+                    <div class="form-control"> 
+                        <select aria-describedby="span_select_director" style="width: 100%;" id="select_director">
+                            <optgroup label="Inscrits">
+                                {% for person in site_persons %}
+                                <option value="{{person.pk}}" {% if object.director.pk == person.pk %} selected {% endif %}>{{ person.first_name }} {{ person.last_name }} ({{ person.email }})</option>
+                                {% endfor %}
+                            </optgroup>
+                            <optgroup label="Externes">
+                                {% for person in ext_persons %}
+                                <option value="{{person.pk}}" {% if object.director.pk == person.pk %} selected {% endif %}>{{ person.first_name }} {{ person.last_name }} ({{ person.email }})</option>
+                                {% endfor %}
+                            </optgroup>
+                        </select>
+                    </div>
+                    <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addExtUserForm">Créer un profil</button>
+                </div>
+                <div class="input-group input-group-md mt-3">
+                    <span class="input-group-text col-xl-2 text-dark" id="span_select_money_handler">Respo. financier</span>
+                    <div class="form-control" aria-describedby="span_select_money_handler">
+                        <select style="width: 100%;" id="select_money_handler">
+                            <optgroup label="Inscrits">
+                                {% for person in site_persons %}
+                                <option value="{{person.pk}}" {% if object.money_handler.pk == person.pk %} selected {% endif %}>{{ person.first_name }} {{ person.last_name }} ({{ person.email }})</option>
+                                {% endfor %}
+                            </optgroup>
+                            <optgroup label="Externes">
+                                {% for person in ext_persons %}
+                                <option value="{{person.pk}}" {% if object.money_handler.pk == person.pk %} selected {% endif %}>{{ person.first_name }} {{ person.last_name }} ({{ person.email }})</option>
+                                {% endfor %}
+                            </optgroup>
+                        </select>
+                    </div>
+                    <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addExtUserForm">Créer un profil</button>
+                </div>
+                <div class="input-group input-group-md mt-3">
+                    <input type="text" class="form-control" id="project_genre" placeholder="Genre" value="{{object.genre}}">
+                </div>
+                <div class="input-group input-group-md mt-3">
+                    <input type="text" class="form-control" id="project_short_desc" placeholder="Description courte" value="{{object.short_desc}}">
+                </div>
+                <div class="input-group input-group-md mt-3">
+                    <textarea class="form-control" id="project_desc" placeholder="Description complète">{{ object.desc }}</textarea>
+                </div>
+                <div class="input-group input-group-md mt-3">
+                    <span class="input-group-text col-xl-2 text-dark" id="span_shoot_date">Date tournage</span>
+                    <input type="date" aria-describedby="span_shoot_date" class="form-control" id="project_shoot_date" value="{{ object.shoot_date|date:"Y-m-d" }}">
+                </div>
+                <div class="input-group input-group-md mt-3">
+                    <span class="input-group-text col-xl-2 text-dark" id="span_release_date">Date sortie</span>
+                    <input type="date" aria-describedby="span_release_date" class="form-control" id="project_release_date" value="{{ object.release_date|date:"Y-m-d" }}">
+                </div>
+                <div class="input-group input-group-md mt-3">
+                    <span class="input-group-text col-xl-2 text-dark" id="span_poster">Poster</span>
+                    <input aria-describedby="span_poster" type="file" class="form-control" id="project_poster">
+                </div>
+                <div class="input-group input-group-md mt-3">
+                    <span class="input-group-text col-xl-2 text-dark" id="span_options">Options</span>
+                    <div class="form-control" aria-describedby="span_options">
+                        <div class="form-check">
+                            <label class="form-check-label text-dark" id="label_public">Public</label>
+                            <input class="form-check-input" type="checkbox" id="project_public" {% if object.public %} checked {% endif %}>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Annuler</button>
+                <button type="button" class="btn btn-success" onclick="editProject('{{ object.slug }}', callback_editProject)" data-bs-dismiss="modal">Modifier le projet</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function() {
+        
+        var select_director = $('#select_director').select2({
+            placeholder: "Sélectionner un.e réalisateur.ice",
+            dropdownParent: $('#editProjectForm'),
+        });
+        
+        var select_money_handler = $('#select_money_handler').select2({
+            placeholder: "Sélectionner un.e responsable financier",
+            dropdownParent: $('#editProjectForm'),
+        });
+
+        callback_addExtUser = function(response) {
+            json_response = JSON.parse(response.data);
+
+            let value = json_response.pk;
+            let text = json_response.first_name + " " + json_response.last_name + " " + "(" + json_response.email +")";
+
+            select_director.find('optgroup[label="Externes"]').append($('<option>', {
+                value: value,
+                text: text    
+            }));
+
+            select_money_handler.find('optgroup[label="Externes"]').append($('<option>', {
+                value: value,
+                text: text    
+            }));
+
+            select_director = $('#select_director').select2({
+                placeholder: "Sélectionner un.e réalisateur.ice",
+                dropdownParent: $('#editProjectForm'),
+            });
+            
+            select_money_handler = $('#select_money_handler').select2({
+                placeholder: "Sélectionner un.e responsable financier",
+                dropdownParent: $('#editProjectForm'),
+            });
+        };
+
+        callback_editProject = function(response) {
+            setTimeout(function() {window.location.reload()}, 2500);
+        };
+    });
+    
+</script>
+<script src="{% static 'js/api/api.js' %}"></script>
+<script src="{% static 'js/dashboard/members.js' %}"></script>
+<script src="{% static 'js/dashboard/projects.js' %}"></script>
+
+{% endif %}
+
+{% endblock %}

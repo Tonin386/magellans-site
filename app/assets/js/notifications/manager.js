@@ -10,7 +10,7 @@ function createNotification(id, title, application, text, status) {
     // Construct the toast HTML
     let toastHTML = '<div id="' + toastId + '" class="toast bg-dark text-white" role="alert" aria-live="assertive" aria-atomic="true" data-delay="5000">' +
                     '  <div class="toast-header bg-dark">' +
-                    '    <strong class="me-auto">' + title + '</strong>' +
+                    '    <span class="me-auto text-light">' + title + '</span>' +
                     '    <small> ' + application + '</small>' +
                     '    <button type="button" class="btn-close" onclick="closeNotification(\'#'+ toastId +'\')">' +
                     '    </button>' +
@@ -27,12 +27,14 @@ function createNotification(id, title, application, text, status) {
     let toast = $('#' + toastId) ;
     toast.toast('show');
 
-    return toast
+    return toast;
 }
 
 function closeNotification(id) {
     $(id).toast('hide');
 }
+
+
 try {
     var unsecureNotificationSocket = new WebSocket("ws://" + window.location.host + "/ws/notifications/");
 

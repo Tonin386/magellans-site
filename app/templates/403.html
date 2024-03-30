@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block title %}
+Interdit
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-3">
+    <div class="card m-auto text-center col-xl-6 border-danger border-4 rounded-4">
+        <div class="card-header bg-danger text-light fs-3">Interdit (403)</div>
+        <div class="card-body">
+            <h5 class="card-title">
+                Vous n'êtes pas censé.e être ici.
+            </h5>
+            <p class="card-text">Veuillez cliquer sur le bouton ci-dessous pour retourner à l'accueil membres.</p>
+            <a class="btn btn-primary btn-xl fs-4" href="{% url 'members' %}">Retour</a>
+        </div>
+        <div class="card-footer bg-danger fs-4 text-light">
+            Espace réservé aux administrateurs
+        </div>
+    </div>
+</div>
+{% endblock %}
