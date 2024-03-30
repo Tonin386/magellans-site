@@ -43,10 +43,6 @@ class MemberManager(BaseUserManager):
         return self.create_user(email, password, **extra_fields)
     
 class Member(AbstractBaseUser, PermissionsMixin):
-    first_name = models.CharField(max_length=30, null=True, blank=True, verbose_name="Prénom")
-    last_name = models.CharField(max_length=30, null=True, blank=True, verbose_name="Nom")
-    phone = models.CharField(max_length=15, blank=True, verbose_name="N° téléphone")
-    gender = models.CharField(max_length=1, choices=GENDER_CHOICES, null=True, blank=True, verbose_name="Sexe")
     email = models.EmailField(unique=True, verbose_name="Courriel")
     is_active = models.BooleanField(default=True, verbose_name="Actif")
     is_staff = models.BooleanField(default=False, verbose_name="CA")
