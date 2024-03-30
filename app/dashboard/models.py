@@ -55,8 +55,6 @@ class ProjectFundingRequest(models.Model):
         verbose_name_plural = "Demandes d'aide financière"
 
 class Project(models.Model):
-    default_money_handler = Member.objects.get(role="T")
-
     name = models.CharField("Nom", max_length=255)
     slug = models.SlugField("Slug", max_length=255, unique=True, blank=True, editable=False)
     genre = models.CharField("Genre", max_length=255)
@@ -66,7 +64,7 @@ class Project(models.Model):
     shoot_date = models.DateField("Date du tournage", blank=True, null=True)
     release_date = models.DateField("Date de sortie", blank=True, null=True)
     director = models.ForeignKey(Person, on_delete=models.SET_NULL, null=True, verbose_name="Réalisateur.ice", related_name="directed_projects")
-    money_handler = models.ForeignKey(Person, on_delete=models.SET_DEFAULT, default=default_money_handler.pk, verbose_name="Responsable financier", related_name="handled_projects")
+    money_handler = models.ForeignKey(Person, on_delete=models.SET_DEFAULT, default=settings.TREASURER_PK, verbose_name="Responsable financier", related_name="handled_projects")
     public = models.BooleanField("Projet public", default=False)
     
     def save(self, *args, **kwargs):
