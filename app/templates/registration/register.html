@@ -17,6 +17,22 @@ S'inscrire
                 Si vous voulez devenir membre, merci de vous inscrire sur <a href="https://www.helloasso.com/associations/magellans" target="_blank" class="link text-info">HelloAsso</a>.
             </div>
         </div>
+
+        {% for message in messages %}
+        {% if message.tags == 'error' %}
+        <div class="alert alert-danger">
+            {{ message }}
+        </div>
+        {% elif message.tags == 'success' %}
+        <div class="alert alert-success">
+            {{ message }}
+        </div>
+        {% else %}
+        <div class="alert alert-info">
+            {{ message }}
+        </div>
+        {% endif %}
+        {% endfor %}
         
         <form method="post" class="needs-validation" novalidate>
             {% csrf_token %}

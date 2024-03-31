@@ -80,13 +80,19 @@ def register(request):
             new_user = form.save()
             new_user.is_active = False
 
-            new_user.site_person = Person.objects.create(
-                first_name=form.cleaned_data.get('first_name'),
-                last_name=form.cleaned_data.get('last_name'),
-                email=form.cleaned_data.get('email'),
-                gender=form.cleaned_data.get('gender', "O"),
-                phone=form.cleaned_data.get('phone', "")
-            )
+            first_name=form.cleaned_data.get('first_name')
+            last_name=form.cleaned_data.get('last_name')
+            email=form.cleaned_data.get('email')
+            gender=form.cleaned_data.get('gender', "O")
+            phone=form.cleaned_data.get('phone', "")
+
+            new_user.site_person.first_name = first_name
+            new_user.site_person.last_name = last_name
+            new_user.site_person.email = email
+            new_user.site_person.gender = gender
+            new_user.site_person.phone = phone
+
+            new_user.site_person.save()
             
             token = ''.join(secrets.choice(string.ascii_letters + string.digits) for _ in range(128))
             new_user.api_token = token
