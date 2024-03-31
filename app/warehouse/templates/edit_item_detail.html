@@ -18,9 +18,9 @@ Magasin - {{ item.name }}
 <div class="container-fluid mt-3">
     <h1 class="display-6 text-center"><i class="fa-solid fa-edit" class="bg-primary"></i> Edition de "{{ item.name }}"</h1>
     <div class="col-lg-4 m-auto text-center">
-        <img height="200" src="/static/media{{item.image}}">
+        <img height="200" src="{{MEDIA_URL}}{{item.image.url}}">
     </div>
-    <form method="post" class="row justify-content-center">
+    <form method="post" class="row justify-content-center" enctype="multipart/form-data">
         {% csrf_token %}
         {% for field in form %}
         <div class="col-lg-11 my-2">
