@@ -25,9 +25,12 @@ class MemberManager(BaseUserManager):
             raise ValueError('The email field must be set')
         email = self.normalize_email(email)
         token = ''.join(secrets.choice(string.ascii_letters + string.digits) for _ in range(128))
-        profile = Person.objects.create(email=email, **extra_fields)
-        user = self.model(email=email, api_token=token, person=profile, **extra_fields)
+        user = self.model(email=email, api_token=token, **extra_fields)
         user.set_password(password)
+        user.save(using=self._db)
+        profile = Person.objects.create(email=email, first_name="Indéfini", last_name="Indéfini", gender="O", phone="Indéfini")
+        user.site_person.delete()
+        user.site_person = profile
         user.save(using=self._db)
         return user
 
