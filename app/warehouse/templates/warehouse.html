@@ -63,7 +63,7 @@ Magasin
                 <a class="btn btn-warning float-end" href="{% url 'edit-item-detail' pk=item.pk %}"><i class="fa-solid fa-edit"></i></a>
             </div>
             {% endif %}
-            <img src="/static/media{{item.image}}" class="card-img-top m-2">
+            <img src="{{ MEDIA_URL }}{{item.image.url}}" class="card-img-top m-2">
             <div class="card-body">
                 <h5 class="card-title fs-5 text-center">
                     {{ item.name }}
