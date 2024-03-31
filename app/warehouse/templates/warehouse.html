@@ -81,7 +81,7 @@ Magasin
             <ul class="list-group list-group-flush">
                 <li class="list-group-item">
                     {% for tag in item.tags.all %}
-                    <span class="badge badge-tag text-light fs-6 my-1" style="background-color: '{{ tag.color }}';"> {{ tag.name }}</span>
+                    <span class="badge badge-tag text-light fs-6 my-1" style="background-color: {{ tag.color }};"> {{ tag.name }}</span>
                     {% endfor %}
                 </li>              
                 <li class="list-group-item">
@@ -139,7 +139,7 @@ Magasin
                         {% for tag in tags %}
                         <div class="form-check form-check-inline" id="tag-group{{ tag.pk }}">
                             <input type="checkbox" value="{{ tag.pk }}" class="tag-checkbox form-check-input" id="tag{{tag.pk}}" style="margin-top: 1vh;">
-                            <label class="btn form-check-label" for="tag{{tag.pk}}" style="background-color: '{{ tag.color }}'; color: white;">{{ tag.name }}</label>
+                            <label class="btn form-check-label" for="tag{{tag.pk}}" style="background-color: {{ tag.color }}; color: white;">{{ tag.name }}</label>
                         </div>
                         {% endfor %}
                     </div>
