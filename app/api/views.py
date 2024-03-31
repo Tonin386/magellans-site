@@ -120,6 +120,8 @@ def api_dashboard(request):
         director = body_post.get("director", "0")
         money_handler = body_post.get("money_handler", "0")
         public = body_post.get("public", "undefined")
+        
+        fields = {}
 
         if name == "undefined":
             createNotification("Ajout projet", "add-project", app_id, 3, "Vous devez au moins préciser un nom pour le projet.", user)
@@ -127,7 +129,6 @@ def api_dashboard(request):
         else:
             fields['name'] = name
         
-        fields = {}
 
         if not director in ['undefined', '']:
             fields['director'] = Person.objects.get(pk=int(director))
