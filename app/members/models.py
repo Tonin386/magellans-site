@@ -28,10 +28,7 @@ class MemberManager(BaseUserManager):
         user = self.model(email=email, api_token=token, **extra_fields)
         user.set_password(password)
         user.save(using=self._db)
-        profile = Person.objects.create(email=email, first_name="Indéfini", last_name="Indéfini", gender="O", phone="Indéfini")
-        user.site_person.delete()
-        user.site_person = profile
-        user.save(using=self._db)
+        profile = Person.objects.create(email=email, first_name="Indéfini", last_name="Indéfini", gender="O", phone="Indéfini", site_profile=user)
         return user
 
     def create_superuser(self, email, password=None, **extra_fields):
