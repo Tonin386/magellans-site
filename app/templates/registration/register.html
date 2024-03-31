@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block title %}
 S'inscrire
@@ -7,64 +8,53 @@ S'inscrire
 {% block content %}
 <div class="container">
     <div class="row m-auto">
-        <h1 class="display-3 mt-3 text-magellans-dark">S'inscrire</h1>
-        <div class="col-lg-12">
-            <div class="alert alert-warning fs-5">
+        <h1 class="display-5 mt-3 text-magellans-dark">S'inscrire</h1>
+        
+        <div class="col-lg-12 m-auto">
+            <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 Attention ! Vous inscrire sur le site ne fait pas de vous (pour le moment) un membre de l'association.<br>
                 Si vous voulez devenir membre, merci de vous inscrire sur <a href="https://www.helloasso.com/associations/magellans" target="_blank" class="link text-info">HelloAsso</a>.
             </div>
         </div>
-    
-        {% for field, errors in form.errors.items %}
-        <div class="alert alert-danger">
-            {{ field }}: {{ errors }}
-        </div>
-        {% endfor %}
-
-        {% for message in messages %}
-        {% if message.tags == 'error' %}
-        <div class="alert alert-danger">
-            {{ message }}
-        </div>
-        {% elif message.tags == 'success' %}
-        <div class="alert alert-success">
-            {{ message }}
-        </div>
-        {% else %}
-        <div class="alert alert-info">
-            {{ message }}
-        </div>
-        {% endif %}
-        {% endfor %}
-
-        <form method="post">
+        
+        <form method="post" class="needs-validation" novalidate>
             {% csrf_token %}
             <div class="input-group input-group-md col-lg-12 mt-3">
-                <span class="input-group-text bg-primary col-md-2" id="email-span">Courriel</span>
-                <input class="form-control" type="text" name="email" placeholder="Courriel" aria-describedby="email-span">
+                <!-- <span class="input-group-text bg-primary col-md-2" id="email-span">Courriel</span> -->
+                <input class="form-control" type="text" name="email" placeholder="Courriel" aria-describedby="email-span" required>
             </div>
             <div class="input-group input-group-md col-lg-12 mt-3">
-                <span class="input-group-text bg-primary col-md-2" id="password1-span">Mot de passe</span>
-                <input class="form-control" type="password" name="password1" placeholder="Mot de passe" aria-describedby="password1-span">
-                <input class="form-control" type="password" name="password2" placeholder="Confirmez votre  mot de passe">
+                <!-- <span class="input-group-text bg-primary col-md-2" id="password1-span">Mot de passe</span> -->
+                <input class="form-control" type="password" name="password1" placeholder="Mot de passe" aria-describedby="password1-span" required>
+                <input class="form-control" type="password" name="password2" placeholder="Confirmez votre  mot de passe" required>
             </div>
             <div class="input-group input-group-md col-lg-12 mt-3">
-                <span class="input-group-text bg-primary col-md-2" id="name-span">Prénom/Nom</span>
-                <input class="form-control" type="text" name="first_name" placeholder="Prénom" aria-describedby="name-span">
-                <input class="form-control" type="text" name="last_name" placeholder="Nom de famille">
+                <!-- <span class="input-group-text bg-primary col-md-2" id="name-span">Prénom/Nom</span> -->
+                <input class="form-control" type="text" name="first_name" placeholder="Prénom" aria-describedby="name-span" required>
+                <input class="form-control" type="text" name="last_name" placeholder="Nom de famille" required>
             </div>
             <div class="input-group input-group-md col-lg-12 mt-3">
-                <span class="input-group-text bg-primary col-md-2" id="phone-span">Téléphone</span>
+                <!-- <span class="input-group-text bg-primary col-md-2" id="phone-span">Téléphone</span> -->
                 <input class="form-control" type="text" name="phone" placeholder="Téléphone" aria-describedby="phone-span">
             </div>
             <div class="input-group input-group-md col-lg-12 mt-3">
-                <span class="input-group-text bg-primary col-md-2" id="gender-span">Sexe</span>
+                <!-- <span class="input-group-text bg-primary col-md-2" id="gender-span">Sexe</span> -->
                 <select class="form-control" name="gender" aria-describedby="gender-span">
-                    <option value="">Choisir...</option>
+                    <option value="">Sexe...</option>
                     <option value="F">Femme</option>
                     <option value="M">Homme</option>
                     <option value="O">Autre</option>
                 </select>
+            </div>
+            <div class="col-lg-6 m-auto mt-3">
+                <div class="form-check">
+                    <label for="tos">En m'inscrivant, j'accepte les CGU et la Politique de confidentialité de Magellans.</label>
+                    <input class="form-check-input" type="checkbox" name="tos" id="tos" required>
+                    <div class="invalid-feedback">
+                        Vous devez avoir accepté les CGU et la Politique de confidentialité de Magellans pour vous inscrire.
+                    </div>
+                </div>
             </div>
             <div class="input-group input-group-md mt-3">
                 <button class="btn btn-primary m-auto" type="submit">S'inscrire</button>
@@ -72,4 +62,94 @@ S'inscrire
         </form>
     </div>
 </div>
+<hr>
+<div class="container-fluid mt-5">
+    <div class="row">
+        <div class="col-lg-12 text-center">
+            <img src="{% static 'img/logo.webp' %}" class="img-fluid" height="200">
+        </div>
+        <div class="col-lg-12">
+            <h2 class="text-center">Pourquoi devrais-je m'inscrire sur votre site et devenir membre sur <a href="https://www.helloasso.com/associations/magellans" target="_blank" class="link text-info">HelloAsso</a> ?</h2>            
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-lg-12 text-center mb-3">
+            <h2 class="text-muted fs-4">En devenant membre de Magellans, tu obtiens de nombreux avantages, en voici quelques-uns : </h2>
+        </div>
+        
+        <div class="row text-center my-5">
+            <div class="col-md-3">
+                <span class="fa-stack fa-4x">
+                    <i class="fas fa-circle fa-stack-2x text-primary"></i>
+                    <i class="fas fa-address-book fa-stack-1x fa-inverse"></i>
+                </span>
+                <h4 class="my-3">Développe ton réseau</h4>
+                <p class="text-muted">Rencontres de nouvelles personnes qui aiment aussi le cinéma et le monde de l'audiovisuel.</p>
+            </div>
+            <div class="col-md-3">
+                <span class="fa-stack fa-4x">
+                    <i class="fas fa-circle fa-stack-2x text-primary"></i>
+                    <i class="fas fa-paper-plane fa-stack-1x fa-inverse"></i>
+                </span>
+                <h4 class="my-3">Propose ton projet</h4>
+                <p class="text-muted">Soutien humain et financier dans vos projets personnels ou professionnels.</p>
+            </div>
+            <div class="col-md-3">
+                <span class="fa-stack fa-4x">
+                    <i class="fas fa-circle fa-stack-2x text-primary"></i>
+                    <i class="fas fa-dolly fa-stack-1x fa-inverse"></i>
+                </span>
+                <h4 class="my-3">Location</h4>
+                <p class="text-muted">Mise à disposition de matériel audiovisuel pour tous les membres. Gratuitement.</p>
+            </div>
+            <div class="col-md-3">
+                <span class="fa-stack fa-4x">
+                    <i class="fas fa-circle fa-stack-2x text-primary"></i>
+                    <i class="fas fa-cocktail fa-stack-1x fa-inverse"></i>
+                </span>
+                <h4 class="my-3">Evènements</h4>
+                <p class="text-muted">Participe aux évènements organisés par Magellans et avoir accès à son réseau.</p>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-lg-12 text-center mb-3">
+            <h1 class="display-3 text-uppercase text-center fw-bold">Alors rejoins-nous !</h1>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function() {
+        var alertList = document.querySelectorAll(".alert");
+        alertList.forEach(function (alert) {
+            new bootstrap.Alert(alert);
+        });
+        
+        (() => {
+            'use strict'
+            
+            // Fetch all the forms we want to apply custom Bootstrap validation styles to
+            const forms = document.querySelectorAll('.needs-validation')
+            
+            // Loop over them and prevent submission
+            Array.from(forms).forEach(form => {
+                form.addEventListener('submit', event => {
+                    if (!form.checkValidity()) {
+                        event.preventDefault()
+                        event.stopPropagation()
+                    }
+                    
+                    form.classList.add('was-validated')
+                }, false)
+            })
+        })();
+    });
+</script>
+
 {% endblock %}

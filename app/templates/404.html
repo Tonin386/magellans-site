@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block title %}
+Introuvable
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-3">
+    <div class="card m-auto text-center col-xl-6 border-warning border-4 rounded-4">
+        <div class="card-header bg-warning text-light fs-3">Introuvable (404)</div>
+        <div class="card-body">
+            <h5 class="card-title">
+                Cette page n'existe pas
+            </h5>
+            <p class="card-text">Veuillez cliquer sur le bouton ci-dessous pour retourner à l'accueil.</p>
+            <a class="btn btn-primary btn-xl fs-4" href="{% url 'home' %}">Retour</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

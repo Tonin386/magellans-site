@@ -23,7 +23,7 @@ def home(request):
     else:
         form = ContactForm()
         
-    projets = Project.objects.order_by("-shoot_date")[:6]
+    projets = Project.objects.filter(public=True).order_by("-shoot_date")[:6]
         
     return render(request, 'home.html', locals())
 

@@ -26,23 +26,24 @@ def verify_token_permissions(request):
         pass
     
     if token == "undefined" or user == None:
-        permissions['warehouse'] = ['read']
+        permissions['warehouse'] += ['read']
         return permissions
+    else:
+        permissions['bank'] += ['write-expense']
         
     if user.is_staff:
-        permissions['fullpower'] = ['read']
-        permissions['dashboard'] = ['read', 'write']
-        permissions['members'] = ['read']
+        permissions['fullpower'] += ['read']
+        permissions['dashboard'] += ['read', 'write']
+        permissions['members'] += ['read', 'write']
         
         if user.role == "G":
-            permissions['warehouse'] = ['read', 'write']
+            permissions['warehouse'] += ['write']
             
         if user.role == "P":
-            permissions['bank'] = ['read']
-            permissions['members'] = ['read', 'write']
+            permissions['bank'] += ['read']
             
         if user.role == "T":
-            permissions['bank'] = ['read', 'write']
+            permissions['bank'] += ['read', 'write']
         
     if user.is_superuser:
         permissions['fullpower'] = ['read', 'write']
@@ -51,21 +52,273 @@ def verify_token_permissions(request):
 
 def api_bank(request):
     permissions, user = verify_token_permissions(request)
-    
-    return JsonResponse({})
+    app_id = 1
+
+    body_post = json.loads(request.body.decode("utf-8"))
+
+    action = body_post.get("action", "undefined")
+
+    if action == "add-expense":
+        if not 'write-expense' in permissions['bank'] + permissions['fullpower']:
+            createNotification("Ajout dépense", "add-expense", app_id, 3, "Vous n'avez pas les permissions suffisantes pour effectuer cette action.", user)
+            return JsonResponse({"status": "error", "message": "Insufficient permissions"})
+        
+        name = body_post.get("name", "undefined")
+        date = body_post.get("date", "undefined")
+        amount = float(body_post.get("amount", "0"))
+        comm = body_post.get("comm", "undefined")
+        proof = body_post.get("proof", "undefined")
+
+        expense = Expense(
+            title=name,
+            date=date,
+            comm=comm,
+            amount=amount,
+            author=user
+        )
+
+        expense.save()
+
+        if not proof in ['undefined', '']:
+            try:
+                image_data = proof.split(",")
+                extension = image_data[0].replace("data:image/", "").replace(";base64", "")
+                proof = ContentFile(base64.b64decode(image_data[1]))
+                path = f"expense{expense.pk}.{extension}"
+                expense.proof.save(path, proof)
+            except Exception as e:
+                expense.delete()
+                createNotification("Ajout projet", "add-expense", app_id, 3, f"Erreur lors de l'import de l'image. Veuillez réessayer.\n{str(e)}", user, str(e))
+                return JsonResponse({"status": "error", "error": str(e), "message": "There was a problem when decoding image"})
+        
+        expense.save()
+        createNotification("Ajout dépense", "add-expense", app_id, 0, "La dépense a bien été créée.")
+        return JsonResponse({"status": "success", "message": "Expense successfully created.", "id": expense.pk})
+
+    return JsonResponse({"status": "error", "message": "Uncaught error."})
 
 def api_dashboard(request):
     permissions, user = verify_token_permissions(request)
-    
-    return JsonResponse({})
+    app_id = 2
+
+    body_post = json.loads(request.body.decode("utf-8"))
+
+    action = body_post.get("action", "undefined")
+
+    if action == "add-project":
+        if not 'write' in permissions['dashboard'] + permissions['fullpower']:
+            createNotification("Ajout projet", "add-project", app_id, 3, "Vous n'avez pas les permissions suffisantes pour effectuer cette action.", user)
+            return JsonResponse({"status": "error", "message": "Insufficient permissions"})
+        
+        name = body_post.get("name", "undefined")
+        genre = body_post.get("genre", "undefined")
+        desc = body_post.get("desc", "undefined")
+        short_desc = body_post.get("short_desc", "undefined")
+        poster = body_post.get("poster", "undefined")
+        shoot_date = body_post.get("shoot_date", "undefined")
+        release_date = body_post.get("release_date", "undefined")
+        director = body_post.get("director", "0")
+        money_handler = body_post.get("money_handler", "0")
+        public = body_post.get("public", "undefined")
+
+        if name == "undefined":
+            createNotification("Ajout projet", "add-project", app_id, 3, "Vous devez au moins préciser un nom pour le projet.", user)
+            return JsonResponse({"status": "error", "message": "Missing name."})
+        else:
+            fields['name'] = name
+        
+        fields = {}
+
+        if not director in ['undefined', '']:
+            fields['director'] = Person.objects.get(pk=int(director))
+
+        if not money_handler in ['undefined', '']:
+            fields['money_handler'] = Person.objects.get(pk=int(money_handler))
+
+        if not genre in ['undefined', '']:
+            fields['genre'] = genre
+
+        if not desc in ['undefined', '']:
+            fields['desc'] = desc
+
+        if not short_desc in ['undefined', '']:
+            fields['short_desc'] = short_desc
+
+        if not shoot_date in ['undefined', '']:
+            fields['shoot_date'] = shoot_date
+
+        if not release_date in ['undefined', '']:
+            fields['release_date'] = release_date
+
+        fields['public'] = public
+
+        project = Project(
+            **fields
+        )
+
+        project.save()
+
+        if not poster in ['undefined', '']:
+            try:
+                image_data = poster.split(",")
+                extension = image_data[0].replace("data:image/", "").replace(";base64", "")
+                poster = ContentFile(base64.b64decode(image_data[1]))
+                path = f"{project.slug}.{extension}"
+                project.poster.save(path, poster)
+            except Exception as e:
+                project.delete()
+                createNotification("Ajout projet", "add-project", app_id, 3, f"Erreur lors de l'import de l'image. Veuillez réessayer.\n{str(e)}", user, str(e))
+                return JsonResponse({"status": "error", "error": str(e), "message": "There was a problem when decoding image"})
+        
+        project.save()
+        createNotification("Ajout projet", "add-project", app_id, 0, "Le projet a bien été créé.")
+        return JsonResponse({"status": "success", "message": "Project successfully created."})
+
+    if action == "edit-project":
+        if not 'write' in permissions['dashboard'] + permissions['fullpower']:
+            createNotification("Ajout projet", "add-project", app_id, 3, "Vous n'avez pas les permissions suffisantes pour effectuer cette action.", user)
+            return JsonResponse({"status": "error", "message": "Insufficient permissions"})
+        
+        slug = body_post.get("slug", "undefined")
+        name = body_post.get("name", "undefined")
+        genre = body_post.get("genre", "undefined")
+        desc = body_post.get("desc", "undefined")
+        short_desc = body_post.get("short_desc", "undefined")
+        poster = body_post.get("poster", "undefined")
+        shoot_date = body_post.get("shoot_date", "undefined")
+        release_date = body_post.get("release_date", "undefined")
+        director = body_post.get("director", "0")
+        money_handler = body_post.get("money_handler", "0")
+        public = body_post.get("public", "undefined")
+
+        
+        fields = {}
+
+        if not director in ['undefined', '']:
+            fields['director'] = Person.objects.get(pk=int(director))
+
+        if not money_handler in ['undefined', '']:
+            fields['money_handler'] = Person.objects.get(pk=int(money_handler))
+
+        if not name in ['undefined', '']:
+            fields['name'] = name
+
+        if not genre in ['undefined', '']:
+            fields['genre'] = genre
+
+        if not desc in ['undefined', '']:
+            fields['desc'] = desc
+
+        if not short_desc in ['undefined', '']:
+            fields['short_desc'] = short_desc
+
+        if not shoot_date in ['undefined', '']:
+            fields['shoot_date'] = shoot_date
+
+        if not release_date in ['undefined', '']:
+            fields['release_date'] = release_date
+
+        fields['public'] = public
+
+        project = Project.objects.get(slug=slug)
+
+        for key in fields:
+            setattr(project, key, fields[key])
+
+        project.save()
+
+        if not poster in ['undefined', '']:
+            try:
+                image_data = poster.split(",")
+                extension = image_data[0].replace("data:image/", "").replace(";base64", "")
+                poster = ContentFile(base64.b64decode(image_data[1]))
+                path = f"{project.slug}.{extension}"
+                project.poster.save(path, poster)
+            except Exception as e:
+                createNotification("Edition projet", "edit-project", app_id, 2, f"Erreur lors de l'import de l'image. Veuillez réessayer. Le reste du projet a bien été modifié. Actualisation en cours...\n{str(e)}", user, str(e))
+                return JsonResponse({"status": "error", "error": str(e), "message": "There was a problem when decoding image"})
+        
+        project.save()
+        createNotification("Edition projet", "edit-project", app_id, 0, "Le projet a bien été modifié. Actualisation en cours...")
+        return JsonResponse({"status": "success", "message": "Project successfully edited."})
+
+    return JsonResponse({"status": "error", "message": "Uncaught error."})
 
 def api_members(request):
     permissions, user = verify_token_permissions(request)
+    app_id = 4
     
-    return JsonResponse({})
+    body_post = json.loads(request.body.decode("utf-8"))
+            
+    action = body_post.get("action", "undefined")
+
+    if action == "add-ext_user":
+        if not 'write' in permissions['members'] + permissions['fullpower']:
+            createNotification("Ajout utilisateur externe", "add-ext_user", app_id, 3, "Vous n'avez pas les permissions suffisantes pour effectuer cette action.", user)
+            return JsonResponse({"status": "error", "message": "Insufficient permissions"})
+        
+        first_name = body_post.get("first_name", "Non-renseigné")
+        last_name = body_post.get("last_name", "Non-renseigné")
+        email = body_post.get("email", "Non-renseigné")
+        phone = body_post.get("phone", "Non-renseigné")
+        gender = body_post.get("gender", "O")
+
+        if "Non-renseigné" in [first_name, last_name]:
+            createNotification("Ajout utilisateur externe", "add-ext_user", app_id, 3, "Le nouvel utilisateur externe n'a pas été ajouté : veuillez renseigner au moins un nom et prénom.", user)
+            return JsonResponse({"status": "error", "message": "Missing last or first name"})
+
+        data = dict(
+            first_name=first_name,
+            last_name=last_name,
+            email=email,
+            gender=gender,
+            phone=phone
+        )
+
+        person = Person.objects.create(
+            **data
+        )
+
+        data['pk'] = person.pk
+
+        ext_user = UnregisteredMember.objects.create()
+        person.ext_profile = ext_user
+        person.save()
+        createNotification("Ajout utilisateur externe", "add-ext_user", app_id, 0, "Le nouvel utilisateur externe a bien été ajouté.", user)
+        return JsonResponse({"status": "success", "message": "The external user was successfully added", 'data': json.dumps(data)})
+
+    if action == "del-ext_user":
+        if not 'write' in permissions['members'] + permissions['fullpower']:
+            createNotification("Suppression utilisateur externe", "del-ext_user", app_id, 3, "Vous n'avez pas les permissions suffisantes pour effectuer cette action.", user)
+            return JsonResponse({"status": "error", "message": "Insufficient permissions"})
+
+        pk = body_post.get('pk')
+
+        ext_user = UnregisteredMember.objects.get(pk=pk)      
+        ext_user.delete()
+        createNotification("Suppression utilisateur externe", "del-ext_user", app_id, 0, "L'utilisateur a été supprimé.", user)
+        return JsonResponse({"status": "success", "message": "External user deleted.", "id_row": f"#extUser{pk}"})
+    
+    if action == "edit-user_role":
+        if not 'write' in permissions['members'] + permissions['fullpower']:
+            createNotification("Modification utilisateur", "edit-user_role", app_id, 3, "Vous n'avez pas les permissions suffisantes pour effectuer cette action.", user)
+            return JsonResponse({"status": "error", "message": "Insufficient permissions"})
+        
+        pk = body_post.get("pk", "undefined")
+        role = body_post.get("role", "undefined")
+
+        user = Member.objects.get(pk=pk)
+        user.role = role
+        user.save()
+
+        createNotification("Modification utilisateur", "edit-user_role", app_id, 0, "Le rôle de l'utilisateur a été modifié.", user)
+        return JsonResponse({"status": "success", "message": "User role modified."})
+    
+    return JsonResponse({"status": "error", "message": "Uncaught error."})
 
 def api_warehouse(request):
     permissions, user = verify_token_permissions(request)
+    app_id = 6
     
     body_post = json.loads(request.body.decode("utf-8"))
             
@@ -73,7 +326,7 @@ def api_warehouse(request):
     
     if action == "add-item":
         if not 'write' in permissions['warehouse'] + permissions['fullpower']:
-            createNotification("Ajout objet", "add-item", 6, 3, "Vous n'avez pas les permissions suffisantes pour effectuer cette action.", user)
+            createNotification("Ajout objet", "add-item", app_id, 3, "Vous n'avez pas les permissions suffisantes pour effectuer cette action.", user)
             return JsonResponse({"status": "error", "message": "Insufficient permissions"})
         
         name = body_post.get("name", "undefined")
@@ -107,19 +360,18 @@ def api_warehouse(request):
                 image = ContentFile(base64.b64decode(image_data[1]))
                 path = f"{new_item.pk}.{extension}"
                 new_item.image.save(path, image)
-                new_item.image = "/img/items/" + path
             except Exception as e:
                 new_item.delete()
-                createNotification("Ajout objet", "add-item", 6, 3, f"Erreur lors de l'import de l'image. Veuillez réessayer.\n{str(e)}", user, str(e))
+                createNotification("Ajout objet", "add-item", app_id, 3, f"Erreur lors de l'import de l'image. Veuillez réessayer.\n{str(e)}", user, str(e))
                 return JsonResponse({"status": "error", "error": str(e), "message": "There was a problem when decoding image"})
         
         new_item.save()
-        createNotification("Ajout objet", "add-item", 6, 0, "L'objet a bien été ajouté au magasin.")
+        createNotification("Ajout objet", "add-item", app_id, 0, "L'objet a bien été ajouté au magasin.")
         return JsonResponse({"status": "success", "message": "The item was successfully added"})
         
     if action == "add-tag":
         if not 'write' in permissions['warehouse'] + permissions['fullpower']:
-            createNotification("Ajout tag", "add-tag", 6, 3, "Vous n'avez pas les permissions suffisantes pour effectuer cette action.", user)
+            createNotification("Ajout tag", "add-tag", app_id, 3, "Vous n'avez pas les permissions suffisantes pour effectuer cette action.", user)
             return JsonResponse({"status": "error", "message": "Insufficient permissions"})
 
         name = body_post.get("name", "undefined")
@@ -127,12 +379,12 @@ def api_warehouse(request):
         
         new_tag = Tag.objects.create(name=name, color=color)
         
-        createNotification("Ajout tag", "add-tag", 6, 0, "Le tag a bien été ajouté.", user)
+        createNotification("Ajout tag", "add-tag", app_id, 0, "Le tag a bien été ajouté.", user)
         return JsonResponse({"status": "success", "message": "The tag was successfully added", "created_pk": new_tag.pk})
         
     if action == "del-item":
         if not 'write' in permissions['warehouse'] + permissions['fullpower']:
-            createNotification("Suppression tag", "del-tag", 6, 3, "Vous n'avez pas les permissions suffisantes pour effectuer cette action.", user)
+            createNotification("Suppression tag", "del-tag", app_id, 3, "Vous n'avez pas les permissions suffisantes pour effectuer cette action.", user)
             return JsonResponse({"status": "error", "message": "Insufficient permissions"})
         
         pk = int(body_post.get('pk', '-1'))
@@ -141,15 +393,15 @@ def api_warehouse(request):
             item = Item.objects.get(pk=pk)
             item.delete()
         except Exception as e:
-            createNotification("Suppression objet", "del-item", 6, 3, f"Une erreur est survenue. Veuillez réessayer\nErreur : {str(e)}", user, str(e))
+            createNotification("Suppression objet", "del-item", app_id, 3, f"Une erreur est survenue. Veuillez réessayer\nErreur : {str(e)}", user, str(e))
             return JsonResponse({"status": "error", "message": str(e)})
 
-        createNotification("Suppression objet", "del-item", 6, 0, f"L'objet a bien été supprimé.", user)
+        createNotification("Suppression objet", "del-item", app_id, 0, f"L'objet a bien été supprimé.", user)
         return JsonResponse({"status": "success", "message": "Item was successfully deleted"})
     
     if action == "del-tag":
         if not 'write' in permissions['warehouse'] + permissions['fullpower']:
-            createNotification("Suppression tag", "del-tag", 6, 3, "Vous n'avez pas les permissions suffisantes pour effectuer cette action.", user)
+            createNotification("Suppression tag", "del-tag", app_id, 3, "Vous n'avez pas les permissions suffisantes pour effectuer cette action.", user)
             return JsonResponse({"status": "error", "message": "Insufficient permissions"})
         
         pks = body_post.get("pks", "undefined")
@@ -166,28 +418,28 @@ def api_warehouse(request):
                     errors.append(str(e))
                 
             if deleted == len(pks):
-                createNotification("Suppression tag", "del-tag", 6, 0, "Les tags ont bien été supprimés.", user)
+                createNotification("Suppression tag", "del-tag", app_id, 0, "Les tags ont bien été supprimés.", user)
                 return JsonResponse({"status": "success", "message": "Tasg deleted successfully"})
 
-            createNotification("Suppression tag", "del-tag", 6, 2, f"{deleted}/{len(pks)} tags ont été supprimés. Veuillez réessayer avec les tags qui n'ont pas été supprimés.", user, errors)
+            createNotification("Suppression tag", "del-tag", app_id, 2, f"{deleted}/{len(pks)} tags ont été supprimés. Veuillez réessayer avec les tags qui n'ont pas été supprimés.", user, errors)
             return JsonResponse({"status": "warning", "message": "Some tags haven't been deleted"})
         
     if action == "edit-item":
         if not 'write' in permissions['warehouse'] + permissions['fullpower']:
-            createNotification("Edition objet", "edit-item", 6, 3, "Vous n'avez pas les permissions suffisantes pour effectuer cette action.", user)
+            createNotification("Edition objet", "edit-item", app_id, 3, "Vous n'avez pas les permissions suffisantes pour effectuer cette action.", user)
             return JsonResponse({"status": "error", "message": "Insufficient permissions"})
         
         pk = int(body_post.get("pk", "-1"))
         
         if pk == -1:
-            createNotification("Edition objet", "edit-item", 6, 3, "Requête invalide.", user).show()
+            createNotification("Edition objet", "edit-item", app_id, 3, "Requête invalide.", user).show()
             return JsonResponse({"status": "error", "message": "The PK was set to -1, bad request."})
         
         item = None
         try:
             item = Item.objects.get(pk=pk)
         except Item.DoesNotExist:
-            createNotification("Edition objet", "edit-item", 6, 3, "L'objet demandé n'existe pas.", user, f"Item with pk {pk} not found.").show()
+            createNotification("Edition objet", "edit-item", app_id, 3, "L'objet demandé n'existe pas.", user, f"Item with pk {pk} not found.").show()
             return JsonResponse({"status": "error", "message": f"Item with pk {pk} not found."})
 
         name = body_post.get("name", "undefined")
@@ -233,12 +485,12 @@ def api_warehouse(request):
             for key in update_dict:
                 setattr(item, key, update_dict[key])
             item.save()
-            createNotification("Edition objet", "edit-item", 6, 0, "L'objet a été modifié.", user, json.dumps(update_dict)).show()
+            createNotification("Edition objet", "edit-item", app_id, 0, "L'objet a été modifié.", user, json.dumps(update_dict)).show()
             return JsonResponse({"status": "success", "message": "Item was edited with sucess"})
         except Exception as e:
-            createNotification("Edition objet", "edit-item", 6, 3, f"Une erreur est survenue.\nErreur : {str(e)}", user, str(e)).show()
+            createNotification("Edition objet", "edit-item", app_id, 3, f"Une erreur est survenue.\nErreur : {str(e)}", user, str(e)).show()
             return JsonResponse({"status": "error", "message": f"An error occured\n{str(e)}"})
             
                     
-    createNotification("Erreur inconnue", "unknown error", 6, 3, "Une erreur inconnue est survenue.", user)
+    createNotification("Erreur inconnue", "unknown error", app_id, 3, "Une erreur inconnue est survenue.", user)
     return JsonResponse({"status": "error", "message": "Uncaught error."})

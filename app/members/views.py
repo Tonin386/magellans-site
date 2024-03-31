@@ -1,8 +1,11 @@
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 from django.contrib.auth.tokens import default_token_generator
 from django.contrib.auth.decorators import login_required
+from dashboard.forms import ProjectFundingRequestForm
+from django.utils.decorators import method_decorator
 from django.template.loader import render_to_string
 from django.shortcuts import render, HttpResponse
+from members.decorators import staff_required
 from django.utils.encoding import force_bytes
 from django.views.generic import DetailView
 from django.core.mail import send_mail
@@ -11,6 +14,7 @@ from django.contrib import messages
 from django.conf import settings
 from .forms import RegisterForm
 from .models import Member
+from bank.forms import *
 from .forms import *
 import secrets
 import string
@@ -22,17 +26,52 @@ def members(request):
 
 @login_required
 def my_profile(request):
-    form = EditProfileForm()
+    form = EditProfileForm(request.user.site_person)
     if request.method == "POST":
-        form = EditProfileForm(request.POST)
+        form = EditProfileForm(request.user.site_person, request.POST)
         if form.is_valid():
-            request.user.first_name = form.cleaned_data['first_name']
-            request.user.last_name = form.cleaned_data['last_name']
-            request.user.phone = form.cleaned_data['phone']
-            request.user.gender = form.cleaned_data['gender']
-            request.user.save()
+            request.user.site_person.first_name = form.cleaned_data['first_name']
+            request.user.site_person.last_name = form.cleaned_data['last_name']
+            request.user.site_person.phone = form.cleaned_data['phone']
+            request.user.site_person.gender = form.cleaned_data['gender']
+            request.user.site_person.save()
             
-    return render(request, 'member_detail.html', {'object': request.user, 'form': form})
+    return render(request, 'my_profile.html', {'object': request.user, 'form': form})
+
+@login_required
+def create_invoice(request):
+    invoice_form = CreateInvoiceForm()
+    if request.method == "POST":
+        invoice_form = CreateInvoiceForm(request.POST)
+        if invoice_form.is_valid():
+            new_invoice = invoice_form.save()
+            new_invoice.author = request.user
+            new_invoice.save()
+            linked_expenses = request.POST.get("expenses_ids")
+            ids = linked_expenses[1:-1].split(",")
+
+            for id in ids:
+                expense = Expense.objects.get(pk=id)
+                expense.linked_invoice = new_invoice
+                expense.save()
+
+    return render(request, "create_invoice.html", locals())
+
+@login_required
+def create_funding_request(request):
+    form = ProjectFundingRequestForm()
+    if request.method == "POST":
+        form = ProjectFundingRequestForm(request.POST, request.FILES)
+        if form.is_valid():
+            new_funding_request = form.save()
+
+            new_funding_request.asker = request.user
+            new_funding_request.save()
+
+            new_funding_request.send_by_email()
+            return render(request, "create_funding_request_success.html", {})
+
+    return render(request, "create_funding_request.html", locals())
 
 def register(request):
     form = RegisterForm(request.POST or None)
@@ -40,6 +79,14 @@ def register(request):
         if form.is_valid():
             new_user = form.save()
             new_user.is_active = False
+
+            new_user.site_person = Person.objects.create(
+                first_name=form.cleaned_data.get('first_name'),
+                last_name=form.cleaned_data.get('last_name'),
+                email=form.cleaned_data.get('email'),
+                gender=form.cleaned_data.get('gender', "O"),
+                phone=form.cleaned_data.get('phone', "")
+            )
             
             token = ''.join(secrets.choice(string.ascii_letters + string.digits) for _ in range(128))
             new_user.api_token = token
@@ -80,6 +127,7 @@ def activation_done(request):
 def activation_failed(request):
     return render(request, 'registration/activation_failed.html', locals())
 
+@method_decorator(staff_required, name="dispatch")
 class MemberDetailView(DetailView):
     model = Member
     template_name="member_detail.html"

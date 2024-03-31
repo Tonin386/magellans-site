@@ -1,57 +1,3 @@
-const toBase64 = file => new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = () => resolve(reader.result);
-    reader.onerror = reject;
-});
-
-function getCookie(name) {
-    var cookieValue = null;
-    if (document.cookie && document.cookie !== '') {
-        var cookies = document.cookie.split(';');
-        for (var i = 0; i < cookies.length; i++) {
-            var cookie = jQuery.trim(cookies[i]);
-            // Does this cookie string begin with the name we want?
-            if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                break;
-            }
-        }
-    }
-    return cookieValue;
-}
-
-function printApiToken() {
-    console.log(api_token);
-}
-
-async function sendApiRequest(params) {
-    const url = window.location.origin + "/api/warehouse";
-    let request = {
-        method: "POST",
-        body: JSON.stringify(params),
-        headers: {
-            "X-CSRFToken": getCookie("csrftoken"),
-            "Accept": "application/json",
-            "Content-type": "application/json; charset=UTF-8",
-            'X-Requested-With': 'XMLHttpRequest',
-        }
-    }
-    
-    try {
-        let response = await fetch(url, request);
-        if(!response.ok) {
-            throw new Error('Failed to fetch api response');
-        }
-        
-        const data = await response.json();
-        return data;
-    }
-    catch (error){
-        console.log(error);
-    }
-} 
-
 async function addItem() {
     let action = "add-item";
     let params = {
@@ -77,14 +23,14 @@ async function addItem() {
         }
     });
     
-    let response = await sendApiRequest(params);
+    let response = await sendApiRequest(params, "warehouse");
 }
 
 async function editItem(params) {
     params['action'] = "edit-item";
     params['token'] = api_token;
     
-    let response = await sendApiRequest(params);
+    let response = await sendApiRequest(params, "warehouse");
 }
 
 async function confirmDeleteItem(pk) {
@@ -100,7 +46,7 @@ async function deleteItem(pk) {
         pk: pk,
     }
     
-    let response = await sendApiRequest(params);
+    let response = await sendApiRequest(params, "warehouse");
     if(response.status == "success") {
         var itemList = document.querySelector("#item-list");
         let element = document.querySelector("#item" + pk.toString());
@@ -117,7 +63,7 @@ async function addTag() {
         color: document.querySelector("#tag_color").value
     };
     
-    let response = await sendApiRequest(params);
+    let response = await sendApiRequest(params, "warehouse");
     
     if(response.status == "success") {
         let tagList = document.querySelector("#tag-list");
@@ -170,7 +116,7 @@ async function deleteTags() {
         pks: selectedTags
     }
     
-    let response = await sendApiRequest(params);
+    let response = await sendApiRequest(params, "warehouse");
     if(response.status == "success") {
         var tagList = document.querySelector("#tag-list");
         selectedTags.forEach(tag => {
@@ -241,7 +187,7 @@ function filterTagItems() {
     });
 
     itemDatabase.forEach(item => {
-        if(hiddenTags.length == 0) {
+        if(hiddenTags.length == 0 || hiddenTags.length == tagSelectButtons.length) {
             itemsMatchingTags.push(item.id);
             return;
         }
@@ -255,7 +201,8 @@ function filterTagItems() {
             }
         });
 
-        if(!matchesOneTag) {
+        if(!matchesOneTag && item.tagNames.length > 0) {
+            console.log(item.tagNames);
             itemsMatchingTags.push(item.id);
         }
     });
@@ -315,7 +262,7 @@ document.addEventListener('DOMContentLoaded', function() {
         let title = itemCard.querySelector(".card-title").innerText;
         let tagNames = [];
         let completeText = title;
-        itemCard.querySelectorAll(".badge").forEach(btn => {
+        itemCard.querySelectorAll(".badge-tag").forEach(btn => {
             tagNames.push(btn.innerText);
             completeText += " " + btn.innerText;
         });

@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+
+{% block title %}
+Profil
+{% endblock %}
+
+{% block nav %}
+{% include "nav.html" %}
+{% endblock %}
+
+{% block content %}
+<div class="container mt-3">
+    <div class="box">
+        <h1 class="title fs-3">Détails du compte {{ object.email }}</h1>
+        <div class="row">
+            <div class="col-lg-6">
+                <table class="table table-border table-striped">
+                    <tr>
+                        <th>Nom</th>
+                        <td>{{ object.last_name }}</td>
+                    </tr>
+                    <tr>
+                        <th>Email</th>
+                        <td>{{ object.email }}</td>
+                    </tr>
+                    <tr>
+                        <th>Rôle</th>
+                        <td>{{ object.get_role_display }}</td>
+                    </tr>
+                    <tr class="{% if object.account >= 0 %}bg-success{% else %}bg-danger{% endif %}">
+                        <th>Compte</th>
+                        <td>{{ object.account_formatted }}</td>
+                    </tr>
+                </table>
+            </div>
+            <div class="col-lg-6">
+                <table class="table table-border table-striped">
+                    <tr>
+                        <th>Prénom</th>
+                        <td>{{ object.first_name }}</td>
+                    </tr>
+                    <tr>
+                        <th>Téléphone</th>
+                        <td>{{ object.phone_formatted }}</td>
+                    </tr>
+                    <tr>
+                        <th>Sexe</th>
+                        <td>{{ object.get_gender_display }}</td>
+                    </tr>
+                    <tr class="{% if object.donation > 0 %}bg-success{% else %}bg-warning{% endif %}">
+                        <th>Donation</th>
+                        <td>{{ object.donation_formatted }}</td>
+                    </tr>
+                </table>
+            </div>
+            <div class="col-lg-12 text-center">
+                <a href="{% url 'password_change' %}" class="btn btn-secondary w-25"><i class="fa-solid fa-gear"></i> Changer de mot de passe</a>
+                <button class="btn btn-warning w-25" data-bs-target="#editProfileForm" data-bs-toggle="modal"><i class="fa-solid fa-edit"></i> Modifier mon profil</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- EDIT PROFILE MODAL -->
+<div class="modal fade" id="editProfileForm" data-bs-keyboard="true" tabindex="-1" aria-labelledby="editProfileLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header bg-primary">
+                <h1 class="modal-title fs-5" id="editProfileLabel">Modifier mon profil</h1>
+            </div>
+            <div class="modal-body">
+                <form method="post" class="row justify-content-center">
+                    {% csrf_token %}
+                    {% for field in form %}
+                    <div class="col-lg-11 my-2">
+                        {{ field }}
+                    </div>
+                    {% endfor %}
+                    <div class="col-md-3">
+                        <button type="submit" class="btn btn-success btn-large w-100 p-2 fs-5 my-1">Enregistrer</button>
+                    </div>
+                    <div class="col-md-3">
+                        <a class="btn btn-danger btn-large w-100 p-2 fs-5 my-1" data-bs-dismiss="modal">Annuler</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

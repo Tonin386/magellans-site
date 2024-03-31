@@ -46,8 +46,8 @@ Magasin
     <div class="row text-center">
         <div class="col-md-12" id="selectedTagsGroup">
             {% for tag in tags %}
-            <input type="checkbox" value="{{ tag.name }}" class="selectedTag-checkbox btn-check" id="selectedTag{{tag.pk}}" checked>
-            <label class="btn btn-outline-primary selectedTag-btn mb-2" for="selectedTag{{tag.pk}}" style="--bs-btn-color: {{ tag.color }}; --bs-btn-active-bg: {{ tag.color }}; --bs-btn-border-color: {{ tag.color }}; --bs-btn-active-border-color: {{ tag.color }};">{{ tag.name }} {% if request.user.is_staff %} <a href="{% url 'edit-tag-detail' pk=tag.pk %}" target="_blank" style="vertical-align: middle;"><i class="fa-solid fa-edit bg-primary text-white rounded-2 p-1"></i></a> {% endif %}</label>
+            <input type="checkbox" value="{{ tag.name }}" class="selectedTag-checkbox btn-check" id="selectedTag{{tag.pk}}">
+            <label class="btn btn-outline-primary selectedTag-btn mb-2" for="selectedTag{{tag.pk}}" style="--bs-btn-color: {{ tag.color }}; --bs-btn-active-bg: {{ tag.color }}; --bs-btn-border-color: {{ tag.color }}; --bs-btn-active-border-color: {{ tag.color }};">{{ tag.name }} {% if request.user.is_staff %} <a href="{% url 'edit-tag-detail' pk=tag.pk %}" style="vertical-align: middle;"><i class="fa-solid fa-edit bg-primary text-white rounded-2 p-1"></i></a> {% endif %}</label>
             {% endfor %}
         </div>
     </div>
@@ -59,8 +59,8 @@ Magasin
             
             {% if request.user.is_staff %}
             <div class="card-header">
-                <button class="btn btn-danger float-end mx-1" onclick="confirmDeleteItem({{ item.pk }})"><i class="fa-solid fa-trash"></i></button>
-                <a class="btn btn-warning float-end" href="{% url 'edit-item-detail' pk=item.pk %}" target="_blank"><i class="fa-solid fa-edit"></i></a>
+                <button class="btn btn-danger float-end mx-1" onclick="confirmDeleteItem('{{ item.pk }}')"><i class="fa-solid fa-trash"></i></button>
+                <a class="btn btn-warning float-end" href="{% url 'edit-item-detail' pk=item.pk %}"><i class="fa-solid fa-edit"></i></a>
             </div>
             {% endif %}
             <img src="/static/media{{item.image}}" class="card-img-top m-2">
@@ -81,7 +81,7 @@ Magasin
             <ul class="list-group list-group-flush">
                 <li class="list-group-item">
                     {% for tag in item.tags.all %}
-                    <span class="badge text-light fs-6 my-1" style="background-color: {{ tag.color }};"> {{ tag.name }}</span>
+                    <span class="badge badge-tag text-light fs-6 my-1" style="background-color: {{ tag.color }};"> {{ tag.name }}</span>
                     {% endfor %}
                 </li>              
                 <li class="list-group-item">
@@ -125,17 +125,16 @@ Magasin
 <div class="modal fade" id="addItemForm" data-bs-backdrop="static" data-bs-keyboard="true" tabindex="-1" aria-labelledby="addItemModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-xl">
         <div class="modal-content">
-            <div class="modal-header">
+            <div class="modal-header bg-primary">
                 <h1 class="modal-title fs-5" id="addItemModalLabel">Ajouter un objet au magasin</h1>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Annuler"></button>
             </div>
             <div class="modal-body">
                 <div class="input-group input-group-md mt-3">
-                    <span class="input-group-text col-xl-2 bg-primary text-dark" id="span_item_name">Nom de l'objet</span>
-                    <input aria-describedby="span_item_name" type="text" class="form-control" id="item_name" placeholder="Nom de l'objet">
+                    <input type="text" class="form-control" id="item_name" placeholder="Nom de l'objet">
                 </div>
                 <div class="input-group input-group-md mt-3">
-                    <span class="input-group-text col-xl-2 bg-primary text-dark" id="span_tags">Tags</span>
+                    <span class="input-group-text col-xl-2 text-dark" id="span_tags">Tags</span>
                     <div aria-describedby="span_tags" class="form-control" id="tag-list">
                         {% for tag in tags %}
                         <div class="form-check form-check-inline" id="tag-group{{ tag.pk }}">
@@ -149,16 +148,14 @@ Magasin
                 <button type="button" class="btn btn-success mt-3" data-bs-toggle="modal" data-bs-target="#addTagForm">Créer un tag</button>
                 <button type="button" class="btn btn-danger mt-3" onclick="confirmDeleteTags()">Supprimer les tags sélectionnés</button>
                 <div class="input-group input-group-md mt-3">
-                    <span class="input-group-text col-xl-2 bg-primary text-dark" id="span_image">Image</span>
                     <input aria-describedby="span_image" type="file" class="form-control" id="image">
                 </div>
                 <div class="input-group input-group-md mt-3">
-                    <span class="input-group-text col-xl-2 bg-primary text-dark" id="span_max_stock">Stock maximum</span>
-                    <input aria-describedby="span_max_stock" type="number" class="form-control" id="max_stock" placeholder="Nombre d'objets disponibles au maximum">
+                    <input type="number" class="form-control" id="max_stock" placeholder="Nombre d'objets disponibles au maximum">
                 </div>
                 <div class="input-group input-group-md mt-3">
-                    <span class="input-group-text col-xl-2 bg-primary text-dark" id="span_state">Etat</span>
-                    <select class="form-control" id="state" aria-describedby="span_state">
+                    <select class="form-control" id="state">
+                        <option>Etat de l'objet...</option>
                         <option value="5">Neuf</option>
                         <option value="4">Très bon état</option>
                         <option value="3">Bon état</option>
@@ -169,8 +166,8 @@ Magasin
                     </select>
                 </div>
                 <div class="input-group input-group-md mt-3">
-                    <span class="input-group-text col-xl-2 bg-primary text-dark" id="span_availability">Disponibilité</span>
-                    <select class="form-control" id="availability" aria-describedby="span_availability">
+                    <select class="form-control" id="availability">
+                        <option>Disponibilité de l'objet...</option>
                         <option value="1">Disponible</option>
                         <option value="0">Indisponible</option>
                         <option value="2">En cours de location</option>
@@ -189,16 +186,15 @@ Magasin
 <div class="modal fade" id="addTagForm" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="addTagModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-xl">
         <div class="modal-content">
-            <div class="modal-header">
+            <div class="modal-header bg-primary">
                 <h1 class="modal-title fs-5" id="addTagModalLabel">Ajouter un tag</h1>
             </div>
             <div class="modal-body">
                 <div class="input-group input-group-md mt-3">
-                    <span class="input-group-text col-xl-2 bg-primary text-dark" id="span_tag_name">Nom du tag</span>
-                    <input aria-describedby="span_tag_name" type="text" class="form-control" id="tag_name" placeholder="Nom du tag">
+                    <input type="text" class="form-control" id="tag_name" placeholder="Nom du tag">
                 </div>
                 <div class="input-group input-group-md mt-3">
-                    <span class="input-group-text col-xl-2 bg-primary text-dark" id="span_tag_color">Couleur du tag</span>
+                    <span class="input-group-text col-xl-2 text-dark" id="span_tag_color">Couleur du tag</span>
                     <input aria-describedby="span_tag_color" type="color" class="form-control form-control-color" id="tag_color" placeholder="Couleur du tag">
                 </div>
                 <div class="modal-footer">
@@ -214,7 +210,7 @@ Magasin
 <div class="modal fade" id="confirmDeleteItemModal" tabindex="-1" role="dialog" aria-labelledby="confirmDeleteItemModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
-            <div class="modal-header">
+            <div class="modal-header bg-primary">
                 <h5 class="modal-title" id="confirmDeleteItemModalLabel">Confirmer suppression</h5>
             </div>
             <div class="modal-body">
@@ -232,7 +228,7 @@ Magasin
 <div class="modal fade" id="confirmDeleteTagsModal" tabindex="-1" role="dialog" aria-labelledby="confirmDeleteTagsModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
-            <div class="modal-header">
+            <div class="modal-header bg-primary">
                 <h5 class="modal-title" id="confirmDeleteTagsModalLabel">Confirmer suppression</h5>
             </div>
             <div class="modal-body">
@@ -246,13 +242,10 @@ Magasin
     </div>
 </div>
 
-<!-- NOTIFICATIONS -->
-<div class="toast-container position-fixed bottom-0 end-0 p-3" id="notificationContainer">
-</div>
-
 <div id="csrf" class="d-none">
     {% csrf_token %}
 </div>
+<script src="{% static 'js/api/api.js' %}"></script>
 <script src="{% static 'js/warehouse.js' %}"></script>
 
 {% endblock %}

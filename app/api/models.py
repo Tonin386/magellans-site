@@ -13,7 +13,7 @@ NOTIFICATION_STATUS = [
 APPLICATION_CHOICES = [
     (0, "API"),
     (1, "Trésorerie"),
-    (2, "Gestionnaire"),
+    (2, "Dashboard"),
     (3, "Magellans"),
     (4, "Membres"),
     (5, "Vitrine"),

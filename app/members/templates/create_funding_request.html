@@ -1,0 +1,209 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}
+Demande d'aide à projet
+{% endblock %}
+
+{% block nav %}
+{% include "nav.html" %}
+{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid mt-3">
+    <div class="col-lg-12 text-center mb-3">
+        <h1 class="display-5"> Fiche d'aide à projet </h1>
+        <em class="text-muted fs-4">Demande d'aide financière à Magellans</em>
+    </div>
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                <strong>Comment ça marche ?</strong> <hr> 
+                Cette page vous permet de créer une fiche de projet et demander un financement jusqu'à une hauteur de 500€.<br>
+                Il vous suffit de remplir les quelques informations suivantes, et votre demande sera examinée lors du prochain conseil d'administration Magellans (deux réunions mensuellement).<br>
+                Merci de transmettre tous les documents au format PDF.
+                <hr>
+                <em>En cas de demande particulière ou d'informations, contactez nous: <a class="link link-secondary" href="mailto:contact@magellans.fr">contact@magellans.fr</a></em>
+            </div>
+        </div>
+
+        <form method="post" class="col-lg-12 row justify-content-center needs-validation" novalidate enctype="multipart/form-data">
+            {% csrf_token %}            
+            <div class="col-lg-5 my-2">
+                <input type="text" name="name" maxlength="255" class="form-control" placeholder="Nom du projet : " id="id_name" required>
+            </div>
+            
+            <div class="col-lg-5 my-2">
+                <input type="text" name="role" maxlength="255" class="form-control" placeholder="Poste occupé sur le projet : " id="id_role" required>
+            </div>
+            
+            <div class="col-lg-5 my-2">
+                <input type="text" name="directors" maxlength="255" class="form-control" placeholder="Réalisateur.ices : " id="id_directors" required>
+            </div>
+            
+            <div class="col-lg-5 my-2">
+                <input type="text" name="genre" maxlength="255" class="form-control" placeholder="Genre : " id="id_genre" required>
+            </div>
+            
+            <div class="col-lg-5 my-2">
+                <input type="number" name="duration" min="0" class="form-control" placeholder="Durée en minutes estimée : " id="id_duration" required>
+            </div>
+            
+            <div class="col-lg-5 my-2">
+                <input type="text" name="production" maxlength="255" class="form-control" placeholder="Production : " id="id_production" required>
+            </div>
+            
+            <div class="col-lg-5 my-2">
+                <div class="input-group">
+                    <span class="input-group-text">
+                        Début du tournage
+                        <a class="badge text-dark" data-bs-toggle="tooltip" data-bs-title="Veuillez renseigner les dates prévisionnelles du tournage, même si celles-ci sont sujettes à un changement.">?</a>
+                    </span>
+                    <input type="date" name="previsional_shoot_start_date" class="form-control" placeholder="Date prévisionnelle du début du tournage : " id="id_previsional_shoot_start_date" required>
+                </div>
+            </div>
+            
+            <div class="col-lg-5 my-2">
+                <div class="input-group">
+                    <span class="input-group-text">
+                        Fin du tournage
+                        <a class="badge text-dark" data-bs-toggle="tooltip" data-bs-title="Veuillez renseigner les dates prévisionnelles du tournage, même si celles-ci sont sujettes à un changement.">?</a>
+                    </span>
+                    <input type="date" name="previsional_shoot_end_date" class="form-control" placeholder="Date prévisionnelle de fin du tournage : " id="id_previsional_shoot_end_date" required>
+                </div>
+            </div>
+            
+            <div class="col-lg-10 my-2">
+                <textarea name="explanation" cols="40" rows="5" class="form-control" placeholder="Expliquez pourquoi vous opérez cette demande auprès de Magellans..." id="id_explanation" required></textarea>
+            </div>
+            
+            <div class="col-lg-5 my-2">
+                <input type="number" name="funding_value" min="0" max="500" step="10" class="form-control" placeholder="Montant demandé : " id="id_funding_value" required>
+            </div>
+            
+            <div class="col-lg-10 my-2">
+                <div class="input-group">
+                    <span class="input-group-text col-lg-4" id="span_script">Scénario</span>
+                    <div class="border form-control input-group">
+                        <div class="background-text" id="for_id_script">Aucun fichier choisi</div>
+                        <input type="file" accept=".pdf" name="script" class="hidden-file-input" id="id_script" required>
+                    </div>
+                    <button type="button" class="btn btn-danger input-group-text d-none" id="btn_id_script"><i class="fa-solid fa-trash"></i></button>
+                </div>
+            </div>
+            
+            <div class="col-lg-10 my-2">
+                <div class="input-group">
+                    <span class="input-group-text col-lg-4" id="span_intention_note">Note d'intention</span>
+                    <div class="border form-control input-group">
+                        <div class="background-text" id="for_id_intention_note">Aucun fichier choisi</div>
+                        <input type="file" accept=".pdf" name="intention_note" class="hidden-file-input" id="id_intention_note" required>
+                    </div>
+                    <button type="button" class="btn btn-danger input-group-text d-none" id="btn_id_intention_note"><i class="fa-solid fa-trash"></i></button>
+                </div>
+            </div>
+            
+            <div class="col-lg-10 my-2">
+                <div class="input-group">
+                    <span class="input-group-text col-lg-4" id="span_previsional_budget_plan">Plan de financement</span>
+                    <div class="border form-control input-group">
+                        <div class="background-text" id="for_id_previsional_budget_plan">Aucun fichier choisi</div>
+                        <input type="file" accept=".pdf" name="previsional_budget_plan" class="hidden-file-input" id="id_previsional_budget_plan" required>
+                    </div>
+                    <button type="button" class="btn btn-danger input-group-text d-none" id="btn_id_previsional_budget_plan"><i class="fa-solid fa-trash"></i></button>
+                </div>
+            </div>
+            
+            <div class="col-lg-10 my-2">
+                <div class="input-group">
+                    <div class="input-group-text col-lg-4" id="span_contact_list">
+                        Liste de contact 
+                        <a class="badge text-dark" data-bs-toggle="tooltip" data-bs-title="La liste des personnes qui seront présentes sur le tournage. Cette liste peut être incomplète, mais elle doit contenir les informations que vous possédez déjà.">?</a>
+                    </div>
+                    <div class="border form-control input-group">
+                        <div class="background-text" id="for_id_contact_list">Aucun fichier choisi</div>
+                        <input type="file" accept=".pdf" name="contact_list" class="hidden-file-input" id="id_contact_list" required>
+                    </div>
+                    <button type="button" class="btn btn-danger input-group-text d-none" id="btn_id_contact_list"><i class="fa-solid fa-trash"></i></button>
+                </div>
+            </div>
+            
+            <div class="col-md-3 m-auto text-center">
+                <button type="submit" class="btn btn-success w-75 my-3">Envoyer la demande</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function() {
+        
+        (() => {
+            'use strict'
+            
+            // Fetch all the forms we want to apply custom Bootstrap validation styles to
+            const forms = document.querySelectorAll('.needs-validation')
+            
+            // Loop over them and prevent submission
+            Array.from(forms).forEach(form => {
+                form.addEventListener('submit', event => {
+                    if (!form.checkValidity()) {
+                        event.preventDefault()
+                        event.stopPropagation()
+                    }
+                    
+                    form.classList.add('was-validated')
+                }, false)
+            })
+        })();
+
+        var alertList = document.querySelectorAll(".alert");
+        alertList.forEach(function (alert) {
+            new bootstrap.Alert(alert);
+        });
+        
+        const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+        const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
+        
+        const fileInputList = document.querySelectorAll('input[type="file"]');
+        
+        fileInputList.forEach(fileInput => {
+            $(fileInput).change(function() {
+                let filename = "";
+                try {
+                    filename = this.files[0].name;
+                    if(!filename.toLowerCase().includes(".pdf")) {
+                        fileInput.value = "";
+                        filename = "Veuillez choisir un fichier au format .pdf";
+                        $('#btn_' + this.id).addClass('d-none');
+                    }
+                    else {
+                        $('#btn_' + this.id).removeClass('d-none');
+                    }
+                }
+                catch {
+                    filename = "Aucun fichier choisi";
+                    $('#btn_' + this.id).addClass('d-none');
+                    
+                }
+                
+                $("#for_" + this.id).text(filename);
+            });
+        });
+        
+        const btnDeleteFileList = document.querySelectorAll("button.d-none");
+        btnDeleteFileList.forEach(btn => {
+            $(btn).click(function(){
+                let inputField = $("#" + this.id.replace("btn_", ""));
+                let inputText = $("#for_" + this.id.replace("btn_", ""));
+                inputField.value = "";
+                inputText.text("Aucun fichier choisi");
+                $(this).addClass("d-none");
+            })
+        });
+    });
+</script>
+
+{% endblock %}
