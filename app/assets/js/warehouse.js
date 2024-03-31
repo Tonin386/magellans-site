@@ -178,31 +178,31 @@ function filterSearchItems(text) {
 }
 
 function filterTagItems() {
-    var hiddenTags = [];
+    var selectedTags = [];
     itemsMatchingTags = [];
     tagSelectButtons.forEach(tagSelectButton => {
-        if(!tagSelectButton.checked) {
-            hiddenTags.push($(tagSelectButton).attr('value'));
+        if(tagSelectButton.checked) {
+            selectedTags.push($(tagSelectButton).attr('value'));
         }
     });
 
     itemDatabase.forEach(item => {
-        if(hiddenTags.length == 0 || hiddenTags.length == tagSelectButtons.length) {
+        if(selectedTags.length == 0 || selectedTags.length == tagSelectButtons.length) {
             itemsMatchingTags.push(item.id);
             return;
         }
 
-        var matchesOneTag = false;
+        var showItem = false;
+        console.log(selectedTags);
 
-        hiddenTags.forEach(hiddenTag => {
-            if(item.tagNames.includes(hiddenTag)) {
-                matchesOneTag = true;
+        selectedTags.forEach(selectedTag => {
+            if(item.tagNames.includes(selectedTag)) {
+                showItem = true;
                 return;
             }
         });
 
-        if(!matchesOneTag && item.tagNames.length > 0) {
-            console.log(item.tagNames);
+        if(showItem && item.tagNames.length > 0) {
             itemsMatchingTags.push(item.id);
         }
     });
