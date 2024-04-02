@@ -57,7 +57,7 @@ class ProjectFundingRequest(models.Model):
 class Project(models.Model):
     name = models.CharField("Nom", max_length=255)
     slug = models.SlugField("Slug", max_length=255, unique=True, blank=True, editable=False)
-    genre = models.CharField("Genre", max_length=255)
+    genre = models.CharField("Genre", max_length=255, blank=True, default="Non-spécifié")
     desc = models.TextField("Résumé explicatif de l'oeuvre ou du projet")
     short_desc = models.TextField("Courte phrase d'accroche pour le projet", null=True, blank=True)
     poster = models.ImageField(upload_to='img/projects/', default="img/projects/default.png")

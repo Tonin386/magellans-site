@@ -130,10 +130,11 @@ def api_dashboard(request):
             fields['name'] = name
         
 
-        if not director in ['undefined', '']:
+        if not director in ['0', '']:
             fields['director'] = Person.objects.get(pk=int(director))
 
-        if not money_handler in ['undefined', '']:
+        if not money_handler in ['0', '']:
+            print(money_handler)
             fields['money_handler'] = Person.objects.get(pk=int(money_handler))
 
         if not genre in ['undefined', '']:

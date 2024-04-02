@@ -19,6 +19,9 @@ elif [ "$1" = "db" ]; then
   docker compose --env-file app/.env up -d
   docker exec -it magellans-django python manage.py makemigrations
   docker exec -it magellans-django python manage.py migrate
+elif [ "$1" = "python" ]; then
+  docker compose --env-file app/.env up -d
+  docker exec -it magellans-django python manage.py shell
 else
   echo "Invalid argument."
   exit 1
