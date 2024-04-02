@@ -18,11 +18,30 @@
           </a>
         </li>
         {% endif %} 
-        {% if request.user.is_authenticated %}
         <li class="nav-item">
-          <a class="nav-link" href="{% url 'members' %}">
+          <a class="nav-link" href="{% url 'warehouse' %}">
+            Magasin
+          </a>
+        </li>
+        {% if request.user.is_authenticated %}
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
             Espace membres
           </a>
+          <ul class="dropdown-menu">
+            <li>
+              <a class="dropdown-item" href="{% url 'members' %}">Accueil</a>
+            </li>
+            <li>
+              <a class="dropdown-item" href="{% url 'my-profile' %}">Mon profil</a>
+            </li>
+            <li>
+              <a class="dropdown-item" href="{% url 'create-invoice' %}">Editer une note de frais</a>
+            </li>
+            <li>
+              <a class="dropdown-item" href="{% url 'create-funding-request' %}">Demande d'aide à projets</a>
+            </li>
+          </ul>
         </li>
         {% if request.user.is_staff %}
         <li class="nav-item dropdown">
@@ -46,31 +65,7 @@
         </li>
         {% endif %}
         {% endif %}
-        <li class="nav-item">
-          <a class="nav-link" href="{% url 'warehouse' %}">
-            Magasin
-          </a>
-        </li>
-        
         {% if request.user.is_authenticated %}
-        <li class="nav-item">
-          <a class="nav-link" href="{% url 'my-profile' %}">
-            Mon profil
-          </a>
-        </li>
-        <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-            Formulaires
-          </a>
-          <ul class="dropdown-menu">
-            <li>
-              <a class="dropdown-item" href="{% url 'create-invoice' %}">Editer une note de frais</a>
-            </li>
-            <li>
-              <a class="dropdown-item" href="{% url 'create-funding-request' %}">Demande d'aide à projet</a>
-            </li>
-          </ul>
-        </li>
         <li class="nav-item">
             {% logout_form %}
         </li>

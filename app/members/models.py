@@ -67,6 +67,9 @@ class Member(AbstractBaseUser, PermissionsMixin):
             site_person = Person.objects.create(first_name="Inconnu", last_name="Inconnu", email="Inconnu", gender="O")
             self.site_person = site_person
             created = True
+
+        self.is_staff = self.role in ['P', 'C', 'G', 'T', 'S']
+            
         super().save(*args, **kwargs)
         if created:
             site_person.site_profile = self
