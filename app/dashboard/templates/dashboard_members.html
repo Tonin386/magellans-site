@@ -46,7 +46,7 @@ Dashboard utilisateurs
                         <td>{{ member.first_name }}</td>
                         <td>{{ member.email }}</td>
                         <td>{{ member.phone_formatted }}</td>
-                        <td {% if member.is_staff %} class="bg-success" {% elif member.role == 'M' %} class="bg-primary" {% elif member.role == 'E' %} class="bg-info" {% endif %}>{{ member.role }}</td>
+                        <td {% if member.is_staff %} class="bg-success" {% elif member.site_person.role == 'M' %} class="bg-primary" {% elif member.site_person.role == 'E' %} class="bg-info" {% endif %}>{{ member.role }}</td>
                         <td>{{ member.gender }}</td>
                     </tr>
                     {% endfor %}
