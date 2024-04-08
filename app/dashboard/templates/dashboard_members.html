@@ -66,7 +66,7 @@ Dashboard utilisateurs
                         <td>{{ ext_user.first_name }}</td>
                         <td>{{ ext_user.email }}</td>
                         <td>{{ ext_user.phone }}</td>
-                        <td {% if ext_user.ext_person.role == 'O' or ext_user.ext_person.role == 'X' %} class="bg-danger" {% else %} class="bg-primary" {% endif %}>{{ ext_user.role }}</td>
+                        <td {% if ext_user.ext_person.role == 'O' or ext_user.ext_person.role == 'X' %} class="bg-danger" {% else %} class="bg-primary" {% endif %}>{{ ext_user.ext_person.role }}</td>
                         <td>{{ ext_user.gender }}</td>
                     </tr>
                     {% endfor %}

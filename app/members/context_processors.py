@@ -1,9 +1,9 @@
-from .models import Member
+from .models import Person
 
 def get_treasurer(request):
     try: 
-        treasurer = Member.objects.filter(role='T')[0]
-        return {"treasurer": treasurer.site_person}
+        treasurer = Person.objects.filter(role='T')[0]
+        return {"treasurer": treasurer}
     except Exception as e:
         print(e)
         return {"treasurer": None}

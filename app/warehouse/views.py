@@ -60,7 +60,7 @@ def placeOrder(request):
             email_message = render_to_string('email_order.html', locals())
             recipients = ["contact@magellans.fr", user.email]
 
-            for warehouse_handler in Member.objects.filter(role="G"):
+            for warehouse_handler in Member.objects.filter(site_person__role="G"):
                 recipients.append(warehouse_handler.email)
 
             send_mail(subject, email_message, settings.DEFAULT_FROM_EMAIL, recipients)

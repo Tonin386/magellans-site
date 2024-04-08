@@ -36,13 +36,13 @@ def verify_token_permissions(request):
         permissions['dashboard'] += ['read', 'write']
         permissions['members'] += ['read', 'write']
         
-        if user.role == "G":
+        if user.site_profile.role == "G":
             permissions['warehouse'] += ['write']
             
-        if user.role == "P":
+        if user.site_profile.role == "P":
             permissions['bank'] += ['read']
             
-        if user.role == "T":
+        if user.site_profile.role == "T":
             permissions['bank'] += ['read', 'write']
         
     if user.is_superuser:
