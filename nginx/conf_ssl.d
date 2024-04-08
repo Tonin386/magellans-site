@@ -17,7 +17,7 @@ server {
 
 server {
     listen 443 ssl;
-    listen [::]:443 ssl;
+    listen [::]:443 ssl http2;
     server_name autodiscover.magellans.fr;
 
     ssl_certificate /etc/letsencrypt/live/magellans.fr/fullchain.pem;
@@ -26,7 +26,7 @@ server {
 
 server {
     listen 443 ssl;
-    listen [::]:443 ssl;
+    listen [::]:443 ssl http2;
     server_name magellans.fr;
 
     client_max_body_size 25M;
@@ -77,7 +77,7 @@ server {
 
 server {
     listen 443 ssl;
-    listen [::]:443 ssl;
+    listen [::]:443 ssl http2;
     server_name webmail.magellans.fr;
 
     ssl_certificate /etc/letsencrypt/live/magellans.fr/fullchain.pem;

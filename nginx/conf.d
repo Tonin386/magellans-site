@@ -1,6 +1,6 @@
 server {
     listen 80;
-    listen [::]:80;
+    listen [::]:80 http2;
     server_name localhost;
 
     client_max_body_size 25M;
