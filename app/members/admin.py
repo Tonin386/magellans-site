@@ -24,6 +24,9 @@ class MemberAdmin(admin.ModelAdmin):
     
     def gender(self, obj):
         return obj.site_person.gender
+
+    def role(self, obj):
+        return obj.site_person.role
     
     phone_formatted.short_description = "N° téléphone"
     account_formatted.short_description = "Statut compte"
@@ -31,16 +34,17 @@ class MemberAdmin(admin.ModelAdmin):
     first_name.short_description = "Prénom"
     last_name.short_description = "Nom"
     gender.short_description = "Sexe"
+    role.short_description = "Rôle"
     
     list_display = ('date_joined', 'email', 'last_name', 'first_name', 'is_staff', 'role', 'is_active', 'phone_formatted', 'account_formatted', 'donation_formatted', 'gender')
-    list_filter = ('role', 'is_active', 'is_staff', 'site_person__gender')
-    search_fields =  ('date_joined', 'email', 'last_name', 'first_name', 'is_staff', 'role', 'is_active', 'phone_formatted', 'account_formatted', 'donation_formatted', 'site_person__gender')
+    list_filter = ('site_person__role', 'is_active', 'is_staff', 'site_person__gender')
+    search_fields =  ('date_joined', 'email', 'last_name', 'first_name', 'is_staff', 'site_person__role', 'is_active', 'phone_formatted', 'account_formatted', 'donation_formatted', 'site_person__gender')
     ordering = ('-date_joined', 'email', 'site_person__last_name', 'site_person__first_name', 'is_staff')
 
 class PersonAdmin(admin.ModelAdmin):
-    list_display = ('email', 'last_name', 'first_name', 'gender', 'phone')
-    search_fields = ('email', 'last_name', 'first_name', 'gender', 'phone')
-    ordering = ('email', 'last_name', 'first_name', 'gender')
+    list_display = ('email', 'last_name', 'first_name', 'gender', 'phone', 'role')
+    search_fields = ('email', 'last_name', 'first_name', 'gender', 'phone', 'role')
+    ordering = ('email', 'last_name', 'first_name', 'gender', 'role')
 
 class UnregisteredMemberAdmin(admin.ModelAdmin):
     def phone_formatted(self, obj):

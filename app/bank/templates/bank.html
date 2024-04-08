@@ -9,39 +9,48 @@ Trésorerie
 {% endblock %}
 
 {% block content %}
-<div class="container">
-    <h1 class="display-4 mt-3 mb-5"> Trésorerie </h1>
-    <h2 class="title">Liste des Opérations</h2>
-    <table class="table table-bordered" id="operations-table">
-        <thead>
-            <tr>
-                <th>ID Opération</th>
-                <th>Description</th>
-                <th>Type d'opération</th>
-                <th>Emetteur de l'opération</th>
-                <th>Receveur de l'opération</th>
-                <th>Montant</th>
-                <th>Date d'ajout</th>
-                <th>Date</th>
-                <th>Statut</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for operation in operations %}
-            <tr>
-                <td>{{ operation.id }}</td>
-                <td>{{ operation.desc }}</td>
-                <td>{{ operation.get_direction_display }}</td>
-                <td>{{ operation.src }}</td>
-                <td>{{ operation.dest }}</td>
-                <td>{{ operation.amout }}</td>
-                <td>{{ operation.date_added }}</td>
-                <td>{{ operation.date }}</td>
-                <td>{{ operation.get_status_display }}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+<div class="container-fluid p-3">
+    <h1 class="display-5 text-center"> Trésorerie </h1>
+    <div class="row mt-5">
+        <div class="col-lg-12">
+            <h2 class="title">Liste des opérations</h2>
+            <table class="table table-bordered" id="operations-table">
+                <thead>
+                    <tr>
+                        <th>ID Opération</th>
+                        <th>Description</th>
+                        <th>Type d'opération</th>
+                        <th>Emetteur de l'opération</th>
+                        <th>Receveur de l'opération</th>
+                        <th>Montant</th>
+                        <th>Date d'ajout</th>
+                        <th>Date</th>
+                        <th>Statut</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for operation in operations %}
+                    <tr>
+                        <td>{{ operation.id }}</td>
+                        <td>{{ operation.desc }}</td>
+                        <td>{{ operation.get_direction_display }}</td>
+                        <td>{{ operation.src }}</td>
+                        <td>{{ operation.dest }}</td>
+                        <td>{{ operation.amout }}</td>
+                        <td>{{ operation.date_added }}</td>
+                        <td>{{ operation.date }}</td>
+                        <td>{{ operation.get_status_display }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="row mt-5">
+        <div class="col-lg-12">
+            <h2 class="title">Liste des notes de frais</h2>
+        </div>
+    </div>
 </div>
 
 <script>

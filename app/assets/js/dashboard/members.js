@@ -8,6 +8,7 @@ async function addExtUser(callback = function(){}) {
         email: document.querySelector("#ext-user_email").value,
         gender: document.querySelector("#ext-user_gender").value,
         phone: document.querySelector("#ext-user_phone").value,
+        role: document.querySelector("#select_role").value
     };
 
     let response = await sendApiRequest(params, "members");

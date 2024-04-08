@@ -29,18 +29,22 @@ Profil
                         <td>
                             <div class="input-group input-group-md">
                                 <div class="form-control"> 
-                                    <select style="width: 100%;" id="select_role" pk="{{ object.pk }}">
+                                    <select style="width: 100%;" id="select_role" pk="{{ object.site_person.pk }}">
                                         <optgroup label="CA">
-                                            <option value="P" {% if object.role == "P" %} selected {% endif %}>Président.e</option>
-                                            <option value="C" {% if object.role == "C" %} selected {% endif %}>Communication</option>
-                                            <option value="G" {% if object.role == "G" %} selected {% endif %}>Gestionnaire magasin</option>
-                                            <option value="T" {% if object.role == "T" %} selected {% endif %}>Trésorier.ère</option>
-                                            <option value="S" {% if object.role == "S" %} selected {% endif %}>Secrétaire</option>
+                                            <option value="P" {% if object.site_person.role == "P" %} selected {% endif %}>Président.e</option>
+                                            <option value="C" {% if object.site_person.role == "C" %} selected {% endif %}>Communication</option>
+                                            <option value="G" {% if object.site_person.role == "G" %} selected {% endif %}>Gestionnaire magasin</option>
+                                            <option value="T" {% if object.site_person.role == "T" %} selected {% endif %}>Trésorier.ère</option>
+                                            <option value="S" {% if object.site_person.role == "S" %} selected {% endif %}>Secrétaire</option>
                                         </optgroup>
                                         <optgroup label="Membres & autres">
-                                            <option value="M" {% if object.role == "M" %} selected {% endif %}>Membre Magellans</option>
-                                            <option value="E" {% if object.role == "E" %} selected {% endif %}>Inscrit site (par défaut)</option>
-                                            <option value="O" {% if object.role == "O" %} selected {% endif %}>Organisation</option>
+                                            <option value="M" {% if object.site_person.role == "M" %} selected {% endif %}>Membre Magellans</option>
+                                            <option value="Mx" {% if object.site_person.role == "M" %} selected {% endif %}>Membre Magellans & pas site</option>
+                                            <option value="E" {% if object.site_person.role == "E" %} selected {% endif %}>Inscrit site (par défaut)</option>
+                                        </optgroup>
+                                        <optgroup label="Externes site">
+                                            <option value="X" {% if object.site_person.role == "X" %} selected {% endif %}>Externe site</option>
+                                            <option value="O" {% if object.site_person.role == "O" %} selected {% endif %}>Organisation</option>
                                         </optgroup>
                                     </select>
                                 </div>
@@ -65,7 +69,7 @@ Profil
                     </tr>
                     <tr>
                         <th>Sexe</th>
-                        <td>{{ object.get_gender_display }}</td>
+                        <td>{{ object.gender }}</td>
                     </tr>
                     <tr class="{% if object.donation > 0 %}bg-success{% else %}bg-warning{% endif %}">
                         <th>Donation</th>

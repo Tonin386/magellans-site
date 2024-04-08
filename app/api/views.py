@@ -264,6 +264,9 @@ def api_members(request):
         email = body_post.get("email", "Non-renseigné")
         phone = body_post.get("phone", "Non-renseigné")
         gender = body_post.get("gender", "O")
+        role = body_post.get("role", "X")
+
+        print(role)
 
         if "Non-renseigné" in [first_name, last_name]:
             createNotification("Ajout utilisateur externe", "add-ext_user", app_id, 3, "Le nouvel utilisateur externe n'a pas été ajouté : veuillez renseigner au moins un nom et prénom.", user)
@@ -274,7 +277,8 @@ def api_members(request):
             last_name=last_name,
             email=email,
             gender=gender,
-            phone=phone
+            phone=phone,
+            role=role
         )
 
         person = Person.objects.create(
@@ -309,9 +313,11 @@ def api_members(request):
         pk = body_post.get("pk", "undefined")
         role = body_post.get("role", "undefined")
 
-        user = Member.objects.get(pk=pk)
-        user.role = role
-        user.save()
+        print(role)
+        person = Person.objects.get(pk=pk)
+        person.role = role
+        print(person)
+        person.save()
 
         createNotification("Modification utilisateur", "edit-user_role", app_id, 0, "Le rôle de l'utilisateur a été modifié.", user)
         return JsonResponse({"status": "success", "message": "User role modified."})

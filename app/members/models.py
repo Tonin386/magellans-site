@@ -9,9 +9,11 @@ ROLE_CHOICES = [
     ('G', "Gestionnaire magasin"),
     ('T', "Trésorier.ère"),
     ('S', "Secrétaire"),
-    ('M', "Membre Magellans"),
+    ('M', "Membre Magellans & site"),
+    ('Mx', "Membre Magellans & pas site"),
     ('E', "Inscrit site"),
-    ('O', 'Organisation') #Association, partenaire, entreprise...
+    ('O', 'Organisation'), #Association, partenaire, entreprise...
+    ('X', 'Externe site')
 ]
 
 GENDER_CHOICES = [
@@ -49,7 +51,7 @@ class Member(AbstractBaseUser, PermissionsMixin):
     date_joined = models.DateTimeField(auto_now_add=True, verbose_name="Date d'inscription")
     donation = models.FloatField(default=0, verbose_name="Montant donation")
     account = models.FloatField(default=0, verbose_name="Statut compte")
-    role = models.CharField(max_length=1, choices=ROLE_CHOICES, default='E', verbose_name="Role")
+    role = models.CharField(max_length=2, choices=ROLE_CHOICES, default='E', verbose_name="Role")
     api_token = models.CharField(max_length=128, null=True, blank=True, editable=False)
 
     objects = MemberManager()
@@ -64,7 +66,7 @@ class Member(AbstractBaseUser, PermissionsMixin):
     def save(self, *args, **kwargs):
         created = False
         if not hasattr(self, "site_person"):
-            site_person = Person.objects.create(first_name="Inconnu", last_name="Inconnu", email="Inconnu", gender="O")
+            site_person = Person.objects.create(first_name="Inconnu", last_name="Inconnu", email="Inconnu", gender="O", role="E")
             self.site_person = site_person
             created = True
 
@@ -103,6 +105,9 @@ class Member(AbstractBaseUser, PermissionsMixin):
     def phone(self):
         return self.site_person.phone
     
+    # def role(self):
+    #     return self.site_person.get_role_display()
+    
 class UnregisteredMember(models.Model):
     class Meta:
         verbose_name = "Externe site"
@@ -128,6 +133,9 @@ class UnregisteredMember(models.Model):
     
     def email(self):
         return self.ext_person.email
+    
+    def role(self):
+        return self.ext_person.get_role_display()
 
 class Person(models.Model):
     email = models.EmailField(verbose_name="Courriel", null=True, blank=True)
@@ -137,6 +145,7 @@ class Person(models.Model):
     gender = models.CharField(max_length=1, choices=GENDER_CHOICES, null=True, blank=True, verbose_name="Sexe")
     site_profile = models.OneToOneField(Member, on_delete=models.CASCADE, null=True, blank=True, verbose_name="Profil site lié", related_name="site_person")
     ext_profile = models.OneToOneField(UnregisteredMember, on_delete=models.CASCADE, null=True, blank=True, verbose_name="Profil externe lié", related_name="ext_person")
+    role = models.CharField(max_length=2, choices=ROLE_CHOICES, default='X', verbose_name="Role")
     class Meta:
         verbose_name = "Personne"
         
