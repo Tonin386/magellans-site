@@ -46,7 +46,7 @@ Dashboard utilisateurs
                         <td>{{ member.first_name }}</td>
                         <td>{{ member.email }}</td>
                         <td>{{ member.phone_formatted }}</td>
-                        <td {% if member.is_staff %} class="bg-success" {% elif member.role == 'M' %} class="bg-primary" {% elif member.role == 'E' %} class="bg-info" {% endif %}>{{ member.get_role_display }}</td>
+                        <td {% if member.is_staff %} class="bg-success" {% elif member.role == 'M' %} class="bg-primary" {% elif member.role == 'E' %} class="bg-info" {% endif %}>{{ member.role }}</td>
                         <td>{{ member.gender }}</td>
                     </tr>
                     {% endfor %}
@@ -66,7 +66,7 @@ Dashboard utilisateurs
                         <td>{{ ext_user.first_name }}</td>
                         <td>{{ ext_user.email }}</td>
                         <td>{{ ext_user.phone }}</td>
-                        <td class="bg-danger">Externe site</td>
+                        <td {% if ext_user.ext_person.role == 'O' or ext_user.ext_person.role == 'X' %} class="bg-danger" {% else %} class="bg-primary" {% endif %}>{{ ext_user.role }}</td>
                         <td>{{ ext_user.gender }}</td>
                     </tr>
                     {% endfor %}
@@ -113,7 +113,29 @@ Dashboard utilisateurs
                         <option value="M">Homme</option>
                         <option value="O">Autre</option>
                     </select>
-                    
+                </div>
+                <div class="input-group input-group-md mt-3">
+                    <div class="form-control"> 
+                        <select style="width: 100%;" id="select_role" pk="{{ object.site_person.pk }}">
+                            <option></option>
+                            <optgroup label="CA">
+                                <option value="P">Président.e</option>
+                                <option value="C">Communication</option>
+                                <option value="G">Gestionnaire magasin</option>
+                                <option value="T">Trésorier.ère</option>
+                                <option value="S">Secrétaire</option>
+                            </optgroup>
+                            <optgroup label="Membres & autres">
+                                <option value="M">Membre Magellans</option>
+                                <option value="Mx">Membre Magellans & pas site</option>
+                                <option value="E">Inscrit site (par défaut)</option>
+                            </optgroup>
+                            <optgroup label="Externes site">
+                                <option value="X">Externe site</option>
+                                <option value="O">Organisation</option>
+                            </optgroup>
+                        </select>
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Annuler</button>
@@ -128,10 +150,10 @@ Dashboard utilisateurs
         var table = new DataTable('#members-table', {
             order: [[1, "asc"]],
             columnDefs: [
-                {responsivePriority: 1, targets: 0},
-                {responsivePriority: 1, targets: 2},
-                {responsivePriority: 1, targets: 3},
-                {responsivePriority: 2, targets: 4},
+            {responsivePriority: 1, targets: 0},
+            {responsivePriority: 1, targets: 2},
+            {responsivePriority: 1, targets: 3},
+            {responsivePriority: 2, targets: 4},
             ]
         });
         
@@ -143,6 +165,11 @@ Dashboard utilisateurs
             let id = response.id_row;
             table.row(id).remove().draw(false);
         };
+        
+        var select_role = $('#select_role').select2({
+            placeholder: "Choisir le rôle de la personne",
+            dropdownParent: $('#addExtUserForm'),
+        });
     });
 </script>
 <script src="{% static 'js/api/api.js' %}"></script>

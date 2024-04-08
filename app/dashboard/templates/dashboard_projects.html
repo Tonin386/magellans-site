@@ -94,7 +94,29 @@ Dashboard projets
                         <option value="M">Homme</option>
                         <option value="O">Autre</option>
                     </select>
-                    
+                </div>
+                <div class="input-group input-group-md mt-3">
+                    <div class="form-control"> 
+                        <select style="width: 100%;" id="select_role" pk="{{ object.site_person.pk }}">
+                            <option></option>
+                            <optgroup label="CA">
+                                <option value="P">Président.e</option>
+                                <option value="C">Communication</option>
+                                <option value="G">Gestionnaire magasin</option>
+                                <option value="T">Trésorier.ère</option>
+                                <option value="S">Secrétaire</option>
+                            </optgroup>
+                            <optgroup label="Membres & autres">
+                                <option value="M">Membre Magellans</option>
+                                <option value="Mx">Membre Magellans & pas site</option>
+                                <option value="E">Inscrit site (par défaut)</option>
+                            </optgroup>
+                            <optgroup label="Externes site">
+                                <option value="X">Externe site</option>
+                                <option value="O">Organisation</option>
+                            </optgroup>
+                        </select>
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-danger" data-bs-target="#addProjectForm" data-bs-toggle="modal" data-bs-dismiss="modal">Annuler</button>
@@ -213,6 +235,11 @@ Dashboard projets
             dropdownParent: $('#addProjectForm'),
         });
         
+        var select_role = $('#select_role').select2({
+            placeholder: "Choisir le rôle de la personne",
+            dropdownParent: $('#addExtUserForm'),
+        });
+        
         callback_addExtUser = function(response) {
             json_response = JSON.parse(response.data);
             
@@ -237,6 +264,11 @@ Dashboard projets
             select_money_handler = $('#select_money_handler').select2({
                 placeholder: "Sélectionner un.e responsable financier",
                 dropdownParent: $('#addProjectForm'),
+            });
+
+            select_role = $('#select_role').select2({
+                placeholder: "Choisir le rôle de la personne",
+                dropdownParent: $('#addExtUserForm'),
             });
         };
     });

@@ -24,6 +24,33 @@ Profil
                         <th>Email</th>
                         <td>{{ object.email }}</td>
                     </tr>
+                    <tr>
+                        <th>Rôle</th>
+                        <td>
+                            <div class="input-group input-group-md">
+                                <div class="form-control"> 
+                                    <select style="width: 100%;" id="select_role" pk="{{ object.pk }}">
+                                        <optgroup label="CA">
+                                            <option value="P" {% if object.role == "P" %} selected {% endif %}>Président.e</option>
+                                            <option value="C" {% if object.role == "C" %} selected {% endif %}>Communication</option>
+                                            <option value="G" {% if object.role == "G" %} selected {% endif %}>Gestionnaire magasin</option>
+                                            <option value="T" {% if object.role == "T" %} selected {% endif %}>Trésorier.ère</option>
+                                            <option value="S" {% if object.role == "S" %} selected {% endif %}>Secrétaire</option>
+                                        </optgroup>
+                                        <optgroup label="Membres & autres">
+                                            <option value="M" {% if object.role == "M" %} selected {% endif %}>Membre Magellans & site</option>
+                                            <option value="Mx" {% if object.role == "M" %} selected {% endif %}>Membre Magellans & pas site</option>
+                                            <option value="E" {% if object.role == "E" %} selected {% endif %}>Inscrit site (par défaut)</option>
+                                        </optgroup>
+                                        <optgroup label="Externes site">
+                                            <option value="X" {% if object.role == "X" %} selected {% endif %}>Externe site</option>
+                                            <option value="O" {% if object.role == "O" %} selected {% endif %}>Organisation</option>
+                                        </optgroup>
+                                    </select>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
                 </table>
             </div>
             <div class="col-lg-6">
@@ -45,5 +72,20 @@ Profil
         </div>
     </div>
 </div>
+
+<script src="{% static 'js/api/api.js' %}"></script>
+<script src="{% static 'js/dashboard/members.js' %}"></script>
+<script>
+    $(document).ready(function() {
+        var select_role = $('#select_role').select2();
+
+        select_role.on("change", function() {
+            var value = $(this).val();
+            var pk = $(this).attr("pk");
+
+            editUserRole(pk, value);
+        })
+    });
+</script>
 
 {% endblock %}
