@@ -7,6 +7,7 @@ from django.template.loader import render_to_string
 from django.shortcuts import render, HttpResponse
 from members.decorators import staff_required
 from django.utils.encoding import force_bytes
+from django.utils.safestring import mark_safe
 from django.views.generic import DetailView
 from django.core.mail import send_mail
 from django.shortcuts import redirect
@@ -32,7 +33,7 @@ def my_profile(request):
         if form.is_valid():
             request.user.site_person.first_name = form.cleaned_data['first_name']
             request.user.site_person.last_name = form.cleaned_data['last_name']
-            request.user.site_person.phone = form.cleaned_data['phone']
+            request.user.site_person.phone = form.cleaned_data['phone'].replace(" ", "")
             request.user.site_person.gender = form.cleaned_data['gender']
             request.user.site_person.save()
             
@@ -90,7 +91,7 @@ def register(request):
             new_user.site_person.last_name = last_name
             new_user.site_person.email = email
             new_user.site_person.gender = gender
-            new_user.site_person.phone = phone
+            new_user.site_person.phone = phone.replace(" ", "")
 
             new_user.site_person.save()
             
@@ -104,7 +105,7 @@ def register(request):
             activation_url = "https://magellans.fr/membres/activate/{}/{}".format(uidb64, token)
             
             subject = "Activation de votre compte magellans.fr"
-            message = render_to_string('registration/activation_email.html', {'user': new_user, 'activation_url': activation_url})
+            message = mark_safe(render_to_string('registration/activation_email.html', {'user': new_user, 'activation_url': activation_url}))
             send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [new_user.email])
 
             messages.success(request, 'Vous avez reçu un email pour activer votre compte.')
@@ -122,6 +123,11 @@ def activate(request, uidb64, token):
         # Activate user account
         user.is_active = True
         user.save()
+
+        subject = "Nouvelle inscription"
+        message = mark_safe(f"Un nouvel utilisateur vient d'activer son compte sur le site internet !\nPrénom : {user.first_name()}\nNom : {user.last_name()}\nEmail : {user.email}\nDate d'inscription : {user.date_joined}")
+        send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [settings.DEFAULT_FROM_EMAIL])
+
         # Redirect to success page or login page
         return redirect('activation_done')
     
@@ -137,3 +143,8 @@ def activation_failed(request):
 class MemberDetailView(DetailView):
     model = Member
     template_name="member_detail.html"
+
+@method_decorator(staff_required, name="dispatch")
+class PersonDetailView(DetailView):
+    model = Person
+    template_name = "person_detail.html"

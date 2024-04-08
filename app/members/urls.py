@@ -3,7 +3,8 @@ from .views import *
 
 urlpatterns = [
     path('', members, name='members'),
-    path('<int:pk>/', MemberDetailView.as_view(), name='member-detail'),
+    path('profil/<int:pk>/', MemberDetailView.as_view(), name='member-detail'),
+    path('personne/<int:pk>/', PersonDetailView.as_view(), name='person-detail'),
     path('mon-profil', my_profile, name="my-profile"),
     path('note-de-frais/nouveau', create_invoice, name="create-invoice"),
     path('demande-de-financement/nouveau', create_funding_request, name="create-funding-request"),

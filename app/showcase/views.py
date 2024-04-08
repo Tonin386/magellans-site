@@ -1,9 +1,10 @@
+from django.utils.safestring import mark_safe
 from django.shortcuts import render, redirect
 from showcase.forms import ContactForm
 from django.core.mail import send_mail
-from dashboard.models import *
 from django.conf import settings
 from .forms import ContactForm
+from dashboard.models import *
 
 def home(request):
     if request.method == "POST":
@@ -15,7 +16,8 @@ def home(request):
             message = form.cleaned_data['message']
 
             subject = f'Nouveau formulaire reçu de {email}'
-            message_body = f'{message}\n\n--------------------\n{name}\n{email}\n{phone}'
+
+            message_body = mark_safe(f'{message}\n\n--------------------\n{name}\n{email}\n{phone}')
             sender_email = settings.EMAIL_HOST_USER
             recipient_list = [settings.EMAIL_RECEIVER, 'magellans.pro@gmail.com', 'magellans.contact@gmail.com']
             

@@ -54,7 +54,7 @@ Dashboard utilisateurs
                     {% for ext_user in external_users %}
                     <tr id="extUser{{ext_user.pk}}">
                         <td>
-                            <a class="btn btn-warning" href="{% url 'member-detail' pk=ext_user.pk %}">
+                            <a class="btn btn-warning" href="{% url 'person-detail' pk=ext_user.ext_person.pk %}">
                                 <i class="fa-eye fa-solid text-light"></i>
                             </a>
                             <button class="btn btn-danger" onclick="deleteExtUser({{ ext_user.pk }}, callback_delExtUser)">
