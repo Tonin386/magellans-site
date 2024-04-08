@@ -15,7 +15,7 @@ Magasin - Réservation
 
 {% block content %}
 <form method="post" action="{% url 'place-order' %}" class="needs-validation" novalidate>
-    <input type="hidden" id="id_order_text" name="order_text" value="{% for couple in items_values %} {{ couple.1 }}x {{ couple.0.name }}\n {% endfor %}">
+    <input type="hidden" id="id_order_text" name="order_text" value="{% for couple in items_values %}{{ couple.1 }}x {{ couple.0.name }}\n{% endfor %}">
     {% csrf_token %}
     <div class="card col-lg-10 mx-lg-auto mt-3 mx-2">
         <div class="card-header bg-primary">

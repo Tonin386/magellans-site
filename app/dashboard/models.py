@@ -1,4 +1,5 @@
 from django.template.loader import render_to_string
+from django.utils.safestring import mark_safe
 from django.core.mail import EmailMessage
 from django.utils.text import slugify
 from django.conf import settings
@@ -31,7 +32,7 @@ class ProjectFundingRequest(models.Model):
     
     def send_by_email(self):
         subject = f"Nouvelle demande d'aide financière pour {self.name}"
-        email_render = render_to_string("funding_request_email.html", {'instance': self})
+        email_render = mark_safe(render_to_string("funding_request_email.html", {'instance': self}))
 
         email = EmailMessage(
             subject=subject,

@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}
+Profil
+{% endblock %}
+
+{% block nav %}
+{% include "nav.html" %}
+{% endblock %}
+
+{% block content %}
+<div class="container mt-3">
+    <div class="box">
+        <h1 class="title fs-3">Détails de la personne</h1>
+        <div class="row">
+            <div class="col-lg-6">
+                <table class="table table-border table-striped">
+                    <tr>
+                        <th>Nom</th>
+                        <td>{{ object.last_name }}</td>
+                    </tr>
+                    <tr>
+                        <th>Email</th>
+                        <td>{{ object.email }}</td>
+                    </tr>
+                </table>
+            </div>
+            <div class="col-lg-6">
+                <table class="table table-border table-striped">
+                    <tr>
+                        <th>Prénom</th>
+                        <td>{{ object.first_name }}</td>
+                    </tr>
+                    <tr>
+                        <th>Téléphone</th>
+                        <td>{{ object.phone_formatted }}</td>
+                    </tr>
+                    <tr>
+                        <th>Sexe</th>
+                        <td>{{ object.get_gender_display }}</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

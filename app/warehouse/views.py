@@ -53,12 +53,17 @@ def placeOrder(request):
             startDate = form.cleaned_data['start_date'].strftime("%d/%m/%Y")
             endDate = form.cleaned_data['end_date'].strftime("%d/%m/%Y")
             message = mark_safe(request.POST.get('message'))
-            orderText = request.POST.get('order_text').replace("\\n", "\n")
+            orderText = mark_safe(request.POST.get('order_text').replace("\\n", "\n"))
             
             subject = "Demande de réservation de matériel"
             user = request.user
             email_message = render_to_string('email_order.html', locals())
-            send_mail(subject, email_message, settings.DEFAULT_FROM_EMAIL, ["contact@magellans.fr", user.email])
+            recipients = ["contact@magellans.fr", user.email]
+
+            for warehouse_handler in Member.objects.filter(role="G"):
+                recipients.append(warehouse_handler.email)
+
+            send_mail(subject, email_message, settings.DEFAULT_FROM_EMAIL, recipients)
             success = True
             
         except Exception as e:
