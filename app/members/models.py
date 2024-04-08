@@ -51,7 +51,6 @@ class Member(AbstractBaseUser, PermissionsMixin):
     date_joined = models.DateTimeField(auto_now_add=True, verbose_name="Date d'inscription")
     donation = models.FloatField(default=0, verbose_name="Montant donation")
     account = models.FloatField(default=0, verbose_name="Statut compte")
-    role = models.CharField(max_length=2, choices=ROLE_CHOICES, default='E', verbose_name="Role")
     api_token = models.CharField(max_length=128, null=True, blank=True, editable=False)
 
     objects = MemberManager()
@@ -105,8 +104,8 @@ class Member(AbstractBaseUser, PermissionsMixin):
     def phone(self):
         return self.site_person.phone
     
-    # def role(self):
-    #     return self.site_person.get_role_display()
+    def role(self):
+        return self.site_person.get_role_display()
     
 class UnregisteredMember(models.Model):
     class Meta:
