@@ -13,14 +13,6 @@ def dashboard_home(request):
 def dashboard_members(request):
     members = Member.objects.all()
     external_users = UnregisteredMember.objects.all()
-
-    persons = []
-
-    for m in members:
-        persons.append(m.site_person)
-
-    for m in external_users:
-        persons.append(m.ext_person)
     
     return render(request, "dashboard_members.html", locals())
 
