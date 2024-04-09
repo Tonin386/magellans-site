@@ -8,6 +8,7 @@ services:
   # PostgreSQL service
   postgres-django:
     restart: always
+    stop_grace_period: 15s
     container_name: magellans-django-pgsql
     image: postgres:16-bullseye
     environment:
@@ -21,6 +22,7 @@ services:
 
   postgres-mail: 
     restart: always
+    stop_grace_period: 15s
     container_name: magellans-mail-pgsql
     image: postgres:16-bullseye
     environment:
@@ -36,6 +38,7 @@ services:
   # Redis service
   redis:
     restart: always
+    stop_grace_period: 15s
     container_name: magellans-redis
     image: redis:5
     command: ["redis-server"]
@@ -49,6 +52,7 @@ services:
   # Django service
   django:
     restart: always
+    stop_grace_period: 15s
     container_name: magellans-django
     build:
       context: ./app
@@ -64,6 +68,7 @@ services:
   # Nginx service
   nginx:
     restart: always
+    stop_grace_period: 15s
     container_name: magellans-nginx
     image: nginx:latest
     volumes:
@@ -104,7 +109,7 @@ services:
       - /etc/localtime:/etc/localtime:ro
       - ${SSL_LETSENCRYPT}:${SSL_LETSENCRYPT}
     restart: always
-    stop_grace_period: 1m
+    stop_grace_period: 15s
     # Uncomment if using `ENABLE_FAIL2BAN=1`:
     # cap_add:
     #   - NET_ADMIN
@@ -118,6 +123,8 @@ services:
   roundcube:
     image: roundcube/roundcubemail:latest
     container_name:  magellans-webmail
+    restart: always
+    stop_grace_period: 15s
     environment:
       - ROUNDCUBEMAIL_DB_TYPE=pgsql
       - ROUNDCUBEMAIL_DB_HOST=postgres-mail
