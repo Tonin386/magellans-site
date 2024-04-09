@@ -107,14 +107,14 @@ Magasin
 </div>
 
 <div class="sticky-bottom-buttons">
-    <a class="btn btn-info position-relative {% if not request.user.is_authenticated or not completeProfile %} disabled {% endif %}" id="orderButton" href="/magasin/commande">
+    <a class="btn btn-info position-relative {% if not request.user.is_authenticated or not completeProfile %} disabled {% endif %} mt-2" id="orderButton" href="/magasin/commande">
         <i class="fa-solid fa-basket-shopping"></i>
         Voir ma réservation
         <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="nbOrderedItems">0</span>
     </a>
     
     {% if request.user.is_staff %}
-    <button class="btn btn-success" type="button" data-bs-toggle="modal" data-bs-target="#addItemForm">
+    <button class="btn btn-success mt-2" type="button" data-bs-toggle="modal" data-bs-target="#addItemForm">
         <i class="fa-solid fa-plus"></i>
         Ajouter un objet au magasin
     </button>
@@ -246,6 +246,6 @@ Magasin
     {% csrf_token %}
 </div>
 <script src="{% static 'js/api/api.js' %}"></script>
-<script src="{% static 'js/warehouse.js' %}"></script>
+<script src="{% static 'js/warehouse/warehouse.js' %}"></script>
 
 {% endblock %}

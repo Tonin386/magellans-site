@@ -4,6 +4,7 @@ from django.views.generic.edit import UpdateView
 from django.db.models.base import Model as Model
 from django.utils.safestring import mark_safe
 from django.db.models.query import QuerySet
+from django.views.generic import DetailView
 from datetime import datetime, timedelta
 from django.core.mail import send_mail
 from django.urls import reverse_lazy
@@ -32,6 +33,8 @@ def order(request):
         values = [int(value) for value in values.replace(" ", "").split(",")]
         
     items_values = list(zip(items, values))
+    values = ",".join([str(x) for x in values])
+    pks = ",".join([str (x) for x in pks])
     
     return render(request, "order.html", locals())
 
@@ -50,11 +53,35 @@ def placeOrder(request):
     
     if form.is_valid():
         try:
-            startDate = form.cleaned_data['start_date'].strftime("%d/%m/%Y")
-            endDate = form.cleaned_data['end_date'].strftime("%d/%m/%Y")
+            startDate = request.POST.get('start_date')
+            endDate = request.POST.get('end_date')
             message = mark_safe(request.POST.get('message'))
-            orderText = mark_safe(request.POST.get('order_text').replace("\\n", "\n"))
+            pks = request.POST.get("pks", "undefined")
+            quantities = request.POST.get("quantities", "undefined")
+
+            if pks in ["undefined", ""] or quantities in ["undefined", ""]:
+                return render(request, "place_order.html", locals())
             
+            pks = pks.split(",")
+            
+            items = Item.objects.filter(pk__in=pks)
+            items_values = list(zip(items, quantities))
+
+            quantity_str = ""
+            for item, quantity in items_values:
+                quantity_str += str(quantity) + ","
+
+            new_order = Order.objects.create(
+                user=request.user,
+                date_start=startDate, 
+                date_end=endDate, 
+                message=message,
+                quantities=quantities,
+            )
+
+            new_order.items.set(items)
+            new_order.save()
+
             subject = "Demande de réservation de matériel"
             user = request.user
             email_message = render_to_string('email_order.html', locals())
@@ -93,3 +120,17 @@ class EditTagDetailView(UpdateView):
     def get_object(self, queryset=None):
         return Tag.objects.get(pk=self.kwargs['pk'])
     
+class OrderDetailView(DetailView):
+    model = Order
+    template_name = "order_detail.html"
+
+    def get_context_data(self, **kwargs):
+        context =  super().get_context_data(**kwargs)
+
+        obj = self.object
+        quantities = obj.quantities.split(",")
+        item_set = zip(quantities, obj.items.all())
+
+        context['item_set'] = item_set
+
+        return context
