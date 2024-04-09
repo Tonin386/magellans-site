@@ -134,7 +134,6 @@ def api_dashboard(request):
             fields['director'] = Person.objects.get(pk=int(director))
 
         if not money_handler in ['0', '']:
-            print(money_handler)
             fields['money_handler'] = Person.objects.get(pk=int(money_handler))
 
         if not genre in ['undefined', '']:
@@ -266,8 +265,6 @@ def api_members(request):
         gender = body_post.get("gender", "O")
         role = body_post.get("role", "X")
 
-        print(role)
-
         if "Non-renseigné" in [first_name, last_name]:
             createNotification("Ajout utilisateur externe", "add-ext_user", app_id, 3, "Le nouvel utilisateur externe n'a pas été ajouté : veuillez renseigner au moins un nom et prénom.", user)
             return JsonResponse({"status": "error", "message": "Missing last or first name"})
@@ -313,10 +310,8 @@ def api_members(request):
         pk = body_post.get("pk", "undefined")
         role = body_post.get("role", "undefined")
 
-        print(role)
         person = Person.objects.get(pk=pk)
         person.role = role
-        print(person)
         person.save()
 
         createNotification("Modification utilisateur", "edit-user_role", app_id, 0, "Le rôle de l'utilisateur a été modifié.", user)
