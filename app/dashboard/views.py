@@ -2,6 +2,7 @@ from django.utils.decorators import method_decorator
 from members.decorators import staff_required
 from django.views.generic import DetailView
 from django.shortcuts import render
+from warehouse.models import *
 from members.models import *
 from .models import *
 
@@ -33,6 +34,12 @@ def dashboard_projects(request):
         ext_persons.append(m.ext_person)
 
     return render(request, "dashboard_projects.html", locals())
+
+@staff_required
+def dashboard_orders(request):
+    orders = Order.objects.all()
+
+    return render(request, "dashboard_orders.html", locals())
 
 class ProjectDetailView(DetailView):
     model = Project

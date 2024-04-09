@@ -12,6 +12,7 @@ from django.views.generic import DetailView
 from django.core.mail import send_mail
 from django.shortcuts import redirect
 from django.contrib import messages
+from warehouse.models import Order
 from django.conf import settings
 from .forms import RegisterForm
 from .models import Member
@@ -28,6 +29,7 @@ def members(request):
 @login_required
 def my_profile(request):
     form = EditProfileForm(request.user.site_person)
+    orders = Order.objects.filter(user=request.user)
     if request.method == "POST":
         form = EditProfileForm(request.user.site_person, request.POST)
         if form.is_valid():
@@ -37,7 +39,7 @@ def my_profile(request):
             request.user.site_person.gender = form.cleaned_data['gender']
             request.user.site_person.save()
             
-    return render(request, 'my_profile.html', {'object': request.user, 'form': form})
+    return render(request, 'my_profile.html', {'object': request.user, 'form': form, 'orders': orders})
 
 @login_required
 def create_invoice(request):

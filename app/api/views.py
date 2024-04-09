@@ -326,6 +326,7 @@ def api_warehouse(request):
     body_post = json.loads(request.body.decode("utf-8"))
             
     action = body_post.get("action", "undefined")
+    print(body_post)
     
     if action == "add-item":
         if not 'write' in permissions['warehouse'] + permissions['fullpower']:
@@ -422,7 +423,7 @@ def api_warehouse(request):
                 
             if deleted == len(pks):
                 createNotification("Suppression tag", "del-tag", app_id, 0, "Les tags ont bien été supprimés.", user)
-                return JsonResponse({"status": "success", "message": "Tasg deleted successfully"})
+                return JsonResponse({"status": "success", "message": "Tags deleted successfully"})
 
             createNotification("Suppression tag", "del-tag", app_id, 2, f"{deleted}/{len(pks)} tags ont été supprimés. Veuillez réessayer avec les tags qui n'ont pas été supprimés.", user, errors)
             return JsonResponse({"status": "warning", "message": "Some tags haven't been deleted"})
@@ -493,7 +494,26 @@ def api_warehouse(request):
         except Exception as e:
             createNotification("Edition objet", "edit-item", app_id, 3, f"Une erreur est survenue.\nErreur : {str(e)}", user, str(e)).show()
             return JsonResponse({"status": "error", "message": f"An error occured\n{str(e)}"})
-            
+    
+    if action == "edit-order_status":
+        if not 'write' in permissions['warehouse'] + permissions['fullpower']:
+            createNotification("Suppression tag", "del-tag", app_id, 3, "Vous n'avez pas les permissions suffisantes pour effectuer cette action.", user)
+            return JsonResponse({"status": "error", "message": "Insufficient permissions"})
+        
+        pk = body_post.get("pk", "undefined")
+        value = body_post.get("value", "undefined")
+        
+        if not pk == "undefined":
+            try:    
+                order = Order.objects.get(pk=int(pk))
+                order.status = int(value)
+                order.save()
+
+                createNotification("Edition commande", "edit-order_status", app_id, 0, "La commande a bien été modifiée", user)
+                return JsonResponse({"status": "success", "message": "Order updated successfully"})
+            except Exception as e:
+                createNotification("Edition commande", "edit-order_status", app_id, 3, f"Une erreur est survenue.\nErreur : {str(e)}", user, str(e)).show()
+                return JsonResponse({"status": "error", "message": f"An error occured\n{str(e)}"})
                     
     createNotification("Erreur inconnue", "unknown error", app_id, 3, "Une erreur inconnue est survenue.", user)
     return JsonResponse({"status": "error", "message": "Uncaught error."})

@@ -18,10 +18,10 @@ AVAILABILITY_CHOICES = [
 ]
 
 ORDER_STATUS_CHOICES = [
-    (0, 'Invalidée'), #Order wasn't validated by the user
-    (1, 'Validée'), #Order was validated and sent to the staff
-    (2, 'Refusée'), #Order was declined by a staff member
-    (3, 'Acceptée') #Order was accepted by a staff member
+    (0, 'Commande non-effectuée'), #Order wasn't validated by the user
+    (1, 'Commande effectuée & en attente de réponse'), #Order was validated and sent to the staff
+    (2, 'Commande refusée'), #Order was declined by a staff member
+    (3, 'Commande acceptée') #Order was accepted by a staff member
 ]
 
 class Tag(models.Model):
@@ -52,12 +52,17 @@ class Item(models.Model):
         verbose_name = "Objet"
         
 class Order(models.Model):
-    date_start = models.DateField("Début de la réservation")
-    date_end = models.DateField("Fin de la réservation")
+    date_start = models.DateTimeField("Début de la réservation")
+    date_end = models.DateTimeField("Fin de la réservation")
     items = models.ManyToManyField(Item, verbose_name="Objets réservés")
+    quantities = models.TextField(verbose_name="Quantité demandée pour chaque objet")
+    message = models.TextField(verbose_name="Message personnalisé du demandeur", null=True, blank=True)
     user = models.ForeignKey(Member, verbose_name="Demandeur", blank=True, null=True, on_delete=models.SET_NULL)
-    status = models.IntegerField("Statut", choices=ORDER_STATUS_CHOICES)
-    
+    status = models.IntegerField("Statut", choices=ORDER_STATUS_CHOICES, default=1)
+    date_created = models.DateTimeField("Date commande effectuée", auto_now_add=True)
+    date_validated = models.DateTimeField("Date commande validée", blank=True, null=True)
+    tos = models.BooleanField("CGU acceptées", default=True)
+     
     def __str__(self):
         return f"Réservation de {self.user} : {self.date_start.strftime('%d/%m/%Y')} -> {self.date_end.strftime('%d/%m/%Y')}"
     
