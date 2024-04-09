@@ -15,7 +15,8 @@ Magasin - Réservation
 
 {% block content %}
 <form method="post" action="{% url 'place-order' %}" class="needs-validation" novalidate>
-    <input type="hidden" id="id_order_text" name="order_text" value="{% for couple in items_values %}{{ couple.1 }}x {{ couple.0.name }}\n{% endfor %}">
+    <input type="hidden" id="id_pks" name="pks" value="{{ pks }}">
+    <input type="hidden" id="id_quantities" name="quantities" value="{{ values }}">
     {% csrf_token %}
     <div class="card col-lg-10 mx-lg-auto mt-3 mx-2">
         <div class="card-header bg-primary">
@@ -43,9 +44,12 @@ Magasin - Réservation
                     {% endfor %}
                     <div class="col-lg-12">
                         <div class="input-group input-group mt-3">
-                            <span class="input-group-text col-xl-2 bg-secondary text-white" id="periodeSpan">Début -> fin</span>
-                            <input aria-describedby="periodeSpan" type="date" class="form-control" id="id_start_date" name="start_date" required>
-                            <input aria-describedby="periodeSpan" type="date" class="form-control" id="id_end_date" name="end_date" required>
+                            <span class="input-group-text col-xl-2 bg-secondary text-white" id="periodeSpan">
+                                Début -> fin
+                                <a class="badge text-dark" data-bs-toggle="tooltip" data-bs-title="La première date-heure correspond au moment du retrait du matériel. La deuxième date-heure correspond au retour du matériel.">?</a>
+                            </span>
+                            <input aria-describedby="periodeSpan" type="datetime-local" class="form-control" id="id_start_date" name="start_date" required>
+                            <input aria-describedby="periodeSpan" type="datetime-local" class="form-control" id="id_end_date" name="end_date" required>
                             <div class="invalid-feedback">Veuillez sélectionner une date de début et une date de fin.</div>
                             <div class="invalid-feedback" id="dateError">La date de début doit être avant la date de fin.</div>
                         </div>
@@ -53,11 +57,22 @@ Magasin - Réservation
                     <div class="col-lg-12 mt-3">
                         <textarea class="form-control" placeholder="Message particulier pour Magellans" id="id_message" name="message"></textarea>
                     </div>
-                    <div class="col-md-3 mt-2">
-                        <button type="submit" class="btn btn-success w-100 fs-6 h-100">Confirmer la demande</button>
+                    <div class="col-lg-4 text-center m-auto mt-3">
+                        <div class="form-check">
+                            <label for="tos">Je déclare avoir lu et consentir aux CGU du magasin de Magellans.</label>
+                            <input class="form-check-input" type="checkbox" name="tos" id="tos" required>
+                            <div class="invalid-feedback">
+                                Vous devez avoir accepté les CGU du magasin pour effectuer une commande.
+                            </div>
+                        </div>
                     </div>
-                    <div class="col-md-3 mt-2">
-                        <a class="btn btn-danger w-100 fs-6 h-100 d-inline-block" href="{% url 'warehouse' %}">Annuler et revenir au magasin</a>
+                    <div class="col-lg-12 row justify-content-center">
+                        <div class="col-md-3 mt-2">
+                            <button type="submit" class="btn btn-success w-100 fs-6 h-100">Confirmer la demande</button>
+                        </div>
+                        <div class="col-md-3 mt-2">
+                            <a class="btn btn-danger w-100 fs-6 h-100 d-inline-block" href="{% url 'warehouse' %}">Annuler et revenir au magasin</a>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -65,6 +80,13 @@ Magasin - Réservation
     </div>
 </form>
 
-<script src="{% static 'js/order.js' %}"></script>
+<script>
+    $(document).ready(function() {
+        const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+        const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
+    });
+</script>
+
+<script src="{% static 'js/warehouse/order.js' %}"></script>
 
 {% endblock %}

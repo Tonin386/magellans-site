@@ -10,54 +10,84 @@ Profil
 
 {% block content %}
 <div class="container mt-3">
-    <div class="box">
-        <h1 class="title fs-3">Détails du compte {{ object.email }}</h1>
-        <div class="row">
-            <div class="col-lg-6">
-                <table class="table table-border table-striped">
-                    <tr>
-                        <th>Nom</th>
-                        <td>{{ object.last_name }}</td>
-                    </tr>
-                    <tr>
-                        <th>Email</th>
-                        <td>{{ object.email }}</td>
-                    </tr>
-                    <tr>
-                        <th>Rôle</th>
-                        <td>{{ object.role }}</td>
-                    </tr>
-                    <tr class="{% if object.account >= 0 %}bg-success{% else %}bg-danger{% endif %}">
-                        <th>Compte</th>
-                        <td>{{ object.account_formatted }}</td>
-                    </tr>
-                </table>
-            </div>
-            <div class="col-lg-6">
-                <table class="table table-border table-striped">
-                    <tr>
-                        <th>Prénom</th>
-                        <td>{{ object.first_name }}</td>
-                    </tr>
-                    <tr>
-                        <th>Téléphone</th>
-                        <td>{{ object.phone_formatted }}</td>
-                    </tr>
-                    <tr>
-                        <th>Sexe</th>
-                        <td>{{ object.gender }}</td>
-                    </tr>
-                    <tr class="{% if object.donation > 0 %}bg-success{% else %}bg-warning{% endif %}">
-                        <th>Donation</th>
-                        <td>{{ object.donation_formatted }}</td>
-                    </tr>
-                </table>
-            </div>
-            <div class="col-lg-12 text-center">
-                <a href="{% url 'password_change' %}" class="btn btn-secondary w-25"><i class="fa-solid fa-gear"></i> Changer de mot de passe</a>
-                <button class="btn btn-warning w-25" data-bs-target="#editProfileForm" data-bs-toggle="modal"><i class="fa-solid fa-edit"></i> Modifier mon profil</button>
-            </div>
+    <h1 class="title fs-3">Détails du compte {{ object.email }}</h1>
+    <div class="row">
+        <div class="col-lg-6">
+            <table class="table table-border table-striped">
+                <tr>
+                    <th>Nom</th>
+                    <td>{{ object.last_name }}</td>
+                </tr>
+                <tr>
+                    <th>Email</th>
+                    <td>{{ object.email }}</td>
+                </tr>
+                <tr>
+                    <th>Rôle</th>
+                    <td>{{ object.role }}</td>
+                </tr>
+                <tr class="{% if object.account >= 0 %}bg-success{% else %}bg-danger{% endif %}">
+                    <th>Compte</th>
+                    <td>{{ object.account_formatted }}</td>
+                </tr>
+            </table>
         </div>
+        <div class="col-lg-6">
+            <table class="table table-border table-striped">
+                <tr>
+                    <th>Prénom</th>
+                    <td>{{ object.first_name }}</td>
+                </tr>
+                <tr>
+                    <th>Téléphone</th>
+                    <td>{{ object.phone_formatted }}</td>
+                </tr>
+                <tr>
+                    <th>Sexe</th>
+                    <td>{{ object.gender }}</td>
+                </tr>
+                <tr class="{% if object.donation > 0 %}bg-success{% else %}bg-warning{% endif %}">
+                    <th>Donation</th>
+                    <td>{{ object.donation_formatted }}</td>
+                </tr>
+            </table>
+        </div>
+        <div class="col-lg-12 text-center">
+            <a href="{% url 'password_change' %}" class="btn btn-secondary w-25 h-100"><i class="fa-solid fa-gear"></i> Changer de mot de passe</a>
+            <button class="btn btn-warning w-25 h-100" data-bs-target="#editProfileForm" data-bs-toggle="modal"><i class="fa-solid fa-edit"></i> Modifier mon profil</button>
+        </div>
+    </div>    
+
+    <h1 class="title fs-3 mt-5">Mes réservations de matériel</h1>
+    <div class="row">
+        <div class="col-lg-12">
+            <table class="table table-striped align-middle display responsive nowrap" id="orders-table">
+                <thead>
+                    <tr>
+                        <th scope="col" style="max-width: 80px;;"></th>
+                        <th scope="col" style="max-width: 75px;">#</th>
+                        <th scope="col">Début</th>
+                        <th scope="col">Fin</th>
+                        <th scope="col">Statut</th>
+                        <th scope="col">Reçue le</th>
+                    </tr>
+                </thead>
+                <tbody class="table-group-divider">
+                    {% for order in orders %}
+                    <tr id="order{{order.pk}}">
+                        <td>
+                            <a class="btn btn-warning" href="{% url 'order-detail' pk=order.pk %}"><i class="fa-eye fa-solid text-light"></i></a>
+                        </td>
+                        <td>{{ order.pk }}</td>
+                        <td>{{ order.date_start }}</td>
+                        <td>{{ order.date_end }}</td>
+                        <td class="{% if order.status == 3 %}bg-success{% elif order.status == 1 %} bg-warning {% else %} bg-danger {% endif %}">{{ order.get_status_display }}</td>
+                        <td>{{ order.date_created }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </tbody>
+        </table>
     </div>
 </div>
 
@@ -87,5 +117,18 @@ Profil
         </div>
     </div>
 </div>
+
+<script>
+    $(document).ready(function() {
+        var table = new DataTable('#orders-table', {
+            order: [[1, "desc"]],
+            columnDefs: [
+            {responsivePriority: 1, targets: 0},
+            {responsivePriority: 1, targets: 2, type: "datetime"},
+            {responsivePriority: 1, targets: 3, type: "datetime"},
+            ]
+        });
+    });
+</script>
 
 {% endblock %}

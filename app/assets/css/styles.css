@@ -636,8 +636,10 @@ footer {
 .sticky-bottom-buttons {
   position: fixed;
   bottom: 20px;
-  right: 20px;
+  right: 50%;
+  transform: translateX(50%);
   z-index: 1000;
+  text-align: center;
 }
 
 .active>.page-link {

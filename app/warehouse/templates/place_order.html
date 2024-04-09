@@ -11,6 +11,8 @@ Magasin - Réservation
 
 {% block content %}
 
+{{ form.errors }}
+
 {% if tooManyOrders %}
 <div class="alert alert-danger w-75 my-3 mx-auto">
     <p>

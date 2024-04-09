@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}
+Récapitulatif commande #{{ object.pk }}
+{% endblock %}
+
+{% block extra_head %}
+{% endblock %}
+
+{% block nav %}
+{% include "nav.html" %}
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1 class="display-5 text-center"> Commande #{{ object.pk }} </h1>
+    <div class="row mt-5">
+        <div class="col-lg-12">
+            <h2 class="title">Informations de la commande</h2>
+            <table class="table table-striped">
+                <tr>
+                    <th>Demandeur</th>
+                    <td>{{ object.user }}</td>
+                </tr>
+                <tr>
+                    <th>Date début</th>
+                    <td>{{ object.date_start }}</td>
+                </tr>
+                <tr>
+                    <th>Date fin</th>
+                    <td>{{ object.date_end }}</td>
+                </tr>
+                <tr>
+                    <th>Statut</th>
+                    {% if request.user.is_staff %}
+                    <td>
+                        <div class="input-group input-group-md">
+                            <div class="form-control"> 
+                                <select style="width: 100%;" id="select_status" pk="{{ object.pk }}">
+                                    <optgroup label="Réponse définitive">
+                                        <option value="2" {% if order.status == 2 %} selected {% endif %}>Commande refusée</option>
+                                        <option value="3" {% if order.status == 3 %} selected {% endif %}>Commande acceptée</option>
+                                    </optgroup>
+                                    <optgroup label="En attente">
+                                        <option value="0" {% if order.status == 0 %} selected {% endif %}>Commande non-effectuée (incomplète)</option>
+                                        <option value="1" {% if order.status == 1 %} selected {% endif %}>Commande effectuée & en attente de réponse</option>
+                                    </optgroup>
+                                </select>
+                            </div>
+                        </div>
+                    </td>
+                    {% else %}
+                    <td class="{% if object.status == 3 %}bg-success{% elif object.status == 1 %} bg-warning {% else %} bg-danger {% endif %}">{{ object.get_status_display }}</td>
+                    {% endif %}
+                </tr>
+                <tr>
+                    <th>Demande effectuée le</th>
+                    <td>{{ object.date_created }}</td>
+                </tr>
+                {% if object.status == 2 %}
+                <tr>
+                    <th>Demande validée le</th>
+                    <td>{{ object.date_validated }}</td>
+                </tr>
+                {% endif %}
+                <tr>
+                    <th>Message</th>
+                    <td>{{object.message}}</td>
+                </tr>
+            </table>
+            <h2 class="title">Liste récapitulative</h2>
+            <table class="table table-striped" id="order-table">
+                <thead>
+                    <tr>
+                        <th>Objet</th>
+                        <th>Quantité</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for quantity, item in item_set %}
+                    <tr>
+                        <td>{{ item.name }}</td>
+                        <td> {{ quantity }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script src="{% static 'js/api/api.js' %}"></script>
+<script src="{% static 'js/dashboard/warehouse.js' %}"></script>
+<script>
+    $(document).ready(function() {
+        let table = new DataTable('#order-table');
+        var select_status = $('#select_status').select2();
+
+
+        select_status.on("change", function() {
+            var value = $(this).val();
+            var pk = $(this).attr("pk");
+
+            editOrderStatus(pk, value);
+        })
+    });
+</script>
+{% endblock %}

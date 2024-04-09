@@ -34,11 +34,9 @@ class EditTagForm(forms.ModelForm):
         fields = ['name', 'color']
         
 class PlaceOrderForm(forms.Form):
-    start_date = forms.DateField()
-    end_date = forms.DateField()
-    message = forms.CharField()
-    order_text = forms.HiddenInput()
-    
-    required = {
-        'message': False
-    }
+    start_date = forms.DateTimeInput()
+    end_date = forms.DateTimeInput()
+    message = forms.TextInput()
+    pks = forms.HiddenInput()
+    quantities = forms.HiddenInput()
+    tos = forms.CheckboxInput()
