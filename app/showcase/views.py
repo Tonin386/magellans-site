@@ -30,6 +30,7 @@ def home(request):
     return render(request, 'home.html', locals())
 
 def projects(request):
+    projets = Project.objects.filter(public=True)
     return render(request, 'projects.html', locals())
 
 def contact(request):

@@ -348,9 +348,23 @@ header.masthead .masthead-heading {
   height: 3rem;
   cursor: pointer;
   background-color: transparent;
+  z-index: 100;
 }
 .portfolio-modal .close-modal:hover {
   opacity: 0.3;
+}
+
+.portfolio-modal {
+  right: 50%;
+  left: auto;
+  transform: translateX(50%);
+  width: 100%;
+}
+
+@media (min-width: 992px) {
+  .portfolio-modal {
+    width: 75%;
+  }
 }
 
 .timeline {
@@ -544,7 +558,6 @@ section#about {
 
 section#contact {
   background-color: #212529;
-  background-image: url("/static/img/portfolio/48HFP2022_1.jpg");
   background-repeat: no-repeat;
   background-position: center;
 }
