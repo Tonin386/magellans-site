@@ -58,7 +58,7 @@ Récapitulatif commande #{{ object.pk }}
                     <th>Demande effectuée le</th>
                     <td>{{ object.date_created }}</td>
                 </tr>
-                {% if object.status == 2 %}
+                {% if object.status == 2 or object.status == 3 %}
                 <tr>
                     <th>Demande validée le</th>
                     <td>{{ object.date_validated }}</td>

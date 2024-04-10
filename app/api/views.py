@@ -2,6 +2,7 @@ from django.core.files.base import ContentFile
 from django.http import JsonResponse
 from dashboard.models import *
 from warehouse.models import *
+from datetime import datetime
 from members.models import *
 from bank.models import *
 from .utils import *
@@ -507,6 +508,10 @@ def api_warehouse(request):
             try:    
                 order = Order.objects.get(pk=int(pk))
                 order.status = int(value)
+
+                if order.status in [2, 3]:
+                    order.date_validated = datetime.now()
+
                 order.save()
 
                 createNotification("Edition commande", "edit-order_status", app_id, 0, "La commande a bien été modifiée", user)
