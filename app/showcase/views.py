@@ -25,12 +25,12 @@ def home(request):
     else:
         form = ContactForm()
         
-    projets = Project.objects.filter(public=True).order_by("-shoot_date")[:6]
+    projets = Project.objects.filter(public=True).order_by("-release_date")[:6]
         
     return render(request, 'home.html', locals())
 
 def projects(request):
-    projets = Project.objects.filter(public=True)
+    projets = Project.objects.filter(public=True).order_by('-release_date')
     return render(request, 'projects.html', locals())
 
 def contact(request):
