@@ -32,10 +32,11 @@ class Operation(models.Model):
         # Check if it's a new object (not updating an existing one)
         if not self.pk:
             # Get the latest object to determine the next number
-            last_object = Operation.objects.last()
+            last_object = Operation.objects.order_by('date_created').last()
             if last_object:
                 last_pk = last_object.id
                 last_number = int(last_pk.split('-')[1])
+                print(last_number)
                 new_number = last_number + 1
                 self.id = f'OPE-{new_number}'
             else:
