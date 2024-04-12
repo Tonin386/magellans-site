@@ -14,7 +14,7 @@ def bank(request):
         else:
             account_money -= operation.amount
 
-    account_money = '"+%.2f" % account_money' if account_money > 0 else ("%.2f" % account_money)
+    account_money = ("+%.2f" % account_money) if account_money > 0 else ("%.2f" % account_money)
     operation_form = CreateOperationForm()
     if request.method == "POST":
         operation_form = CreateOperationForm(request.POST)
