@@ -1,5 +1,6 @@
 from members.models import Member, Person
 from dashboard.models import Project
+from datetime import datetime
 from django.db import models
 
 OPE_TYPES= [
@@ -82,7 +83,7 @@ class Expense(models.Model):
     author = models.ForeignKey(Member, verbose_name="Auteur de la dépense", on_delete=models.DO_NOTHING)
     proof = models.ImageField(verbose_name="Justificatif de paiement", null=True, blank=True, upload_to="img/proofs/")
     linked_invoice = models.ForeignKey(Invoice, verbose_name="Note de frais liée", null=True, blank=True, on_delete=models.DO_NOTHING)
-    date_created = models.DateField(verbose_name="Date d'ajout", auto_now_add=True, editable=False)
+    date_created = models.DateField(verbose_name="Date d'ajout", auto_now_add=True, editable=False, default=datetime.now)
 
     def __str__(self):
         return f"{self.title} ({self.amount}€) par {self.author.first_name()} {self.author.last_name()}"
