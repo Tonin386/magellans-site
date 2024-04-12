@@ -1,6 +1,6 @@
-from django.db import models
-from members.models import Member
+from members.models import Member, Person
 from dashboard.models import Project
+from django.db import models
 
 OPE_TYPES= [
     ('C', 'Crédit'),
@@ -21,11 +21,11 @@ class Operation(models.Model):
     id = models.CharField(primary_key=True, max_length=100, unique=True, verbose_name="ID Opération", editable=False)
     desc = models.TextField(verbose_name="Description")
     type = models.CharField(max_length=1, choices=OPE_TYPES, default="D", verbose_name="Type d'opération")
-    src = models.OneToOneField(Member, on_delete=models.DO_NOTHING, verbose_name="Emetteur de l'opération", related_name="source_operation")
-    dest = models.OneToOneField(Member, on_delete=models.DO_NOTHING, verbose_name="Receveur de l'opération", related_name="destination_operation")
+    src = models.ForeignKey(Person, on_delete=models.DO_NOTHING, verbose_name="Emetteur de l'opération", related_name="source_operations")
+    dest = models.ForeignKey(Person, on_delete=models.DO_NOTHING, verbose_name="Receveur de l'opération", related_name="destination_operations")
     amount = models.FloatField(verbose_name="Montant")
     date_created = models.DateTimeField(auto_now_add=True, verbose_name="Date d'ajout", editable=False)
-    date = models.DateTimeField(verbose_name="Date")
+    date = models.DateField(verbose_name="Date")
 
     def save(self, *args, **kwargs):
         # Check if it's a new object (not updating an existing one)

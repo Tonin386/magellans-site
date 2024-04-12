@@ -12,7 +12,7 @@ Dashboard
 {% block content %}
 
 <div class="container-fluid p-3">
-    <h1 class="display-3 text-center">Dashboard de Magellans</h1>
+    <h1 class="display-3 text-center">Dashboard CA de Magellans</h1>
     <div class="row mt-5 pt-5">
         <div class="card border-0 col-xl-2 m-auto mt-3">
             <div class="card-body text-center hoverable-card">
@@ -30,6 +30,15 @@ Dashboard
                 </div>
                 <h4 class="fs-5">Gestion des projets</h4>
                 <a href="{% url 'dashboard-projects' %}" class="stretched-link"></a>
+            </div>
+        </div>
+        <div class="card border-0 col-xl-2 m-auto mt-3">
+            <div class="card-body text-center hoverable-card">
+                <div class="team-member">
+                    <img src="{% static 'img/icons/warehouse-solid.svg' %}" class="rounded-pill bg-primary" alt="Icône magasin">
+                </div>
+                <h4 class="fs-5">Gestion des commandes</h4>
+                <a href="{% url 'dashboard-orders' %}" class="stretched-link"></a>
             </div>
         </div>
         <div class="card border-0 col-xl-2 m-auto mt-3">

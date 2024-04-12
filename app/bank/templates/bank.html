@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block title %}
 Trésorerie
@@ -9,41 +10,65 @@ Trésorerie
 {% endblock %}
 
 {% block content %}
+
+<script>
+    var callback_addExtUser = function(response) {};
+</script>
+
 <div class="container-fluid p-3">
     <h1 class="display-5 text-center"> Trésorerie </h1>
+    <h3 class="display-6 text-center">{{ account_money }}€</h3>
     <div class="row mt-5">
         <div class="col-lg-12">
             <h2 class="title">Liste des opérations</h2>
+            {% for message in messages %}
+            {% if message.tags == 'error' %}
+            <div class="alert alert-danger">
+                {{ message }}
+            </div>
+            {% elif message.tags == 'success' %}
+            <div class="alert alert-success">
+                {{ message }}
+            </div>
+            {% else %}
+            <div class="alert alert-info">
+                {{ message }}
+            </div>
+            {% endif %}
+            {% endfor %}
             <table class="table table-striped align-middle display responsive nowrap" id="operations-table">
                 <thead>
                     <tr>
                         <th>ID Opération</th>
-                        <th>Description</th>
                         <th>Type d'opération</th>
                         <th>Emetteur de l'opération</th>
                         <th>Receveur de l'opération</th>
                         <th>Montant</th>
-                        <th>Date d'ajout</th>
+                        <th>Description</th>
                         <th>Date</th>
-                        <th>Statut</th>
+                        <th>Date d'ajout</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for operation in operations %}
                     <tr>
                         <td>{{ operation.id }}</td>
-                        <td>{{ operation.desc }}</td>
-                        <td>{{ operation.get_direction_display }}</td>
+                        <td class="{% if operation.type == 'C' %} bg-success {% else %} bg-danger {% endif %}">{{ operation.get_type_display }}</td>
                         <td>{{ operation.src }}</td>
                         <td>{{ operation.dest }}</td>
-                        <td>{{ operation.amout }}</td>
-                        <td>{{ operation.date_added }}</td>
+                        <td>{{ operation.amount|floatformat:".2f" }} €</td>
+                        <td>{{ operation.desc }}</td>
                         <td>{{ operation.date }}</td>
-                        <td>{{ operation.get_status_display }}</td>
+                        <td>{{ operation.date_created }}</td>
                     </tr>
                     {% endfor %}
                 </tbody>
             </table>
+        </div>
+        <div class="col-lg-12 mt-3">
+            <button type="button" class="btn btn-success float-end" data-bs-toggle="modal" data-bs-target="#addOperationForm">
+                <i class="fa-solid fa-plus">Ajouter une opération</i>
+            </button>
         </div>
     </div>
     <div class="row mt-5">
@@ -80,15 +105,134 @@ Trésorerie
                     </tr>
                     {% endfor %}
                 </tbody>
-            </tbody>
-        </table>
+            </table>
+        </div>
     </div>
 </div>
+
+
+<!-- ADD OPERATION MODAL -->
+<div class="modal modal-lg fade" id="addOperationForm" data-bs-keyboard="true" tabindex="-1" aria-labelledby="addOperationLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-primary">
+                <h1 class="modal-title fs-5" id="addOperationLabel">Créer une opération</h1>
+            </div>
+            <div class="modal-body">
+                <form method="post" class="row justify-content-center">
+                    {% csrf_token %}
+                    {% for field in operation_form %}
+                    <div class="col-lg-11 my-2">
+                        {{ field }}
+                    </div>
+                    {% endfor %}
+                    <div class="col-lg-12 my-2 text-center">
+                        <button class="btn btn-primary" type="button" data-bs-toggle="modal" data-bs-target="#addExtUserForm">Ajouter un profil</button>
+                    </div>
+                    <div class="col-md-3">
+                        <button type="submit" class="btn btn-success w-100 my-1">Créer</button>
+                    </div>
+                    <div class="col-md-3">
+                        <a class="btn btn-danger w-100 my-1" data-bs-dismiss="modal">Annuler</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 </div>
+
+<!-- ADD EXTERNAL USER MODAL -->
+<div class="modal fade" id="addExtUserForm" data-bs-backdrop="static" data-bs-keyboard="true" tabindex="-1" aria-labelledby="addExtUserModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-md">
+        <div class="modal-content">
+            <div class="modal-header bg-primary">
+                <h1 class="modal-title fs-5" id="addExtUserModalLabel">Ajouter un profil d'utilisateur externe</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Annuler"></button>
+            </div>
+            <div class="modal-body">
+                <div class="input-group input-group-md mt-3">
+                    <input type="text" class="form-control" id="ext-user_first_name" placeholder="Prénom">
+                </div>
+                <div class="input-group input-group-md mt-3">
+                    <input type="text" class="form-control" id="ext-user_last_name" placeholder="Nom">
+                </div>
+                <div class="input-group input-group-md mt-3">
+                    <input type="email" class="form-control" id="ext-user_email" placeholder="Email">
+                </div>
+                <div class="input-group input-group-md mt-3">
+                    <input type="text" class="form-control" id="ext-user_phone" placeholder="Téléphone">
+                </div>
+                <div class="input-group input-group-md mt-3">
+                    <select class="form-control" id="ext-user_gender" >
+                        <option value="">Sexe...</option>
+                        <option value="F">Femme</option>
+                        <option value="M">Homme</option>
+                        <option value="O">Autre</option>
+                    </select>
+                </div>
+                <div class="input-group input-group-md mt-3">
+                    <div class="form-control"> 
+                        <select style="width: 100%;" id="select_role" pk="{{ object.site_person.pk }}">
+                            <option></option>
+                            <optgroup label="CA">
+                                <option value="P">Président.e</option>
+                                <option value="C">Communication</option>
+                                <option value="G">Gestionnaire magasin</option>
+                                <option value="T">Trésorier.ère</option>
+                                <option value="S">Secrétaire</option>
+                            </optgroup>
+                            <optgroup label="Membres & autres">
+                                <option value="M">Membre Magellans</option>
+                                <option value="Mx">Membre Magellans & pas site</option>
+                                <option value="E">Inscrit site (par défaut)</option>
+                            </optgroup>
+                            <optgroup label="Externes site">
+                                <option value="X">Externe site</option>
+                                <option value="O">Organisation</option>
+                            </optgroup>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-bs-target="#addOperationForm" data-bs-toggle="modal" data-bs-dismiss="modal">Annuler</button>
+                    <button type="button" class="btn btn-success" onclick="addExtUser(callback_addExtUser)" data-bs-target="#addOperationForm" data-bs-toggle="modal" data-bs-dismiss="modal">Ajouter l'utilisateur</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="{% static 'js/api/api.js' %}"></script>
+<script src="{% static 'js/dashboard/members.js' %}"></script>
 
 <script>
     $(document).ready(function() {
-        var operations_table = new DataTable('#operations-table');
+        jQuery.extend(jQuery.fn.dataTableExt.oSort, {
+            "ope-desc": function (a, b) {
+                // Extract numeric values after the prefix
+                var numA = parseInt(a.replace('OPE-', ''), 10);
+                var numB = parseInt(b.replace('OPE-', ''), 10);
+                
+                return numA - numB;
+            },
+        
+            "ope-asc": function (a, b) {
+                var numA = parseInt(a.replace('OPE-', ''), 10);
+                var numB = parseInt(b.replace('OPE-', ''), 10);
+                
+                return numB - numA;
+            }
+        });
+
+        var operations_table = new DataTable('#operations-table', {
+            order: [[0, "desc"]],
+            columnDefs: [
+            {responsivePriority: 1, targets: 0, type: "ope"},
+            {responsivePriority: 2, targets: 2},
+            {responsivePriority: 1, targets: 5},
+            {responsivePriority: 1, targets: 6},
+            ]
+        });
         
         var invoices_table = new DataTable('#invoices-table', {
             order: [[6, "desc"]],
@@ -99,6 +243,33 @@ Trésorerie
             {responsivePriority: 1, targets: 7},
             ]
         });
+        
+        var select_type = $('#id_type').select2({
+            dropdownParent: $('#addOperationForm'),
+        });
+        var select_dest = $('#id_dest').select2({
+            dropdownParent: $('#addOperationForm'),
+        });
+        var select_src = $('#id_src').select2({
+            dropdownParent: $('#addOperationForm'),
+        });
+        
+        callback_addExtUser = function(response) {
+            json_response = JSON.parse(response.data);
+            
+            let value = json_response.pk;
+            let text = json_response.first_name + " " + json_response.last_name + " " + "(" + json_response.email +")";
+            
+            select_dest.append($('<option>', {
+                value: value,
+                text: text    
+            }));
+            
+            select_src.append($('<option>', {
+                value: value,
+                text: text    
+            }));
+        };
     });
 </script>
 {% endblock %}
