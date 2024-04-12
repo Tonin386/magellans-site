@@ -1,9 +1,12 @@
+from members.decorators import staff_required
 from django.views.generic import DetailView
 from .forms import CreateOperationForm
 from django.contrib import messages
 from django.shortcuts import render
+
 from .models import *
 
+@staff_required
 def bank(request):
     operations = Operation.objects.all()
     invoices = Invoice.objects.all()
