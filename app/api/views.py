@@ -129,7 +129,7 @@ def api_bank(request):
             try:    
                 invoice = Invoice.objects.get(pk=int(pk))
 
-                subject = "Modification statut de votre note de frais"
+                subject = "Modification du statut de votre note de frais"
                 message = mark_safe(render_to_string('email_invoice_status_changed.html', {'invoice': invoice}))
                 send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [invoice.author.email])
 
@@ -574,7 +574,7 @@ def api_warehouse(request):
             try:    
                 order = Order.objects.get(pk=int(pk))
 
-                subject = "Modification statut de votre commande"
+                subject = "Modification du statut de votre commande"
                 message = mark_safe(render_to_string('email_order_status_changed.html', {'order': order}))
                 send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [order.user.email])
 
