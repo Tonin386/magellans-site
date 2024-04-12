@@ -18,14 +18,14 @@ function addLocalExpense() {
     
     let card = document.createElement("div");
     card.classList.add("card", "expenseCard");
-
+    
     let cardHeader = document.createElement("div");
     cardHeader.classList.add("card-header", "bg-primary");
-
+    
     let buttonDelete = document.createElement("button");
     buttonDelete.classList.add("btn", "btn-danger", "float-end");
     buttonDelete.type = "button";
-
+    
     let trashIcon = document.createElement("i");
     trashIcon.classList.add("fa-solid", 'fa-trash');
     
@@ -46,7 +46,7 @@ function addLocalExpense() {
         image.src = URL.createObjectURL(proof);
         cardBody.appendChild(image);
     }
-
+    
     buttonDelete.appendChild(trashIcon);
     
     // Appending elements to card body
@@ -65,18 +65,24 @@ function addLocalExpense() {
     
     var btnInvoice = $('#btnSubmitInvoice');
     btnInvoice.removeClass("disabled");
-
+    
     function callback(response) {
         let id = response.id;
         var expensesInput = document.querySelector("#id_expenses_ids");
         expensesInput.value += id.toString() + ",";
-
+        
         buttonDelete.onclick = function() {
             document.getElementById("expenses").removeChild(card_container);
             expensesInput.value = expensesInput.value.replace(',' + id.toString() + ',', ',');
         }
+        
+        document.querySelector("#expense_name").value = "";
+        document.querySelector("#expense_date").value = "";
+        document.querySelector("#expense_amount").value = "";
+        document.querySelector("#expense_proof").value = "";
+        document.querySelector("#expense_comm").value = "";
     }
-
+    
     addExpense(name, date, amount, proof, comm, callback);
 }
 
@@ -91,7 +97,7 @@ async function addExpense(name, date, amount, proof, comm, callback = function()
         proof: proof,
         comm: comm,
     };
-
+    
     if(params["proof"]) {
         const base64Image = await toBase64(params['proof']);
         params['proof'] = base64Image;

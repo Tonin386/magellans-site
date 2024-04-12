@@ -1,0 +1,7 @@
+Bonjour {{ order.user.first_name }},
+
+Vous recevez cette email car le statut de votre commande #{{ order.pk }} vient d'être modifié.
+Pour plus d'informations, allez consultez votre commande en ligne : https://magellans.fr{% url 'order-detail' pk=order.pk %}
+
+En vous souhaitant une excellente journée,
+L'équipe Magellans.

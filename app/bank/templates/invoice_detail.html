@@ -1,0 +1,163 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}
+Note de frais {{ object.title }}
+{% endblock %}
+
+{% block extra_head %}
+{% endblock %}
+
+{% block nav %}
+{% include "nav.html" %}
+{% endblock %}
+
+{% block content %}
+
+{% if request.user.is_staff %}
+<script>
+    var callback_editInvoiceStatus = function(response) {};
+    var sendInvoiceStatusEmail = function(){};
+</script>
+{% endif %}
+
+<div class="container">
+    <h1 class="display-5 text-center"> Note de frais {{ object.title }} </h1>
+    <div class="row mt-5">
+        <div class="col-lg-12">
+            <h2 class="title">Informations de la note de frais</h2>
+            <table class="table table-striped">
+                <tr>
+                    <th>Auteur</th>
+                    <td>{{ object.author }}</td>
+                </tr>
+                <tr>
+                    <th>Rôle sur le projet</th>
+                    <td>{{ object.role }}</td>
+                </tr>
+                <tr>
+                    <th>Projet</th>
+                    <td>{{ object.project }}</td>
+                </tr>
+                <tr>
+                    <th>Statut</th>
+                    {% if request.user.is_staff %}
+                    <td>
+                        <div class="input-group input-group-md">
+                            <div class="form-control"> 
+                                <select style="width: 100%;" id="select_status" pk="{{ object.pk }}">
+                                    <option value="R" {% if object.status == 'R' %} selected {% endif %}>Remboursement effectué et confirmé</option>
+                                    <option value="F" {% if object.status == 'F' %} selected {% endif %}>A faire</option>
+                                    <option value="J" {% if object.status == 'J' %} selected {% endif %}>Justificatif(s) manquant(s)</option>
+                                    <option value="V" {% if object.status == 'V' %} selected {% endif %}>En attente de validation par le CA</option>
+                                    <option value="D" {% if object.status == 'D' %} selected {% endif %}>Demande d'informations bancaires</option>
+                                    <option value="C" {% if object.status == 'C' %} selected {% endif %}>Virement en cours</option>
+                                </select>
+                            </div>
+                        </div>
+                    </td>
+                    {% else %}
+                    <td class="{% if invoice.status == 'R' or invoice.status == 'C' %}bg-success{% elif invoice.status == 'F' or invoice.status == 'D' %}bg-warning {% elif invoice.status == 'V' %}bg-info{% else %} bg-danger {% endif %}"> {{ object.get_status_display }}</td>
+                    {% endif %}
+                </tr>
+                <tr>
+                    <th>Note de frais déclarée le</th>
+                    <td>{{ object.date_created }}</td>
+                </tr>
+                <tr>
+                    <th>Commentaire</th>
+                    <td>{{object.comm}}</td>
+                </tr>
+                <tr>
+                    <th>Total</th>
+                    <td>{{ object.total }}€</td>
+                </tr>
+            </table>
+            <h2 class="title">Liste des dépenses</h2>
+            <table class="table table-striped" id="expenses-table">
+                <thead>
+                    <tr>
+                        <th>Dépense</th>
+                        <th>Date</th>
+                        <th>Montant</th>
+                        <th>Commentaire</th>
+                        <th>Justificatif</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for expense in expenses %}
+                    <tr>
+                        <td>{{ expense.title }}</td>
+                        <td>{{ expense.date }}</td>
+                        <td>{{ expense.amount }}€</td>
+                        <td class="text-nowrap">{{ expense.comm }}</td>
+                        <td>
+                            {% if expense.proof %}
+                            <a href="{% static '/media/' %}{{expense.proof}}"  class="text-success" target="_blank">Voir le justificatif</a>
+                            {% else %}
+                            <p class="text-danger">Justificatif manquant</p>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+{% if request.user.is_staff %}
+<!-- SEND EMAIL NOTIFICATION MODAL -->
+<div class="modal fade" id="sendEmailNotificationModal" data-bs-keyboard="true" tabindex="-1" aria-labelledby="sendEmailNotificationLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-primary">
+                <h1 class="modal-title fs-5" id="sendEmailNotificationLabel">Notifier par email</h1>
+            </div>
+            <div class="modal-body">
+                <div class="row justify-content-center text-center">
+                    <div class="col-md-12">
+                        <p>Voulez-vous envoyer un email automatique au demandeur pour le notifier du changement de statut de sa commande ?</p>
+                    </div>
+                    <div class="col-md-3">
+                        <button class="btn btn-success w-100 my-1" data-bs-dismiss="modal" onclick="sendInvoiceStatusEmail('{{ object.pk }}')">Oui</button>
+                    </div>
+                    <div class="col-md-3">
+                        <button class="btn btn-danger w-100 my-1" data-bs-dismiss="modal">Non</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="{% static 'js/api/api.js' %}"></script>
+<script src="{% static 'js/dashboard/bank.js' %}"></script>
+{% endif %}
+<script>
+    $(document).ready(function() {
+        var table = new DataTable('#expenses-table',{
+            order: [[2, "desc"]],
+            columnDefs: [
+            {responsivePriority: 1, targets: 0},
+            {responsivePriority: 1, targets: 1, type: "date"},
+            ]
+        });
+        
+        //{% if request.user.is_staff%}
+
+        function callback_editInvoiceStatus(response) {
+            $('#sendEmailNotificationModal').modal('show');
+        }
+
+        var select_status = $('#select_status').select2();
+        select_status.on("change", function() {
+            var value = $(this).val();
+            var pk = $(this).attr("pk");
+
+            editInvoiceStatus(pk, value, callback_editInvoiceStatus);
+        })
+        //{% endif %}
+    });
+</script>
+{% endblock %}

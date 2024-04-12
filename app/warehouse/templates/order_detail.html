@@ -13,6 +13,14 @@ Récapitulatif commande #{{ object.pk }}
 {% endblock %}
 
 {% block content %}
+
+{% if request.user.is_staff %}
+<script>
+    var callback_editOrderStatus = function(response) {};
+    var sendOrderStatusEmail = function(){};
+</script>
+{% if request.user.is_staff %}
+
 <div class="container">
     <h1 class="display-5 text-center"> Commande #{{ object.pk }} </h1>
     <div class="row mt-5">
@@ -81,7 +89,7 @@ Récapitulatif commande #{{ object.pk }}
                     {% for quantity, item in item_set %}
                     <tr>
                         <td>{{ item.name }}</td>
-                        <td> {{ quantity }}</td>
+                        <td>{{ quantity }}</td>
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -90,20 +98,53 @@ Récapitulatif commande #{{ object.pk }}
     </div>
 </div>
 
+{% if request.user.is_staff %}
+<!-- SEND EMAIL NOTIFICATION MODAL -->
+<div class="modal fade" id="sendEmailNotificationModal" data-bs-keyboard="true" tabindex="-1" aria-labelledby="sendEmailNotificationLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-primary">
+                <h1 class="modal-title fs-5" id="sendEmailNotificationLabel">Notifier par email</h1>
+            </div>
+            <div class="modal-body">
+                <div class="row justify-content-center text-center">
+                    <div class="col-md-12">
+                        <p>Voulez-vous envoyer un email automatique au demandeur pour le notifier du changement de statut de sa commande ?</p>
+                    </div>
+                    <div class="col-md-3">
+                        <button class="btn btn-success w-100 my-1" data-bs-dismiss="modal" onclick="sendOrderStatusEmail('{{ object.pk }}')">Oui</button>
+                    </div>
+                    <div class="col-md-3">
+                        <button class="btn btn-danger w-100 my-1" data-bs-dismiss="modal">Non</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
 <script src="{% static 'js/api/api.js' %}"></script>
 <script src="{% static 'js/dashboard/warehouse.js' %}"></script>
+{% endif %}
 <script>
     $(document).ready(function() {
         let table = new DataTable('#order-table');
+        
+        //{% if request.user.is_staff %}
+        
+        function callback_editOrderStatus(response) {
+            $('#sendEmailNotificationModal').modal('show');
+        }
+        
         var select_status = $('#select_status').select2();
-
-
         select_status.on("change", function() {
             var value = $(this).val();
             var pk = $(this).attr("pk");
-
-            editOrderStatus(pk, value);
+            
+            editOrderStatus(pk, value, callback_editOrderStatus);
         })
+        //{% endif %}
     });
 </script>
 {% endblock %}

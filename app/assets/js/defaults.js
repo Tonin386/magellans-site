@@ -6,5 +6,6 @@ $.extend($.fn.dataTable.defaults, {
     stateSave: true,
     language: {
         url: "https://cdn.datatables.net/plug-ins/1.10.24/i18n/French.json"
-    }
+    },
+    responsive: true,
 })

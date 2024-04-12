@@ -17,6 +17,23 @@ Créer une note de frais
 
 <div class="container-fluid mt-3">
     <h1 class="display-5 text-center"> Formulaire de note de frais </h1>
+    
+    {% for message in messages %}
+    {% if message.tags == 'error' %}
+    <div class="alert alert-danger">
+        {{ message }}
+    </div>
+    {% elif message.tags == 'success' %}
+    <div class="alert alert-success">
+        {{ message }}
+    </div>
+    {% else %}
+    <div class="alert alert-info">
+        {{ message }}
+    </div>
+    {% endif %}
+    {% endfor %}
+    
     <div class="row justify-content-center">
         <div class="col-lg-5">
             <div class="alert alert-warning alert-dismissible fade show" role="alert">
@@ -56,13 +73,13 @@ Créer une note de frais
                 {{ field }}
             </div>
             {% endfor %}
-
+            
             <input type="hidden" id="id_expenses_ids" name="expenses_ids" value=",">
-
+            
             <h4 class="mt-3">Dépenses</h4>
             <div id="expenses" class="col-lg-12 row">
             </div>
-
+            
             <div class="col-lg-12">
                 <button type="button" class="btn btn-success float-end" data-bs-toggle="modal" data-bs-target="#addExpenseForm">
                     <i class="fa-solid fa-plus">Ajouter une dépense</i>
@@ -122,7 +139,7 @@ Créer une note de frais
         let select_project = $('#id_project').select2({
             placeholder:"Sélectionner un projet",
         });
-
+        
         var alertList = document.querySelectorAll(".alert");
         alertList.forEach(function (alert) {
             new bootstrap.Alert(alert);

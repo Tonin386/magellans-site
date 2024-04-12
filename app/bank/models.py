@@ -9,12 +9,11 @@ OPE_TYPES= [
 ]
 
 STATUS = [
-    ('R', "Reçue"),
-    ('P', "Prévisionnelle"),
+    ('R', "Remboursement effectué et confirmé"),
     ('F', "A faire"),
-    ('J', "En attente justificatif"),
-    ('V', "En attente de validation CA"),
-    ('D', "Demande des identifiants"),
+    ('J', "Justificatif(s) manquant(s)"),
+    ('V', "En attente de validation par le CA"),
+    ('D', "Demande d'informations bancaires"),
     ('C', "Virement en cours")
 ]
 
@@ -52,13 +51,23 @@ class Invoice(models.Model):
     title = models.CharField(verbose_name="Titre de la note de frais", max_length=255)
     date_created = models.DateTimeField(verbose_name="Date de création", auto_now_add=True, editable=False)
     project = models.ForeignKey(Project, verbose_name="Projet", on_delete=models.DO_NOTHING)
-    status = models.CharField(max_length=1, choices=STATUS, default="J", verbose_name="Statut")
+    status = models.CharField(max_length=1, choices=STATUS, default="V", verbose_name="Statut")
     author = models.ForeignKey(Member, verbose_name="Auteur de la note de frais", on_delete=models.DO_NOTHING, null=True)
     role = models.CharField("Rôle sur le projet", max_length=255, null=True)
     comm = models.TextField(verbose_name="Commentaire", null=True, blank=True)
+    total = models.CharField("Montant total", null=True, blank=True, editable=False, max_length=255)
 
     def __str__(self):
         return f"Note de frais #{self.pk} - {self.title}"
+    
+    def save(self, *args, **kwargs):
+        total_amount = 0
+        for expense in self.expense_set.all():
+            total_amount += expense.amount
+
+        self.total = "%.2f" % total_amount
+
+        super().save(*args, **kwargs)
     
     class Meta:
         verbose_name = "Note de frais"

@@ -1,4 +1,5 @@
 from django.core.files.base import ContentFile
+from django.core.mail import send_mail
 from django.http import JsonResponse
 from dashboard.models import *
 from warehouse.models import *
@@ -89,13 +90,56 @@ def api_bank(request):
                 expense.proof.save(path, proof)
             except Exception as e:
                 expense.delete()
-                createNotification("Ajout projet", "add-expense", app_id, 3, f"Erreur lors de l'import de l'image. Veuillez réessayer.\n{str(e)}", user, str(e))
+                createNotification("Ajout dépense", "add-expense", app_id, 3, f"Erreur lors de l'import de l'image. Veuillez réessayer.\n{str(e)}", user, str(e))
                 return JsonResponse({"status": "error", "error": str(e), "message": "There was a problem when decoding image"})
         
         expense.save()
         createNotification("Ajout dépense", "add-expense", app_id, 0, "La dépense a bien été créée.")
         return JsonResponse({"status": "success", "message": "Expense successfully created.", "id": expense.pk})
+    
+    if action == "edit-invoice_status":
+        if not 'write' in permissions['bank'] + permissions['fullpower']:
+            createNotification("Edition note de frais", "edit-invoice_status", app_id, 3, "Vous n'avez pas les permissions suffisantes pour effectuer cette action.", user)
+            return JsonResponse({"status": "error", "message": "Insufficient permissions"})
+        
+        pk = body_post.get("pk", "undefined")
+        value = body_post.get("value", "undefined")
+        
+        if not pk == "undefined":
+            try:    
+                invoice = Invoice.objects.get(pk=int(pk))
+                invoice.status = value
 
+                invoice.save()
+
+                createNotification("Edition note de frais", "edit-invoice_status", app_id, 0, "La note de frais a bien été modifiée.", user)
+                return JsonResponse({"status": "success", "message": "Invoice updated successfully"})
+            except Exception as e:
+                createNotification("Edition note de frais", "edit-invoice_status", app_id, 3, f"Une erreur est survenue.\nErreur : {str(e)}", user, str(e)).show()
+                return JsonResponse({"status": "error", "message": f"An error occured\n{str(e)}"})
+
+    if action == "email-invoice_status":
+        if not 'write' in permissions['bank'] + permissions['fullpower']:
+            createNotification("Email note de frais", "email-invoice_status", app_id, 3, "Vous n'avez pas les permissions suffisantes pour effectuer cette action.", user)
+            return JsonResponse({"status": "error", "message": "Insufficient permissions"})
+        
+        pk = body_post.get("pk", "undefined")
+        
+        if not pk == "undefined":
+            try:    
+                invoice = Invoice.objects.get(pk=int(pk))
+
+                subject = "Modification statut de votre note de frais"
+                message = mark_safe(render_to_string('email_invoice_status_changed.html', {'invoice': invoice}))
+                send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [invoice.author.email])
+
+                createNotification("Email note de frais", "email-invoice_status", app_id, 0, "L'email a bien été envoyé.", user)
+                return JsonResponse({"status": "success", "message": "Invoice updated successfully"})
+            except Exception as e:
+                createNotification("Email note de frais", "email-invoice_status", app_id, 3, f"Une erreur est survenue.\nErreur : {str(e)}", user, str(e)).show()
+                return JsonResponse({"status": "error", "message": f"An error occured\n{str(e)}"})
+
+                    
     return JsonResponse({"status": "error", "message": "Uncaught error."})
 
 def api_dashboard(request):
@@ -327,7 +371,6 @@ def api_warehouse(request):
     body_post = json.loads(request.body.decode("utf-8"))
             
     action = body_post.get("action", "undefined")
-    print(body_post)
     
     if action == "add-item":
         if not 'write' in permissions['warehouse'] + permissions['fullpower']:
@@ -389,7 +432,7 @@ def api_warehouse(request):
         
     if action == "del-item":
         if not 'write' in permissions['warehouse'] + permissions['fullpower']:
-            createNotification("Suppression tag", "del-tag", app_id, 3, "Vous n'avez pas les permissions suffisantes pour effectuer cette action.", user)
+            createNotification("Suppression objet", "del-item", app_id, 3, "Vous n'avez pas les permissions suffisantes pour effectuer cette action.", user)
             return JsonResponse({"status": "error", "message": "Insufficient permissions"})
         
         pk = int(body_post.get('pk', '-1'))
@@ -498,7 +541,7 @@ def api_warehouse(request):
     
     if action == "edit-order_status":
         if not 'write' in permissions['warehouse'] + permissions['fullpower']:
-            createNotification("Suppression tag", "del-tag", app_id, 3, "Vous n'avez pas les permissions suffisantes pour effectuer cette action.", user)
+            createNotification("Edition commande", "edit-order_status", app_id, 3, "Vous n'avez pas les permissions suffisantes pour effectuer cette action.", user)
             return JsonResponse({"status": "error", "message": "Insufficient permissions"})
         
         pk = body_post.get("pk", "undefined")
@@ -518,6 +561,27 @@ def api_warehouse(request):
                 return JsonResponse({"status": "success", "message": "Order updated successfully"})
             except Exception as e:
                 createNotification("Edition commande", "edit-order_status", app_id, 3, f"Une erreur est survenue.\nErreur : {str(e)}", user, str(e)).show()
+                return JsonResponse({"status": "error", "message": f"An error occured\n{str(e)}"})
+        
+    if action == "email-order_status":
+        if not 'write' in permissions['bank'] + permissions['fullpower']:
+            createNotification("Email commande", "email-order_status", app_id, 3, "Vous n'avez pas les permissions suffisantes pour effectuer cette action.", user)
+            return JsonResponse({"status": "error", "message": "Insufficient permissions"})
+        
+        pk = body_post.get("pk", "undefined")
+        
+        if not pk == "undefined":
+            try:    
+                order = Order.objects.get(pk=int(pk))
+
+                subject = "Modification statut de votre commande"
+                message = mark_safe(render_to_string('email_order_status_changed.html', {'order': order}))
+                send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [order.user.email])
+
+                createNotification("Email commande", "email-order_status", app_id, 0, "L'email a bien été envoyé.", user)
+                return JsonResponse({"status": "success", "message": "Invoice updated successfully"})
+            except Exception as e:
+                createNotification("Email commande", "email-order_status", app_id, 3, f"Une erreur est survenue.\nErreur : {str(e)}", user, str(e)).show()
                 return JsonResponse({"status": "error", "message": f"An error occured\n{str(e)}"})
                     
     createNotification("Erreur inconnue", "unknown error", app_id, 3, "Une erreur inconnue est survenue.", user)

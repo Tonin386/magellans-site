@@ -14,7 +14,7 @@ Trésorerie
     <div class="row mt-5">
         <div class="col-lg-12">
             <h2 class="title">Liste des opérations</h2>
-            <table class="table table-bordered" id="operations-table">
+            <table class="table table-striped align-middle display responsive nowrap" id="operations-table">
                 <thead>
                     <tr>
                         <th>ID Opération</th>
@@ -49,13 +49,56 @@ Trésorerie
     <div class="row mt-5">
         <div class="col-lg-12">
             <h2 class="title">Liste des notes de frais</h2>
-        </div>
+            <table class="table table-striped align-middle display responsive nowrap" id="invoices-table">
+                <thead>
+                    <tr>
+                        <th scope="col" style="max-width: 80px;;"></th>
+                        <th scope="col">Nom</th>
+                        <th scope="col">Auteur</th>
+                        <th scope="col">Rôle sur le projet</th>
+                        <th scope="col">Projet</th>
+                        <th scope="col">Statut</th>
+                        <th scope="col">Reçue le</th>
+                        <th scope="col">Montant total</th>
+                    </tr>
+                </thead>
+                <tbody class="table-group-divider">
+                    {% for invoice in invoices %}
+                    <tr id="invoice{{invoice.pk}}">
+                        <td>
+                            <a class="btn btn-warning" href="{% url 'invoice-detail' pk=invoice.pk %}"><i class="fa-eye fa-solid text-light"></i></a>
+                        </td>
+                        <td>{{ invoice.title }}</td>
+                        <td>{{ invoice.author }}</td>
+                        <td>{{ invoice.role }}</td>
+                        <td>{{ invoice.project }}</td>
+                        <td class="{% if invoice.status == 'R' or invoice.status == 'C' %}bg-success{% elif invoice.status == 'F' or invoice.status == 'D' %}bg-warning {% elif invoice.status == 'V' %}bg-info{% else %} bg-danger {% endif %}">
+                            {{ invoice.get_status_display }}
+                        </td>
+                        <td>{{ invoice.date_created }}</td>
+                        <td>{{ invoice.total }}€</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </tbody>
+        </table>
     </div>
+</div>
 </div>
 
 <script>
     $(document).ready(function() {
-        let table = new DataTable('#operations-table');
+        var operations_table = new DataTable('#operations-table');
+        
+        var invoices_table = new DataTable('#invoices-table', {
+            order: [[6, "desc"]],
+            columnDefs: [
+            {responsivePriority: 1, targets: 0},
+            {responsivePriority: 2, targets: 1},
+            {responsivePriority: 1, targets: 6, type: "datetime"},
+            {responsivePriority: 1, targets: 7},
+            ]
+        });
     });
 </script>
 {% endblock %}

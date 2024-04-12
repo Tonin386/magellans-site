@@ -29,7 +29,8 @@ def members(request):
 @login_required
 def my_profile(request):
     form = EditProfileForm(request.user.site_person)
-    orders = Order.objects.filter(user=request.user)
+    orders = Order.objects.filter(user=request.user).order_by('-date_created')
+    invoices = Invoice.objects.filter(author=request.user).order_by('-date_created')
     if request.method == "POST":
         form = EditProfileForm(request.user.site_person, request.POST)
         if form.is_valid():
@@ -39,7 +40,7 @@ def my_profile(request):
             request.user.site_person.gender = form.cleaned_data['gender']
             request.user.site_person.save()
             
-    return render(request, 'my_profile.html', {'object': request.user, 'form': form, 'orders': orders})
+    return render(request, 'my_profile.html', {'object': request.user, 'form': form, 'orders': orders, 'invoices': invoices})
 
 @login_required
 def create_invoice(request):
@@ -57,6 +58,8 @@ def create_invoice(request):
                 expense = Expense.objects.get(pk=id)
                 expense.linked_invoice = new_invoice
                 expense.save()
+            
+            messages.success(request, 'La note de frais a bien été créée et envoyée au trésorier.')
 
     return render(request, "create_invoice.html", locals())
 

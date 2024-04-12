@@ -57,7 +57,7 @@ Profil
             <button class="btn btn-warning w-25 h-100" data-bs-target="#editProfileForm" data-bs-toggle="modal"><i class="fa-solid fa-edit"></i> Modifier mon profil</button>
         </div>
     </div>    
-
+    
     <h1 class="title fs-3 mt-5">Mes réservations de matériel</h1>
     <div class="row">
         <div class="col-lg-12">
@@ -83,6 +83,41 @@ Profil
                         <td>{{ order.date_end }}</td>
                         <td class="{% if order.status == 3 %}bg-success{% elif order.status == 1 %} bg-warning {% else %} bg-danger {% endif %}">{{ order.get_status_display }}</td>
                         <td>{{ order.date_created }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </tbody>
+        </table>
+    </div>
+    
+    
+    <h1 class="title fs-3 mt-5">Mes notes de frais</h1>
+    <div class="row">
+        <div class="col-lg-12">
+            <table class="table table-striped align-middle display responsive nowrap" id="invoices-table">
+                <thead>
+                    <tr>
+                        <th scope="col" style="max-width: 80px;;"></th>
+                        <th scope="col">Nom</th>
+                        <th scope="col">Projet</th>
+                        <th scope="col">Statut</th>
+                        <th scope="col">Reçue le</th>
+                        <th scope="col">Montant total</th>
+                    </tr>
+                </thead>
+                <tbody class="table-group-divider">
+                    {% for invoice in invoices %}
+                    <tr id="invoice{{invoice.pk}}">
+                        <td>
+                            <a class="btn btn-warning" href="{% url 'invoice-detail' pk=invoice.pk %}"><i class="fa-eye fa-solid text-light"></i></a>
+                        </td>
+                        <td>{{ invoice.title }}</td>
+                        <td>{{ invoice.project }}</td>
+                        <td class="{% if invoice.status == 'R' or invoice.status == 'C' %}bg-success{% elif invoice.status == 'F' or invoice.status == 'D' %}bg-warning {% elif invoice.status == 'V' %}bg-info{% else %} bg-danger {% endif %}">
+                            {{ invoice.get_status_display }}
+                        </td>
+                        <td>{{ invoice.date_created }}</td>
+                        <td>{{ invoice.total }}€</td>
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -120,12 +155,24 @@ Profil
 
 <script>
     $(document).ready(function() {
-        var table = new DataTable('#orders-table', {
+        var orders_table = new DataTable('#orders-table', {
             order: [[1, "desc"]],
             columnDefs: [
             {responsivePriority: 1, targets: 0},
             {responsivePriority: 1, targets: 2, type: "datetime"},
             {responsivePriority: 1, targets: 3, type: "datetime"},
+            {targets: 5, type: "datetime"}
+            ]
+        });
+        
+        
+        var invoices_table = new DataTable('#invoices-table', {
+            order: [[4, "desc"]],
+            columnDefs: [
+            {responsivePriority: 1, targets: 0},
+            {responsivePriority: 1, targets: 1},
+            {responsivePriority: 1, targets: 4, type: "datetime"},
+            {responsivePriority: 1, targets: 5},
             ]
         });
     });
