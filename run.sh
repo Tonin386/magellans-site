@@ -22,9 +22,23 @@ elif [ "$1" = "db" ]; then
 elif [ "$1" = "python" ]; then
   docker compose --env-file app/.env up -d
   docker exec -it magellans-django python manage.py shell
+elif [ "$1" = "update" ]; then
+  git pull
+  docker compose --env-file app/.env down
+  docker compose --env-file app/.env up -d
+  docker exec -it magellans-django python manage.py makemigrations
+  docker exec -it magellans-django python manage.py migrate
+elif [ "$1" = "gitupdate" ]; then
+  git checkout dev
+  git push
+  git checkout production
+  git merge dev
+  git push
+  git checkout main
+  git merge dev
+  git push
+  git checkout dev
 else
   echo "Invalid argument."
   exit 1
 fi
-
-
