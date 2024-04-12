@@ -19,7 +19,7 @@ Récapitulatif commande #{{ object.pk }}
     var callback_editOrderStatus = function(response) {};
     var sendOrderStatusEmail = function(){};
 </script>
-{% if request.user.is_staff %}
+{% endif %}
 
 <div class="container">
     <h1 class="display-5 text-center"> Commande #{{ object.pk }} </h1>
