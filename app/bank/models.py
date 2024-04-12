@@ -61,13 +61,14 @@ class Invoice(models.Model):
         return f"Note de frais #{self.pk} - {self.title}"
     
     def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
         total_amount = 0
         for expense in self.expense_set.all():
             total_amount += expense.amount
 
         self.total = "%.2f" % total_amount
-
         super().save(*args, **kwargs)
+
     
     class Meta:
         verbose_name = "Note de frais"
