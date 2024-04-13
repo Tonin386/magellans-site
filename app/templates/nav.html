@@ -2,90 +2,90 @@
 {% load logout_tags %}
 
 <nav class="navbar navbar-expand-xl navbar-dark" id="mainNav" style="background-color: #212529;">
-  <div class="container-fluid">
-    <a class="navbar-brand" href="{% url 'home' %}">
-      <img src="{% static 'media/img/logo.webp' %}" alt="Magellans"> Magellans
-    </a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarResponsive" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse justify-content-end" id="navbarResponsive">
-      <ul class="navbar-nav text-center">
-        {% if request.user.is_superuser %}
-        <li class="nav-item">
-          <a class="nav-link" href="{% url 'admin:index' %}">
-            Administration site
-          </a>
-        </li>
-        {% endif %} 
-        <li class="nav-item">
-          <a class="nav-link" href="{% url 'warehouse' %}">
-            Magasin
-          </a>
-        </li>
-        {% if request.user.is_authenticated %}
-        <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-            Espace membres
-          </a>
-          <ul class="dropdown-menu">
-            <li>
-              <a class="dropdown-item" href="{% url 'members' %}">Accueil</a>
-            </li>
-            <li>
-              <a class="dropdown-item" href="{% url 'my-profile' %}">Mon profil</a>
-            </li>
-            <li>
-              <a class="dropdown-item" href="{% url 'create-invoice' %}">Editer une note de frais</a>
-            </li>
-            <li>
-              <a class="dropdown-item" href="{% url 'create-funding-request' %}">Demande d'aide à projets</a>
-            </li>
-          </ul>
-        </li>
-        {% if request.user.is_staff %}
-        <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-            Outils CA
-          </a>
-          <ul class="dropdown-menu">
-            <li>
-              <a class="dropdown-item" href="{% url 'dashboard-home' %}">Dashboard</a>
-            </li>
-            <li>
-              <a class="dropdown-item" href="{% url 'dashboard-members' %}">Gestion des profils utilisateurs</a>
-            </li>
-            <li>
-              <a class="dropdown-item" href="{% url 'dashboard-projects' %}">Gestion des projets</a>
-            </li>
-            <li>
-              <a class="dropdown-item" href="{% url 'dashboard-orders' %}">Gestion des commandes</a>
-            </li>
-            <li>
-              <a class="dropdown-item" href="{% url 'bank' %}">Trésorerie</a>
-            </li>
-          </ul>
-        </li>
-        {% endif %}
-        {% endif %}
-        {% if request.user.is_authenticated %}
-        <li class="nav-item">
-            {% logout_form %}
-        </li>
-        {% else %}
-        <li class="nav-item">
-          <a class="nav-link" href="{% url 'login' %}?next={{ request.path }}">
-            Se connecter
-          </a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="{% url 'register' %}">
-            S'inscrire
-          </a>
-        </li>
-        {% endif %}
-      </ul>
-    </div>
-  </div>
+	<div class="container-fluid">
+		<a class="navbar-brand" href="{% url 'home' %}">
+			<img src="{% static 'media/img/logo.webp' %}" alt="Magellans"> Magellans
+		</a>
+		<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarResponsive" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+			<span class="navbar-toggler-icon"></span>
+		</button>
+		<div class="collapse navbar-collapse justify-content-end" id="navbarResponsive">
+			<ul class="navbar-nav text-center">
+				{% if request.user.is_superuser %}
+				<li class="nav-item">
+					<a class="nav-link" href="{% url 'admin:index' %}">
+						Administration site
+					</a>
+				</li>
+				{% endif %} 
+				<li class="nav-item">
+					<a class="nav-link" href="{% url 'warehouse' %}">
+						Magasin
+					</a>
+				</li>
+				{% if request.user.is_authenticated %}
+				<li class="nav-item dropdown">
+					<a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+						Espace membres
+					</a>
+					<ul class="dropdown-menu">
+						<li>
+							<a class="dropdown-item" href="{% url 'members' %}">Accueil</a>
+						</li>
+						<li>
+							<a class="dropdown-item" href="{% url 'my-profile' %}">Mon profil</a>
+						</li>
+						<li>
+							<a class="dropdown-item" href="{% url 'create-invoice' %}">Editer une note de frais</a>
+						</li>
+						<li>
+							<a class="dropdown-item" href="{% url 'create-funding-request' %}">Demande d'aide à projets</a>
+						</li>
+					</ul>
+				</li>
+				{% if request.user.is_staff %}
+				<li class="nav-item dropdown">
+					<a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+						Outils CA
+					</a>
+					<ul class="dropdown-menu">
+						<li>
+							<a class="dropdown-item" href="{% url 'dashboard-home' %}">Dashboard</a>
+						</li>
+						<li>
+							<a class="dropdown-item" href="{% url 'dashboard-orders' %}">Commandes</a>
+						</li>
+						<li>
+							<a class="dropdown-item" href="{% url 'dashboard-members' %}">Profils utilisateurs</a>
+						</li>
+						<li>
+							<a class="dropdown-item" href="{% url 'dashboard-projects' %}">Projets</a>
+						</li>
+						<li>
+							<a class="dropdown-item" href="{% url 'bank' %}">Trésorerie</a>
+						</li>
+					</ul>
+				</li>
+				{% endif %}
+				{% endif %}
+				{% if request.user.is_authenticated %}
+				<li class="nav-item">
+					{% logout_form %}
+				</li>
+				{% else %}
+				<li class="nav-item">
+					<a class="nav-link" href="{% url 'login' %}?next={{ request.path }}">
+						Se connecter
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link" href="{% url 'register' %}">
+						S'inscrire
+					</a>
+				</li>
+				{% endif %}
+			</ul>
+		</div>
+	</div>
 </nav>
 </div>

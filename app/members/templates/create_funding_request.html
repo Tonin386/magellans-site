@@ -158,11 +158,6 @@ Demande d'aide à projet
                 }, false)
             })
         })();
-
-        var alertList = document.querySelectorAll(".alert");
-        alertList.forEach(function (alert) {
-            new bootstrap.Alert(alert);
-        });
         
         const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
         const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));

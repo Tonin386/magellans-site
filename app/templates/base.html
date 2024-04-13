@@ -2,40 +2,75 @@
 <!DOCTYPE html>
 <html data-bs-theme="light">
 <head>
-  <title>{% block title %}{% endblock %}</title>
-  {% include "head.html" %}
-  {% block scripts %}
-  {% endblock %}
-  {% block extra_head %}
-  {% endblock %}
+	<title>{% block title %}{% endblock %}</title>
+	{% include "head.html" %}
+	{% block scripts %}
+	{% endblock %}
+	{% block extra_head %}
+	{% endblock %}
 </head>
 <body class="pb-5 mb-5">
-  {% include 'nav.html' %}
-  
-  <section class="base-section pb-5">
-    {% block content %}
-    <!-- This is where content from child templates will be inserted -->
-    {% endblock %}
-  </section>
-  
-  {% include "footer.html" %}
-  
-  <!-- Google tag (gtag.js) -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-BDZJKQJ88M"></script>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-  <script>
-    let api_token = "{{ request.user.api_token }}" || "default";
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    
-    gtag('config', 'G-BDZJKQJ88M');
-  </script>
-  
-  <!-- NOTIFICATIONS -->
-  <div class="toast-container position-fixed bottom-0 end-0 p-3" id="notificationContainer">
-  </div>
-  
+	{% include 'nav.html' %}
+	<div class="container mt-3">
+		<div class="row justify-content-center">
+			<div class="col-lg-5">
+				{% for message in messages %}
+				{% if message.tags == 'error' %}
+				<div class="alert alert-danger alert-dismissible fade show" role="alert">
+					<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+					<strong>Erreur</strong> <hr> 
+					{{ message }}
+				</div>
+				{% elif message.tags == 'success' %}
+				<div class="alert alert-success alert-dismissible fade show" role="alert">
+					<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+					<strong>Succès</strong> <hr> 
+					{{ message }}
+				</div>
+				{% else %}
+				<div class="alert alert-info alert-dismissible fade show" role="alert">
+					<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+					<strong>Information</strong> <hr> 
+					{{ message }}
+				</div>
+				{% endif %}
+				{% endfor %}
+			</div>
+		</div>
+	</div>
+	<section class="base-section pb-5">
+		{% block content %}
+		<!-- This is where content from child templates will be inserted -->
+		{% endblock %}
+	</section>
+	
+	{% include "footer.html" %}
+	
+	<!-- Google tag (gtag.js) -->
+	<script async src="https://www.googletagmanager.com/gtag/js?id=G-BDZJKQJ88M"></script>
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+	<script>
+		let api_token = "{{ request.user.api_token }}" || "default";
+		window.dataLayer = window.dataLayer || [];
+		function gtag(){dataLayer.push(arguments);}
+		gtag('js', new Date());
+		
+		gtag('config', 'G-BDZJKQJ88M');
+	</script>
+	
+	<!-- STATIC NOTIFICATIONS -->
+	<script>
+		$(document).ready(function() {
+			var alertList = document.querySelectorAll(".alert");
+			alertList.forEach(function (alert) {
+				new bootstrap.Alert(alert);
+			});
+		})
+	</script>
+	
+	<!-- ASYNC NOTIFICATIONS -->
+	<div class="toast-container position-fixed bottom-0 end-0 p-3" id="notificationContainer">
+	</div>
+	
 </body>
-
 </html>

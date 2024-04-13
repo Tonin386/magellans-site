@@ -9,7 +9,6 @@ S'inscrire
 <div class="container">
     <div class="row m-auto">
         <h1 class="display-5 mt-3 text-magellans-dark">S'inscrire</h1>
-        
         <div class="col-lg-12 m-auto">
             <div class="alert alert-warning alert-dismissible fade show" role="alert">
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
@@ -18,44 +17,23 @@ S'inscrire
             </div>
         </div>
 
-        {% for message in messages %}
-        {% if message.tags == 'error' %}
-        <div class="alert alert-danger">
-            {{ message }}
-        </div>
-        {% elif message.tags == 'success' %}
-        <div class="alert alert-success">
-            {{ message }}
-        </div>
-        {% else %}
-        <div class="alert alert-info">
-            {{ message }}
-        </div>
-        {% endif %}
-        {% endfor %}
-        
         <form method="post" class="needs-validation" novalidate>
             {% csrf_token %}
             <div class="input-group input-group-md col-lg-12 mt-3">
-                <!-- <span class="input-group-text bg-primary col-md-2" id="email-span">Courriel</span> -->
                 <input class="form-control" type="text" name="email" placeholder="Courriel" aria-describedby="email-span" required>
             </div>
             <div class="input-group input-group-md col-lg-12 mt-3">
-                <!-- <span class="input-group-text bg-primary col-md-2" id="password1-span">Mot de passe</span> -->
                 <input class="form-control" type="password" name="password1" placeholder="Mot de passe" aria-describedby="password1-span" required>
                 <input class="form-control" type="password" name="password2" placeholder="Confirmez votre  mot de passe" required>
             </div>
             <div class="input-group input-group-md col-lg-12 mt-3">
-                <!-- <span class="input-group-text bg-primary col-md-2" id="name-span">Prénom/Nom</span> -->
                 <input class="form-control" type="text" name="first_name" placeholder="Prénom" aria-describedby="name-span" required>
                 <input class="form-control" type="text" name="last_name" placeholder="Nom de famille" required>
             </div>
             <div class="input-group input-group-md col-lg-12 mt-3">
-                <!-- <span class="input-group-text bg-primary col-md-2" id="phone-span">Téléphone</span> -->
                 <input class="form-control" type="text" name="phone" placeholder="Téléphone" aria-describedby="phone-span">
             </div>
             <div class="input-group input-group-md col-lg-12 mt-3">
-                <!-- <span class="input-group-text bg-primary col-md-2" id="gender-span">Sexe</span> -->
                 <select class="form-control" name="gender" aria-describedby="gender-span">
                     <option value="">Sexe...</option>
                     <option value="F">Femme</option>
@@ -142,11 +120,6 @@ S'inscrire
 
 <script>
     $(document).ready(function() {
-        var alertList = document.querySelectorAll(".alert");
-        alertList.forEach(function (alert) {
-            new bootstrap.Alert(alert);
-        });
-        
         (() => {
             'use strict'
             

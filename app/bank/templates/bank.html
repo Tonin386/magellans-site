@@ -21,32 +21,15 @@ Trésorerie
     <div class="row mt-5">
         <div class="col-lg-12">
             <h2 class="title">Liste des opérations</h2>
-            {% for message in messages %}
-            {% if message.tags == 'error' %}
-            <div class="alert alert-danger">
-                {{ message }}
-            </div>
-            {% elif message.tags == 'success' %}
-            <div class="alert alert-success">
-                {{ message }}
-            </div>
-            {% else %}
-            <div class="alert alert-info">
-                {{ message }}
-            </div>
-            {% endif %}
-            {% endfor %}
             <table class="table table-striped align-middle display responsive nowrap" id="operations-table">
                 <thead>
                     <tr>
                         <th>ID Opération</th>
                         <th>Type d'opération</th>
-                        <th>Emetteur de l'opération</th>
-                        <th>Receveur de l'opération</th>
+                        <th>Tiers</th>
                         <th>Montant</th>
                         <th>Description</th>
                         <th>Date</th>
-                        <th>Date d'ajout</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -54,12 +37,10 @@ Trésorerie
                     <tr>
                         <td>{{ operation.id }}</td>
                         <td class="{% if operation.type == 'C' %} bg-success {% else %} bg-danger {% endif %}">{{ operation.get_type_display }}</td>
-                        <td>{{ operation.src }}</td>
-                        <td>{{ operation.dest }}</td>
+                        <td>{{ operation.third_party }}</td>
                         <td>{{ operation.amount|floatformat:".2f" }} €</td>
                         <td>{{ operation.desc }}</td>
                         <td>{{ operation.date }}</td>
-                        <td>{{ operation.date_created }}</td>
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -225,12 +206,12 @@ Trésorerie
         });
 
         var operations_table = new DataTable('#operations-table', {
-            order: [[0, "desc"]],
+            order: [[0, "asc"]],
             columnDefs: [
             {responsivePriority: 1, targets: 0, type: "ope"},
             {responsivePriority: 2, targets: 2},
+            {responsivePriority: 1, targets: 4},
             {responsivePriority: 1, targets: 5},
-            {responsivePriority: 1, targets: 6},
             ]
         });
         

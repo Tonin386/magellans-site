@@ -3,7 +3,6 @@ from django.views.generic import DetailView
 from .forms import CreateOperationForm
 from django.contrib import messages
 from django.shortcuts import render
-
 from .models import *
 
 @staff_required
@@ -22,12 +21,14 @@ def bank(request):
     if request.method == "POST":
         operation_form = CreateOperationForm(request.POST)
         if operation_form.is_valid():
-            operation_form.save()
-            messages.success(request, 'Opération ajoutée.')
+            if request.user.site_person.role in ['P', 'T'] or request.user.is_superuser:
+                operation_form.save()
+                messages.success(request, 'Opération ajoutée.')
+            else:
+                messages.error(request, "Vous n'avez pas les permissions suffisantes pour gérer les opérations de trésorerie.<br>Seuls les Prédsident.e et Trésorier.ère peuvent les gérer.")
         else:
             messages.error(request, "Erreur lors de l'ajout de l'opération.")
 
-            #success message
     return render(request, "bank.html", locals())
 
 class InvoiceDetailView(DetailView):

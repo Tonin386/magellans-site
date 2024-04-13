@@ -22,8 +22,9 @@ class Operation(models.Model):
     id = models.CharField(primary_key=True, max_length=100, unique=True, verbose_name="ID Opération", editable=False)
     desc = models.TextField(verbose_name="Description")
     type = models.CharField(max_length=1, choices=OPE_TYPES, default="D", verbose_name="Type d'opération")
-    src = models.ForeignKey(Person, on_delete=models.DO_NOTHING, verbose_name="Emetteur de l'opération", related_name="source_operations")
-    dest = models.ForeignKey(Person, on_delete=models.DO_NOTHING, verbose_name="Receveur de l'opération", related_name="destination_operations")
+    third_party = models.ForeignKey(Person, on_delete=models.DO_NOTHING, verbose_name='Tiers', related_name='operations', null=True) #TODO: Delete null=True
+    src = models.ForeignKey(Person, on_delete=models.DO_NOTHING, verbose_name="Emetteur de l'opération", related_name="source_operations") #TODO: delete this
+    dest = models.ForeignKey(Person, on_delete=models.DO_NOTHING, verbose_name="Receveur de l'opération", related_name="destination_operations") #TODO: delete this
     amount = models.FloatField(verbose_name="Montant")
     date_created = models.DateTimeField(verbose_name="Date d'ajout", editable=False, default=datetime.now)
     date = models.DateField(verbose_name="Date")

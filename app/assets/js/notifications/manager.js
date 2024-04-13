@@ -8,7 +8,7 @@ function createNotification(id, title, application, text, status) {
     application = application_map[application];
 
     // Construct the toast HTML
-    let toastHTML = '<div id="' + toastId + '" class="toast bg-dark text-white" role="alert" aria-live="assertive" aria-atomic="true" data-delay="5000">' +
+    let toastHTML = '<div id="' + toastId + '" class="toast bg-dark text-white" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="10000">' +
                     '  <div class="toast-header bg-dark">' +
                     '    <span class="me-auto text-light">' + title + '</span>' +
                     '    <small> ' + application + '</small>' +

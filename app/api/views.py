@@ -90,7 +90,7 @@ def api_bank(request):
                 expense.proof.save(path, proof)
             except Exception as e:
                 expense.delete()
-                createNotification("Ajout dépense", "add-expense", app_id, 3, f"Erreur lors de l'import de l'image. Veuillez réessayer.\n{str(e)}", user, str(e))
+                createNotification("Ajout dépense", "add-expense", app_id, 3, f"Erreur lors de l'import de l'image. Veuillez réessayer.<hr>{str(e)}", user, str(e))
                 return JsonResponse({"status": "error", "error": str(e), "message": "There was a problem when decoding image"})
         
         expense.save()
@@ -115,7 +115,7 @@ def api_bank(request):
                 createNotification("Edition note de frais", "edit-invoice_status", app_id, 0, "La note de frais a bien été modifiée.", user)
                 return JsonResponse({"status": "success", "message": "Invoice updated successfully"})
             except Exception as e:
-                createNotification("Edition note de frais", "edit-invoice_status", app_id, 3, f"Une erreur est survenue.\nErreur : {str(e)}", user, str(e)).show()
+                createNotification("Edition note de frais", "edit-invoice_status", app_id, 3, f"Une erreur est survenue.<hr>Erreur : {str(e)}", user, str(e)).show()
                 return JsonResponse({"status": "error", "message": f"An error occured\n{str(e)}"})
 
     if action == "email-invoice_status":
@@ -136,8 +136,8 @@ def api_bank(request):
                 createNotification("Email note de frais", "email-invoice_status", app_id, 0, "L'email a bien été envoyé.", user)
                 return JsonResponse({"status": "success", "message": "Invoice updated successfully"})
             except Exception as e:
-                createNotification("Email note de frais", "email-invoice_status", app_id, 3, f"Une erreur est survenue.\nErreur : {str(e)}", user, str(e)).show()
-                return JsonResponse({"status": "error", "message": f"An error occured\n{str(e)}"})
+                createNotification("Email note de frais", "email-invoice_status", app_id, 3, f"Une erreur est survenue.<hr>Erreur : {str(e)}", user, str(e)).show()
+                return JsonResponse({"status": "error", "message": f"An error occured<\n{str(e)}"})
 
                     
     return JsonResponse({"status": "error", "message": "Uncaught error."})
@@ -213,7 +213,7 @@ def api_dashboard(request):
                 project.poster.save(path, poster)
             except Exception as e:
                 project.delete()
-                createNotification("Ajout projet", "add-project", app_id, 3, f"Erreur lors de l'import de l'image. Veuillez réessayer.\n{str(e)}", user, str(e))
+                createNotification("Ajout projet", "add-project", app_id, 3, f"Erreur lors de l'import de l'image. Veuillez réessayer.<hr>{str(e)}", user, str(e))
                 return JsonResponse({"status": "error", "error": str(e), "message": "There was a problem when decoding image"})
         
         project.save()
@@ -281,7 +281,7 @@ def api_dashboard(request):
                 path = f"{project.slug}.{extension}"
                 project.poster.save(path, poster)
             except Exception as e:
-                createNotification("Edition projet", "edit-project", app_id, 2, f"Erreur lors de l'import de l'image. Veuillez réessayer. Le reste du projet a bien été modifié. Actualisation en cours...\n{str(e)}", user, str(e))
+                createNotification("Edition projet", "edit-project", app_id, 2, f"Erreur lors de l'import de l'image. Veuillez réessayer. Le reste du projet a bien été modifié. Actualisation en cours...<hr>{str(e)}", user, str(e))
                 return JsonResponse({"status": "error", "error": str(e), "message": "There was a problem when decoding image"})
         
         project.save()
@@ -323,17 +323,22 @@ def api_members(request):
             role=role
         )
 
-        person = Person.objects.create(
-            **data
-        )
+        try:
+            person = Person.objects.create(
+                **data
+            )
 
-        data['pk'] = person.pk
+            data['pk'] = person.pk
 
-        ext_user = UnregisteredMember.objects.create()
-        person.ext_profile = ext_user
-        person.save()
-        createNotification("Ajout utilisateur externe", "add-ext_user", app_id, 0, "Le nouvel utilisateur externe a bien été ajouté.", user)
-        return JsonResponse({"status": "success", "message": "The external user was successfully added", 'data': json.dumps(data)})
+            ext_user = UnregisteredMember.objects.create()
+            person.ext_profile = ext_user
+            person.save()
+            createNotification("Ajout utilisateur externe", "add-ext_user", app_id, 0, "Le nouvel utilisateur externe a bien été ajouté.", user)
+            return JsonResponse({"status": "success", "message": "The external user was successfully added", 'data': json.dumps(data)})
+        except Exception as e:
+            person.delete()
+            createNotification("Ajout utilisateur externe", "add-ext_user", app_id, 3, f"Une erreur est survenue. Veuillez réessayer<hr>Erreur : {str(e)}", user, str(e))
+            return JsonResponse({"status": "error", "message": str(e)})
 
     if action == "del-ext_user":
         if not 'write' in permissions['members'] + permissions['fullpower']:
@@ -342,10 +347,14 @@ def api_members(request):
 
         pk = body_post.get('pk')
 
-        ext_user = UnregisteredMember.objects.get(pk=pk)      
-        ext_user.delete()
-        createNotification("Suppression utilisateur externe", "del-ext_user", app_id, 0, "L'utilisateur a été supprimé.", user)
-        return JsonResponse({"status": "success", "message": "External user deleted.", "id_row": f"#extUser{pk}"})
+        try:
+            ext_user = UnregisteredMember.objects.get(pk=pk)
+            ext_user.delete()
+            createNotification("Suppression utilisateur externe", "del-ext_user", app_id, 0, "L'utilisateur a été supprimé.", user)
+            return JsonResponse({"status": "success", "message": "External user deleted.", "id_row": f"#extUser{pk}"})
+        except Exception as e:
+            createNotification("Suppression utilisateur externe ", "del-ext-user", app_id, 3, f"Impossible de supprimer l'utilisateur. Veuillez réessayer.<hr>Erreur : {str(e)}", user, str(e))
+            return JsonResponse({"status": "error", "message": str(e)})
     
     if action == "edit-user_role":
         if not 'write' in permissions['members'] + permissions['fullpower']:
@@ -355,12 +364,16 @@ def api_members(request):
         pk = body_post.get("pk", "undefined")
         role = body_post.get("role", "undefined")
 
-        person = Person.objects.get(pk=pk)
-        person.role = role
-        person.save()
+        try:
+            person = Person.objects.get(pk=pk)
+            person.role = role
+            person.save()
 
-        createNotification("Modification utilisateur", "edit-user_role", app_id, 0, "Le rôle de l'utilisateur a été modifié.", user)
-        return JsonResponse({"status": "success", "message": "User role modified."})
+            createNotification("Modification utilisateur", "edit-user_role", app_id, 0, "Le rôle de l'utilisateur a été modifié.", user)
+            return JsonResponse({"status": "success", "message": "User role modified."})
+        except Exception as e:
+            createNotification("Modification utilisateur", "edit-user_role", app_id, 3, f"Une erreur est survenue. Veuillez réessayer<hr>Erreur : {str(e)}", user, str(e))
+            return JsonResponse({"status": "error", "message": str(e)})
     
     return JsonResponse({"status": "error", "message": "Uncaught error."})
 
@@ -410,7 +423,7 @@ def api_warehouse(request):
                 new_item.image.save(path, image)
             except Exception as e:
                 new_item.delete()
-                createNotification("Ajout objet", "add-item", app_id, 3, f"Erreur lors de l'import de l'image. Veuillez réessayer.\n{str(e)}", user, str(e))
+                createNotification("Ajout objet", "add-item", app_id, 3, f"Erreur lors de l'import de l'image. Veuillez réessayer.<hr>{str(e)}", user, str(e))
                 return JsonResponse({"status": "error", "error": str(e), "message": "There was a problem when decoding image"})
         
         new_item.save()
@@ -441,7 +454,7 @@ def api_warehouse(request):
             item = Item.objects.get(pk=pk)
             item.delete()
         except Exception as e:
-            createNotification("Suppression objet", "del-item", app_id, 3, f"Une erreur est survenue. Veuillez réessayer\nErreur : {str(e)}", user, str(e))
+            createNotification("Suppression objet", "del-item", app_id, 3, f"Une erreur est survenue. Veuillez réessayer<hr>Erreur : {str(e)}", user, str(e))
             return JsonResponse({"status": "error", "message": str(e)})
 
         createNotification("Suppression objet", "del-item", app_id, 0, f"L'objet a bien été supprimé.", user)
@@ -536,8 +549,8 @@ def api_warehouse(request):
             createNotification("Edition objet", "edit-item", app_id, 0, "L'objet a été modifié.", user, json.dumps(update_dict)).show()
             return JsonResponse({"status": "success", "message": "Item was edited with sucess"})
         except Exception as e:
-            createNotification("Edition objet", "edit-item", app_id, 3, f"Une erreur est survenue.\nErreur : {str(e)}", user, str(e)).show()
-            return JsonResponse({"status": "error", "message": f"An error occured\n{str(e)}"})
+            createNotification("Edition objet", "edit-item", app_id, 3, f"Une erreur est survenue.<hr>Erreur : {str(e)}", user, str(e)).show()
+            return JsonResponse({"status": "error", "message": f"An error occured<hr>{str(e)}"})
     
     if action == "edit-order_status":
         if not 'write' in permissions['warehouse'] + permissions['fullpower']:
@@ -560,8 +573,8 @@ def api_warehouse(request):
                 createNotification("Edition commande", "edit-order_status", app_id, 0, "La commande a bien été modifiée", user)
                 return JsonResponse({"status": "success", "message": "Order updated successfully"})
             except Exception as e:
-                createNotification("Edition commande", "edit-order_status", app_id, 3, f"Une erreur est survenue.\nErreur : {str(e)}", user, str(e)).show()
-                return JsonResponse({"status": "error", "message": f"An error occured\n{str(e)}"})
+                createNotification("Edition commande", "edit-order_status", app_id, 3, f"Une erreur est survenue.<hr>Erreur : {str(e)}", user, str(e)).show()
+                return JsonResponse({"status": "error", "message": f"An error occured<hr>{str(e)}"})
         
     if action == "email-order_status":
         if not 'write' in permissions['bank'] + permissions['fullpower']:
@@ -581,8 +594,8 @@ def api_warehouse(request):
                 createNotification("Email commande", "email-order_status", app_id, 0, "L'email a bien été envoyé.", user)
                 return JsonResponse({"status": "success", "message": "Invoice updated successfully"})
             except Exception as e:
-                createNotification("Email commande", "email-order_status", app_id, 3, f"Une erreur est survenue.\nErreur : {str(e)}", user, str(e)).show()
-                return JsonResponse({"status": "error", "message": f"An error occured\n{str(e)}"})
+                createNotification("Email commande", "email-order_status", app_id, 3, f"Une erreur est survenue.<hr>Erreur : {str(e)}", user, str(e)).show()
+                return JsonResponse({"status": "error", "message": f"An error occured<hr>{str(e)}"})
                     
     createNotification("Erreur inconnue", "unknown error", app_id, 3, "Une erreur inconnue est survenue.", user)
     return JsonResponse({"status": "error", "message": "Uncaught error."})
