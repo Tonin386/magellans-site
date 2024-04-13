@@ -16,7 +16,6 @@ class NotificationConsumer(AsyncWebsocketConsumer):
             "notifications",
             self.channel_name,
         )
-        await self.close()
 
     async def receive(self, text_data):
         print("received: ", text_data)
