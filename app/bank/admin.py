@@ -2,9 +2,9 @@ from django.contrib import admin
 from .models import *
 
 class OperationAdmin(admin.ModelAdmin):
-    list_display = ('date', 'type', 'id', 'amount', 'third_party', 'dest')
-    list_filter = ('type', 'src', 'dest')
-    search_fields = ('date', 'type', 'id', 'amount', 'third_party', 'dest')
+    list_display = ('date', 'type', 'id', 'amount', 'desc', 'third_party')
+    list_filter = ('type', 'third_party')
+    search_fields = ('date', 'type', 'id', 'amount', 'desc', 'third_party')
     ordering = ('-date', 'type', 'id', 'amount')
 class InvoiceAdmin(admin.ModelAdmin):
     list_display = ('date_created', 'title', 'project', 'author', 'role', 'status')
