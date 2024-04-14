@@ -32,6 +32,7 @@ def home(request):
     rendered_template = render(request, 'home.html', locals())
     response = HttpResponse(rendered_template)
     response['Referer'] = referer_url
+    response['HTTP_REFERER'] = referer_url
 
     return response
 
