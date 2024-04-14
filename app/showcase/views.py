@@ -1,5 +1,5 @@
+from django.shortcuts import render, HttpResponse
 from django.utils.safestring import mark_safe
-from django.shortcuts import render, redirect
 from showcase.forms import ContactForm
 from django.core.mail import send_mail
 from django.conf import settings
@@ -7,6 +7,8 @@ from .forms import ContactForm
 from dashboard.models import *
 
 def home(request):
+    referer_url = "https://magellans.fr"
+
     if request.method == "POST":
         form = ContactForm(request.POST)
         if form.is_valid():
@@ -27,7 +29,11 @@ def home(request):
         
     projets = Project.objects.filter(public=True).order_by("-release_date")[:6]
         
-    return render(request, 'home.html', locals())
+    rendered_template = render(request, 'home.html', locals())
+    response = HttpResponse(rendered_template)
+    response['Referer'] = referer_url
+
+    return response
 
 def projects(request):
     projets = Project.objects.filter(public=True).order_by('-release_date')
