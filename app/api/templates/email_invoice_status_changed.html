@@ -1,7 +1,8 @@
 Bonjour {{ invoice.author.first_name }},
 
 Vous recevez cet email car le statut de votre note de frais '{{ invoice.title }}' vient d'être modifié.
-Pour plus d'informations, allez consultez votre note de frais en ligne : https://magellans.fr{% url 'invoice-detail' pk=invoice.pk %}
+Nouveau statut : {{ invoice.get_status_display }}
+Pour plus d'informations, allez consulter votre note de frais en ligne : https://magellans.fr{% url 'invoice-detail' pk=invoice.pk %}
 
 En vous souhaitant une excellente journée,
 L'équipe Magellans.
