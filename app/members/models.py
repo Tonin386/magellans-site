@@ -152,4 +152,4 @@ class Person(models.Model):
         return "%s %s (%s)" % (self.first_name, self.last_name, self.email)
 
     def phone_formatted(self):
-        return ' '.join(self.ext_person.phone[i:i+2] for i in range(0, len(self.ext_person.phone), 2))
+        return ' '.join(self.phone[i:i+2] for i in range(0, len(self.phone), 2))
