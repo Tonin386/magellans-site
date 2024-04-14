@@ -35,9 +35,10 @@ $.extend($.fn.dataTable.defaults, {
         url: "https://cdn.datatables.net/plug-ins/1.10.24/i18n/French.json"
     },
     responsive: true,
-    "initComplete": function(settings, json) {
+    initComplete: function(settings, json) {
         this.responsive.recalc();
     },
+    pagingType: "numbers"
 })
 
 $.extend($.fn.dataTableExt.oSort, {
