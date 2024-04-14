@@ -153,3 +153,23 @@ class MemberDetailView(DetailView):
 class PersonDetailView(DetailView):
     model = Person
     template_name = "person_detail.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        if self.request.POST:
+            context['form'] = EditPersonForm(self.request.POST, instance=self.object)
+        else:
+            context['form'] = EditPersonForm(instance=self.object)
+
+        return context
+    
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        form = EditPersonForm(request.POST, instance=self.object)
+        if form.is_valid():
+            form.save()
+            return redirect('person-detail', pk=self.object.pk)
+        else:
+            return self.render_to_response(self.get_context_data(form=form))
+

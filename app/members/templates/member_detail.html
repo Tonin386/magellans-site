@@ -12,17 +12,22 @@ Profil
 {% block content %}
 <div class="container mt-3">
     <div class="box">
-        <h1 class="title fs-3">Détails du compte {{ object.email }}</h1>
+        <h1 class="title fs-3 text-break">
+            Détails du compte
+            <a href="mailto:{{object.email}}" class="text-black">{{ object.email }}</a>
+        </h1>
         <div class="row">
             <div class="col-lg-6">
-                <table class="table table-border table-striped">
+                <table class="table table-border table-striped responsive">
                     <tr>
                         <th>Nom</th>
                         <td>{{ object.last_name }}</td>
                     </tr>
                     <tr>
                         <th>Email</th>
-                        <td>{{ object.email }}</td>
+                        <td>
+                            <a href="mailto:{{object.email}}" class="text-black text-break">{{ object.email }}</a>
+                        </td>
                     </tr>
                     <tr>
                         <th>Rôle</th>
@@ -58,7 +63,7 @@ Profil
                 </table>
             </div>
             <div class="col-lg-6">
-                <table class="table table-border table-striped">
+                <table class="table table-border table-striped responsive">
                     <tr>
                         <th>Prénom</th>
                         <td>{{ object.first_name }}</td>
@@ -86,11 +91,11 @@ Profil
 <script>
     $(document).ready(function() {
         var select_role = $('#select_role').select2();
-
+        
         select_role.on("change", function() {
             var value = $(this).val();
             var pk = $(this).attr("pk");
-
+            
             editUserRole(pk, value);
         })
     });

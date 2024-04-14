@@ -11,6 +11,7 @@ OPE_TYPES= [
 
 STATUS = [
     ('R', "Remboursement effectué et confirmé"),
+    ('X', "Remboursement refusé"),
     ('F', "A faire"),
     ('J', "Justificatif(s) manquant(s)"),
     ('V', "En attente de validation par le CA"),

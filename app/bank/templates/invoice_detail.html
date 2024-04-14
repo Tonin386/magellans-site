@@ -46,12 +46,19 @@ Note de frais {{ object.title }}
                         <div class="input-group input-group-md">
                             <div class="form-control"> 
                                 <select style="width: 100%;" id="select_status" pk="{{ object.pk }}">
-                                    <option value="R" {% if object.status == 'R' %} selected {% endif %}>Remboursement effectué et confirmé</option>
-                                    <option value="F" {% if object.status == 'F' %} selected {% endif %}>A faire</option>
-                                    <option value="J" {% if object.status == 'J' %} selected {% endif %}>Justificatif(s) manquant(s)</option>
-                                    <option value="V" {% if object.status == 'V' %} selected {% endif %}>En attente de validation par le CA</option>
-                                    <option value="D" {% if object.status == 'D' %} selected {% endif %}>Demande d'informations bancaires</option>
-                                    <option value="C" {% if object.status == 'C' %} selected {% endif %}>Virement en cours</option>
+                                    <optgroup label="Réponse définitive">
+                                        <option value="R" {% if object.status == 'R' %} selected {% endif %}>Remboursement effectué et confirmé</option>
+                                        <option value="X" {% if object.status == 'X' %} selected {% endif %}>Remboursement refusé</option>
+                                    </optgroup>
+                                    <optgroup label="Action nécessaire côté Magellans">
+                                        <option value="F" {% if object.status == 'F' %} selected {% endif %}>A faire</option>
+                                        <option value="V" {% if object.status == 'V' %} selected {% endif %}>En attente de validation par le CA</option>
+                                    </optgroup>
+                                    <optgroup label="Action nécessaire côté utilisateur">
+                                        <option value="D" {% if object.status == 'D' %} selected {% endif %}>Demande d'informations bancaires</option>
+                                        <option value="C" {% if object.status == 'C' %} selected {% endif %}>Virement en cours</option>
+                                        <option value="J" {% if object.status == 'J' %} selected {% endif %}>Justificatif(s) manquant(s)</option>
+                                    </optgroup>
                                 </select>
                             </div>
                         </div>
@@ -74,7 +81,7 @@ Note de frais {{ object.title }}
                 </tr>
             </table>
             <h2 class="title">Liste des dépenses</h2>
-            <table class="table table-striped" id="expenses-table">
+            <table class="table table-striped responsive" id="expenses-table">
                 <thead>
                     <tr>
                         <th>Dépense</th>
@@ -89,13 +96,13 @@ Note de frais {{ object.title }}
                     <tr>
                         <td>{{ expense.title }}</td>
                         <td>{{ expense.date }}</td>
-                        <td>{{ expense.amount }}€</td>
+                        <td>{{ expense.amount|floatformat:"2u" }}€</td>
                         <td class="text-nowrap">{{ expense.comm }}</td>
                         <td>
                             {% if expense.proof %}
                             <a href="{% static '/media/' %}{{expense.proof}}"  class="text-success" target="_blank">Voir le justificatif</a>
                             {% else %}
-                            <p class="text-danger">Justificatif manquant</p>
+                            <strong class="text-danger">Justificatif manquant</strong>
                             {% endif %}
                         </td>
                     </tr>

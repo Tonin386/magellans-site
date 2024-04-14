@@ -45,3 +45,28 @@ class EditProfileForm(forms.ModelForm):
             'phone', 
             'gender'
         ]
+
+class EditPersonForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super(EditPersonForm, self).__init__(*args, **kwargs)
+        instance = kwargs.pop('instance', None)
+        
+        for field_name in self.fields:
+            self.fields[field_name].widget.attrs.update({'class': 'form-control', 'placeholder': self.fields[field_name].label})
+
+        if instance:
+            self.fields['first_name'].widget.attrs.update({"value": instance.first_name})
+            self.fields['last_name'].widget.attrs.update({"value": instance.last_name})
+            self.fields['phone'].widget.attrs.update({"value": instance.phone})
+            self.fields['gender'].widget.attrs.update({"value": instance.gender})
+            self.fields['email'].widget.attrs.update({"value": instance.email})
+
+    class Meta:
+        model = Person
+        fields = [
+            'first_name', 
+            'last_name', 
+            'phone', 
+            'gender',
+            'email'
+        ]

@@ -27,7 +27,7 @@ Trésorerie
                 </button>
             </h2>
             
-            <table class="table table-striped align-middle display responsive nowrap" id="operations-table">
+            <table class="table table-striped align-middle display responsive" id="operations-table">
                 <thead>
                     <tr>
                         <th>ID Opération</th>
@@ -43,7 +43,13 @@ Trésorerie
                     <tr>
                         <td>{{ operation.id }}</td>
                         <td class="{% if operation.type == 'C' %} bg-success {% else %} bg-danger {% endif %}">{{ operation.get_type_display }}</td>
-                        <td>{{ operation.third_party }}</td>
+                        <td>
+                            {% if operation.third_party.site_profile %}
+                            <a href="{% url 'member-detail' pk=operation.third_party.site_profile.pk %}" class="text-black">{{ operation.third_party }}</a>
+                            {% else %}
+                            <a href="{% url 'person-detail' pk=operation.third_party.pk %}" class="text-black">{{ operation.third_party }}</a>
+                            {% endif %}
+                        </td>
                         <td>{{ operation.amount|floatformat:".2f" }} €</td>
                         <td>{{ operation.desc }}</td>
                         <td>{{ operation.date }}</td>
@@ -56,7 +62,7 @@ Trésorerie
     <div class="row mt-5">
         <div class="col-lg-12">
             <h2 class="title">Liste des notes de frais</h2>
-            <table class="table table-striped align-middle display responsive nowrap" id="invoices-table">
+            <table class="table table-striped align-middle display responsive" id="invoices-table">
                 <thead>
                     <tr>
                         <th scope="col" style="max-width: 80px;;"></th>
@@ -76,7 +82,9 @@ Trésorerie
                             <a class="btn btn-warning" href="{% url 'invoice-detail' pk=invoice.pk %}"><i class="fa-eye fa-solid text-light"></i></a>
                         </td>
                         <td>{{ invoice.title }}</td>
-                        <td>{{ invoice.author }}</td>
+                        <td>
+                            <a href="{% url 'member-detail' pk=invoice.author.pk %}" class="text-black"> {{ invoice.author }} </a>
+                        </td>
                         <td>{{ invoice.role }}</td>
                         <td>{{ invoice.project }}</td>
                         <td class="{% if invoice.status == 'R' or invoice.status == 'C' %}bg-success{% elif invoice.status == 'F' or invoice.status == 'D' %}bg-warning {% elif invoice.status == 'V' %}bg-info{% else %} bg-danger {% endif %}">
@@ -91,7 +99,6 @@ Trésorerie
         </div>
     </div>
 </div>
-
 
 <!-- ADD OPERATION MODAL -->
 <div class="modal modal-lg fade" id="addOperationForm" data-bs-keyboard="true" tabindex="-1" aria-labelledby="addOperationLabel" aria-hidden="true">
@@ -207,7 +214,7 @@ Trésorerie
         });
         
         var operations_table = new DataTable('#operations-table', {
-            order: [[0, "desc"]],
+            order: [[0, "asc"]],
             columnDefs: [
             {responsivePriority: 1, targets: 0, type: "ope"},
             {responsivePriority: 2, targets: 2},
