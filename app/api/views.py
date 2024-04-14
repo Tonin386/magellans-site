@@ -305,8 +305,8 @@ def api_members(request):
         
         first_name = body_post.get("first_name", "Non-renseigné")
         last_name = body_post.get("last_name", "Non-renseigné")
-        email = body_post.get("email", "Non-renseigné")
-        phone = body_post.get("phone", "Non-renseigné")
+        email = body_post.get("email", "")
+        phone = body_post.get("phone", "")
         gender = body_post.get("gender", "O")
         role = body_post.get("role", "X")
 

@@ -50,7 +50,7 @@ Trésorerie
                             <a href="{% url 'person-detail' pk=operation.third_party.pk %}" class="text-black">{{ operation.third_party }}</a>
                             {% endif %}
                         </td>
-                        <td>{{ operation.amount|floatformat:".2f" }} €</td>
+                        <td>{{ operation.amount|floatformat:"2u" }}€</td>
                         <td>{{ operation.desc }}</td>
                         <td>{{ operation.date }}</td>
                     </tr>
@@ -196,30 +196,14 @@ Trésorerie
 
 <script>
     $(document).ready(function() {
-        jQuery.extend(jQuery.fn.dataTableExt.oSort, {
-            "ope-desc": function (a, b) {
-                // Extract numeric values after the prefix
-                var numA = parseInt(a.replace('OPE-', ''), 10);
-                var numB = parseInt(b.replace('OPE-', ''), 10);
-                
-                return numA - numB;
-            },
-            
-            "ope-asc": function (a, b) {
-                var numA = parseInt(a.replace('OPE-', ''), 10);
-                var numB = parseInt(b.replace('OPE-', ''), 10);
-                
-                return numB - numA;
-            }
-        });
-        
         var operations_table = new DataTable('#operations-table', {
-            order: [[0, "asc"]],
+            order: [[0, "desc"]],
             columnDefs: [
             {responsivePriority: 1, targets: 0, type: "ope"},
             {responsivePriority: 2, targets: 2},
+            {targets: 3, type: "amount"},
             {responsivePriority: 1, targets: 4},
-            {responsivePriority: 1, targets: 5},
+            {responsivePriority: 1, targets: 5, type: "frdate"},
             ]
         });
         
@@ -228,7 +212,7 @@ Trésorerie
             columnDefs: [
             {responsivePriority: 1, targets: 0},
             {responsivePriority: 2, targets: 1},
-            {responsivePriority: 1, targets: 6, type: "datetime"},
+            {responsivePriority: 1, targets: 6, type: "frdatetime"},
             {responsivePriority: 1, targets: 7},
             ]
         });

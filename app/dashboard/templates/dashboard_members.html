@@ -29,7 +29,7 @@ Dashboard utilisateurs
                         <th scope="col">Nom</th>
                         <th scope="col">Prénom</th>
                         <th scope="col">Email</th>
-                        <th scope="col">Phone</th>
+                        <th scope="col">N° téléphone</th>
                         <th scope="col">Rôle</th>
                         <th scope="col">Sexe</th>
                     </tr>
@@ -65,7 +65,7 @@ Dashboard utilisateurs
                         <td>{{ ext_user.last_name }}</td>
                         <td>{{ ext_user.first_name }}</td>
                         <td>{{ ext_user.email }}</td>
-                        <td>{{ ext_user.phone }}</td>
+                        <td>{{ ext_user.phone_formatted }}</td>
                         <td {% if ext_user.ext_person.role == 'O' or ext_user.ext_person.role == 'X' %} class="bg-danger" {% else %} class="bg-primary" {% endif %}>{{ ext_user.role }}</td>
                         <td>{{ ext_user.gender }}</td>
                     </tr>
@@ -151,6 +151,7 @@ Dashboard utilisateurs
             order: [[1, "asc"]],
             columnDefs: [
             {responsivePriority: 1, targets: 0},
+            {targets: 1, type: "person"},
             {responsivePriority: 1, targets: 2},
             {responsivePriority: 1, targets: 3},
             {responsivePriority: 2, targets: 4},
