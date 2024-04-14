@@ -7,8 +7,6 @@ from .forms import ContactForm
 from dashboard.models import *
 
 def home(request):
-    referer_url = "https://magellans.fr"
-
     if request.method == "POST":
         form = ContactForm(request.POST)
         if form.is_valid():
@@ -29,12 +27,7 @@ def home(request):
         
     projets = Project.objects.filter(public=True).order_by("-release_date")[:6]
         
-    rendered_template = render(request, 'home.html', locals())
-    response = HttpResponse(rendered_template)
-    response['Referer'] = referer_url
-    response['HTTP_REFERER'] = referer_url
-
-    return response
+    return render(request, 'home.html', locals())
 
 def projects(request):
     projets = Project.objects.filter(public=True).order_by('-release_date')
