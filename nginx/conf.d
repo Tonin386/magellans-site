@@ -3,8 +3,6 @@ server {
     listen [::]:80 http2;
     server_name localhost;
 
-    log_format magellans_format '$remote_addr - $remote_user [$time_local] "$request" $status $body_bytes_sent "$http_referer" "$http_user_agent"';
-
     client_max_body_size 25M;
 
     location /static/ {
@@ -21,12 +19,12 @@ server {
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto $scheme;
 
-        access_log /var/log/nginx/access.log magellans_format debug;
-        error_log /var/log/nginx/error.log magellans-format error;
+        access_log /var/log/nginx/access.log;
+        error_log /var/log/nginx/error.log;
 
-        access_log /dev/stdout magellans_format debug;
-        error_log /dev/stderr magellans-format error;
-        
+        access_log /dev/stdout;
+        error_log /dev/stderr;
+
 		proxy_pass http://django:8000;
 	}
 
