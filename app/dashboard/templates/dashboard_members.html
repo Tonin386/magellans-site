@@ -25,7 +25,7 @@ Dashboard utilisateurs
                 <thead>
                     <tr>
                         <th scope="col" style="max-width: 80px;;"></th>
-                        <th scope="col" style="max-width: 100px;">ID Membre</th>
+                        <th scope="col" style="max-width: 100px;">ID</th>
                         <th scope="col">Nom</th>
                         <th scope="col">Prénom</th>
                         <th scope="col">Email</th>
@@ -150,8 +150,8 @@ Dashboard utilisateurs
         var table = new DataTable('#members-table', {
             order: [[1, "asc"]],
             columnDefs: [
-            {responsivePriority: 1, targets: 0},
-            {targets: 1, type: "person"},
+            {responsivePriority: 2, targets: 0},
+            {responsivePriority: 1, targets: 1, type: "person"},
             {responsivePriority: 1, targets: 2},
             {responsivePriority: 1, targets: 3},
             {responsivePriority: 2, targets: 4},
