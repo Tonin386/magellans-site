@@ -83,6 +83,7 @@ def register(request):
     form = RegisterForm(request.POST or None)
     if request.method == "POST":
         if form.is_valid():
+            print("valid form")
             new_user = form.save()
             new_user.is_active = False
 
@@ -114,6 +115,8 @@ def register(request):
             send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [new_user.email])
 
             messages.success(request, 'Vous avez reçu un email pour activer votre compte.')
+        else:
+            messages.error(request, form.errors)
             
     return render(request, "registration/register.html", locals())
 

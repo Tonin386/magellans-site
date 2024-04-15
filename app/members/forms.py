@@ -8,8 +8,8 @@ class LogoutForm(forms.Form):
 class RegisterForm(RegistrationFormTermsOfService):
     first_name = forms.CharField(label="Prénom")
     last_name = forms.CharField(label="Nom")
-    gender = forms.ChoiceField(label="Sexe", choices=GENDER_CHOICES)
-    phone = forms.CharField(label="Téléphone")
+    gender = forms.ChoiceField(label="Sexe", choices=GENDER_CHOICES, required=False)
+    phone = forms.CharField(label="Téléphone", required=False)
     class Meta:
         model = Member
         fields = [
