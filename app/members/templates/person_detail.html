@@ -72,6 +72,7 @@ Profil
             <div class="col-lg-12">
                 <div class="justify-content-center row">
                     <button class="btn btn-warning col-lg-3 col-11 h-100 m-2" data-bs-target="#editPersonForm" data-bs-toggle="modal"><i class="fa-solid fa-edit"></i> Modifier le profil</button>
+                    <button class="btn btn-warning col-lg-3 col-11 h-100 m-2" data-bs-target="#redirectPersonForm" data-bs-toggle="modal"><i class="fa-solid fa-arrow-right-from-bracket"></i> Rediriger vers un profil membre</button>
                 </div>
             </div>
         </div>
@@ -94,12 +95,50 @@ Profil
                     </div>
                     {% endfor %}
                     <div class="col-md-3">
-                        <button type="submit" class="btn btn-success btn-large w-100 p-2 fs-5 my-1">Enregistrer</button>
+                        <button type="submit" class="btn btn-success w-100 my-1">Enregistrer</button>
                     </div>
                     <div class="col-md-3">
-                        <a class="btn btn-danger btn-large w-100 p-2 fs-5 my-1" data-bs-dismiss="modal">Annuler</a>
+                        <a class="btn btn-danger w-100 my-1" data-bs-dismiss="modal">Annuler</a>
                     </div>
                 </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- REDIRECT PERSON MODAL -->
+<div class="modal fade" id="redirectPersonForm" data-bs-keyboard="true" tabindex="-1" aria-labelledby="redirectPersonLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header bg-primary">
+                <h1 class="modal-title fs-5" id="redirectPersonLabel">Rediriger ce profil externe vers un profil membre</h1>
+            </div>
+            <div class="modal-body">
+                <div class="row justify-content-center">
+                    <div class="col-12">
+                        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            <strong>ATTENTION !</strong>
+                            <br>
+                            En redirigeant ce profil externe vers un profil membre, vous allez écraser toutes les données actuelles du profil externe. Le profil prendra toutes les valeurs de la personne actuellement liée au profil membre.
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="m-2 form-control">
+                            <select id="select_redirect" style="width: 100%;">
+                                {% for member in members %}
+                                <option value="{{ member.pk }}">{{ member }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <button class="btn btn-success w-100 my-1" data-bs-dismiss="modal" onclick="redirectExtPerson('{{ object.pk }}')">Valider la redirection</button>
+                    </div>
+                    <div class="col-md-3">
+                        <button class="btn btn-danger w-100 my-1" data-bs-dismiss="modal">Annuler</button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -116,7 +155,11 @@ Profil
             var pk = $(this).attr("pk");
             
             editUserRole(pk, value);
-        })
+        });
+
+        var select_redirect = $('#select_redirect').select2({
+            dropdownParent: "#redirectPersonForm"
+        });
     });
 </script>
 

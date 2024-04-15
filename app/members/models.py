@@ -142,8 +142,8 @@ class Person(models.Model):
     last_name = models.CharField(max_length=30, null=True, blank=True, verbose_name="Nom")
     phone = models.CharField(max_length=15, blank=True, verbose_name="N° téléphone")
     gender = models.CharField(max_length=1, choices=GENDER_CHOICES, null=True, blank=True, verbose_name="Sexe")
-    site_profile = models.OneToOneField(Member, on_delete=models.CASCADE, null=True, blank=True, verbose_name="Profil site lié", related_name="site_person")
-    ext_profile = models.OneToOneField(UnregisteredMember, on_delete=models.CASCADE, null=True, blank=True, verbose_name="Profil externe lié", related_name="ext_person")
+    site_profile = models.OneToOneField(Member, on_delete=models.SET_NULL, null=True, blank=True, verbose_name="Profil site lié", related_name="site_person")
+    ext_profile = models.OneToOneField(UnregisteredMember, on_delete=models.SET_NULL, null=True, blank=True, verbose_name="Profil externe lié", related_name="ext_person")
     role = models.CharField(max_length=2, choices=ROLE_CHOICES, default='X', verbose_name="Role")
     class Meta:
         verbose_name = "Personne"

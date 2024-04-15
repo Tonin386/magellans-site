@@ -64,9 +64,9 @@ class EditPersonForm(forms.ModelForm):
     class Meta:
         model = Person
         fields = [
+            'email',
             'first_name', 
             'last_name', 
             'phone', 
             'gender',
-            'email'
         ]

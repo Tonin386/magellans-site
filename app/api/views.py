@@ -374,6 +374,60 @@ def api_members(request):
         except Exception as e:
             createNotification("Modification utilisateur", "edit-user_role", app_id, 3, f"Une erreur est survenue. Veuillez réessayer<hr>Erreur : {str(e)}", user, str(e))
             return JsonResponse({"status": "error", "message": str(e)})
+        
+    if action == "redirect-ext_person":
+        if not 'write' in permissions['members'] + permissions['fullpower']:
+            createNotification("Redirection profil externe", "redirect-ext_person", app_id, 3, "Vous n'avez pas les permissions suffisantes pour effectuer cette action.", user)
+            return JsonResponse({"status": "error", "message": "Insufficient permissions"})
+                
+        pk_person = int(body_post.get("pk_person", "0"))
+        pk_member = int(body_post.get("pk_member", "0"))
+
+        if 0 in [pk_person, pk_member]:
+            createNotification("Redirection profil externe", "redirect-ext_person", app_id, 3, f"Impossible d'établir la redirection, un des profils est nul.", user)
+            return JsonResponse({"status": "error", "message": "Bad PK."})
+
+        try:
+            redirected_person = Person.objects.get(pk=pk_person)
+            new_member = Member.objects.get(pk=pk_member)
+            toDel_person = new_member.site_person
+
+            if redirected_person.site_profile is not None:
+                createNotification("Redirection profil externe", "redirect-ext_person", app_id, 3, "Cette personne est déjà associée avec un profil de membre. Vous ne pouvez pas modifier le lien.", user)
+                return JsonResponse({"status": "error", "message": "Bad link edit."})
+
+            redirected_person.first_name = toDel_person.first_name
+            redirected_person.last_name = toDel_person.last_name
+            redirected_person.email = toDel_person.email
+            redirected_person.phone = toDel_person.phone
+            redirected_person.gender = toDel_person.gender
+
+            for operation in Operation.objects.filter(third_party=toDel_person):
+                operation.third_party = redirected_person
+                operation.save()
+
+            for project in Project.objects.filter(director=toDel_person):
+                project.director = redirected_person
+                project.save()
+            
+            for project in Project.objects.filter(money_handler=toDel_person):
+                project.money_handler = redirected_person
+                project.save()
+
+            old_person = redirected_person.ext_profile
+            old_person.ext_person = None
+            old_person.save()
+            old_person.delete()
+
+            redirected_person.site_profile = new_member
+            toDel_person.delete()
+            redirected_person.save()
+            
+            createNotification("Redirection profil externe", "redirect-ext_person", app_id, 0, "La redirection vers un nouveau profil est réussie. Veuillez rafraîchir la page pour voir les modifications.", user)
+            return JsonResponse({"status": "success", "message": "Person redirect success."})
+        except Exception as e:
+            createNotification("Redirection profil externe", "redirect-ext_person", app_id, 3, f"Une erreur est survenue. Veuillez réessayer.<hr>Erreur : {str(e)}", user, str(e))
+            return JsonResponse({"status": "error", "message": str(e)})
     
     return JsonResponse({"status": "error", "message": "Uncaught error."})
 

@@ -48,3 +48,19 @@ async function editUserRole(pk, new_role, callback = function(){}) {
         callback(response);
     }
 }
+
+async function redirectExtPerson(pk_person, callback = function(){}) {
+    let action = "redirect-ext_person";
+    let params = {
+        token: api_token,
+        action: action,
+        pk_person: pk_person,
+        pk_member: document.querySelector("#select_redirect").value
+    }
+
+    let response = await sendApiRequest(params, "members");
+
+    if(response.status == "success") {
+        callback(response);
+    }
+}

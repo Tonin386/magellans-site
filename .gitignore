@@ -166,7 +166,6 @@ mailserver.env
 postgres_data/
 redis_data/
 staticfiles/
-video/
 projets/
 volumes/
 migrations/
