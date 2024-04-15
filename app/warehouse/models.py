@@ -58,10 +58,18 @@ class Order(models.Model):
     quantities = models.TextField(verbose_name="Quantité demandée pour chaque objet")
     message = models.TextField(verbose_name="Message personnalisé du demandeur", null=True, blank=True)
     user = models.ForeignKey(Member, verbose_name="Demandeur", blank=True, null=True, on_delete=models.SET_NULL)
+    pickup_first_name = models.TextField("Prénom de la personne chargée de récupérer la commande", max_length=255, blank=True, default="Non-renseigné")
+    pickup_last_name = models.TextField("Nom de la personne chargée de récupérer la commande", max_length=255, blank=True, default="Non-renseigné")
+    pickup_phone = models.TextField("Téléphone de la personne chargée de récupérer la commande", max_length=12, blank=True, default="Non-renseigné")
     status = models.IntegerField("Statut", choices=ORDER_STATUS_CHOICES, default=1)
     date_created = models.DateTimeField("Date commande effectuée", auto_now_add=True)
     date_validated = models.DateTimeField("Date commande validée", blank=True, null=True)
     tos = models.BooleanField("CGU acceptées", default=True)
+    
+    def pickup_phone_formatted(self):
+        if self.pickup_phone != "Non-renseigné" and self.pickup_phone:
+            return ' '.join(self.pickup_phone[i:i+2] for i in range(0, len(self.pickup_phone), 2))
+        return self.pickup_phone
      
     def __str__(self):
         return f"Réservation de {self.user} : {self.date_start.strftime('%d/%m/%Y')} -> {self.date_end.strftime('%d/%m/%Y')}"

@@ -39,4 +39,7 @@ class PlaceOrderForm(forms.Form):
     message = forms.TextInput()
     pks = forms.HiddenInput()
     quantities = forms.HiddenInput()
+    pickup_first_name = forms.TextInput()
+    pickup_last_name = forms.TextInput()
+    pickup_phone = forms.TextInput()
     tos = forms.CheckboxInput()

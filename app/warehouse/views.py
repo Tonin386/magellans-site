@@ -44,7 +44,7 @@ def placeOrder(request):
     
     success = False
     
-    if 'lastOrder' in request.COOKIES:
+    if 'lastOrder' in request.COOKIES and not settings.DEBUG:
         lastOrderTime = datetime.strptime(request.COOKIES['lastOrder'], "%Y-%m-%d %H:%M:%S")
         timePassed = datetime.now() - lastOrderTime
         if not timePassed.seconds > 3600:
@@ -58,6 +58,22 @@ def placeOrder(request):
             message = mark_safe(request.POST.get('message'))
             pks = request.POST.get("pks", "undefined")
             quantities = request.POST.get("quantities", "undefined")
+            pu_first_name = request.POST.get("pickup_first_name", request.user.first_name())
+            pu_last_name = request.POST.get("pickup_last_name", request.user.last_name())
+            pu_phone = request.POST.get("pickup_phone", request.user.phone())
+
+            print(request.POST)
+
+            if pu_first_name == "":
+                pu_first_name = request.user.first_name()
+                
+            if pu_last_name == "":
+                pu_last_name = request.user.last_name()
+
+            if pu_phone == "":
+                pu_phone = request.user.phone()
+
+            pu_phone = pu_phone.replace(" ", "").replace(".", "")
 
             if pks in ["undefined", ""] or quantities in ["undefined", ""]:
                 return render(request, "place_order.html", locals())
@@ -77,6 +93,9 @@ def placeOrder(request):
                 date_end=endDate, 
                 message=message,
                 quantities=quantities,
+                pickup_first_name=pu_first_name,
+                pickup_last_name=pu_last_name,
+                pickup_phone=pu_phone,
             )
 
             new_order.items.set(items)

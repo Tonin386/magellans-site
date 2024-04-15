@@ -72,7 +72,9 @@ Profil
             <div class="col-lg-12">
                 <div class="justify-content-center row">
                     <button class="btn btn-warning col-lg-3 col-11 h-100 m-2" data-bs-target="#editPersonForm" data-bs-toggle="modal"><i class="fa-solid fa-edit"></i> Modifier le profil</button>
+                    {% if not object.site_profile %}
                     <button class="btn btn-warning col-lg-3 col-11 h-100 m-2" data-bs-target="#redirectPersonForm" data-bs-toggle="modal"><i class="fa-solid fa-arrow-right-from-bracket"></i> Rediriger vers un profil membre</button>
+                    {% endif %}
                 </div>
             </div>
         </div>
@@ -106,6 +108,7 @@ Profil
     </div>
 </div>
 
+{% if not object.site_profile %}
 <!-- REDIRECT PERSON MODAL -->
 <div class="modal fade" id="redirectPersonForm" data-bs-keyboard="true" tabindex="-1" aria-labelledby="redirectPersonLabel" aria-hidden="true">
     <div class="modal-dialog modal-xl">
@@ -143,6 +146,7 @@ Profil
         </div>
     </div>
 </div>
+{% endif %}
 
 <script src="{% static 'js/api/api.js' %}"></script>
 <script src="{% static 'js/dashboard/members.js' %}"></script>

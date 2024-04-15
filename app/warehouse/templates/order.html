@@ -27,6 +27,7 @@ Magasin - Réservation
         <div class="container-fluid">
             <div class="card-body">
                 <div class="row mt-1 justify-content-center">
+                    <h4>Informations générales</h4>
                     {% for couple in items_values %}
                     <div class="col-xl-2 col-lg-4 col-md-6 my-1">
                         <div class="card">
@@ -42,7 +43,7 @@ Magasin - Réservation
                         </div>
                     </div>
                     {% endfor %}
-                    <div class="col-lg-12">
+                    <div class="col-lg-12 mb-3">
                         <div class="input-group input-group mt-3">
                             <span class="input-group-text col-xl-2 bg-secondary text-white" id="periodeSpan">
                                 Début -> fin
@@ -54,6 +55,27 @@ Magasin - Réservation
                             <div class="invalid-feedback" id="dateError">La date de début doit être avant la date de fin.</div>
                         </div>
                     </div>
+                    <hr>
+                    <div class="col-lg-12">
+                        <div class="alert alert-info alert-dismissible fade show" role="alert">
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            Si ce n'est pas vous qui allez récupérer cette commande, merci de nous communiquer les informations de la personne chargée de la récupération.
+                        </div>
+                        <h4>Informations de récupération</h4>
+                        <div class="row mb-3">
+                            <div class="col-lg-4 my-1">
+                                <input type="text" id="pickup_first_name" name="pickup_first_name" class="form-control" placeholder="Prénom">
+                            </div>
+                            <div class="col-lg-4 my-1">
+                                <input type="text" id="pickup_last_name" name="pickup_last_name" class="form-control" placeholder="Nom">
+                            </div>
+                            <div class="col-lg-4 my-1">
+                                <input type="tel" id="pickup_phone" name="pickup_phone" class="form-control" placeholder="Téléphone">
+                            </div>
+                        </div>
+                    </div>
+                    <hr>
+                    <h4>Finaliser la commande</h4>
                     <div class="col-lg-12 mt-3">
                         <textarea class="form-control" placeholder="Message particulier pour Magellans" id="id_message" name="message"></textarea>
                     </div>
@@ -68,10 +90,10 @@ Magasin - Réservation
                     </div>
                     <div class="col-lg-12 row justify-content-center">
                         <div class="col-md-3 mt-2">
-                            <button type="submit" class="btn btn-success w-100 fs-6 h-100">Confirmer la demande</button>
+                            <button type="submit" class="btn btn-success w-100 h-100">Confirmer la demande</button>
                         </div>
                         <div class="col-md-3 mt-2">
-                            <a class="btn btn-danger w-100 fs-6 h-100 d-inline-block" href="{% url 'warehouse' %}">Annuler et revenir au magasin</a>
+                            <a class="btn btn-danger w-100 h-100 d-inline-block" href="{% url 'warehouse' %}">Annuler et revenir au magasin</a>
                         </div>
                     </div>
                 </div>

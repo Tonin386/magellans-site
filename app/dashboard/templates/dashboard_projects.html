@@ -43,8 +43,8 @@ Dashboard projets
                         </td>
                         <td>{{ project.pk }}</td>
                         <td style="white-space: nowrap;">{{ project.name }}</td>
-                        <td>{{ project.director }}</td>
-                        <td>{{ project.money_handler }}</td>
+                        <td><a href="{% url 'person-detail' pk=project.director.pk %}" class="text-black">{{ project.director }}</a></td>
+                        <td><a href="{% url 'person-detail' pk=project.money_handler.pk %}" class="text-black">{{ project.money_handler }}</a></td>
                         <td style="white-space: nowrap;">{{ project.slug }}</td>
                         <td>{{ project.genre }}</td>
                         <td>{{ project.short_desc }}</td>

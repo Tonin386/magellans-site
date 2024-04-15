@@ -36,10 +36,28 @@ Projet {{ object.name }}
                     Genre : <strong>{{ object.genre }}</strong>
                 </li>
                 <li class="list-group-item">
-                    Réalisateur.ice : <strong>{{ object.director }}</strong>
+                    Réalisateur.ice : 
+                    {% if request.user.is_staff %}
+                    <strong>
+                        <a href="{% url 'person-detail' pk=object.director.pk %}" class="text-black">
+                            {{ object.director }}
+                        </a>
+                    </strong>
+                    {% else %}
+                    {{ object.director }}
+                    {% endif %}
                 </li>
                 <li class="list-group-item">
-                    Responsable financier : <strong>{{ object.money_handler }}</strong>
+                    Responsable financier :
+                    {% if request.user.is_staff %}
+                    <strong>
+                        <a href="{% url 'person-detail' pk=object.money_handler.pk %}" class="text-black">
+                            {{ object.money_handler }}
+                        </a>
+                    </strong>
+                    {% else %}
+                    {{ object.money_handler }}
+                    {% endif %}
                 </li>
                 <li class="list-group-item">
                     Date tournage : <strong>{{ object.shoot_date }}</strong>

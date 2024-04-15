@@ -26,61 +26,68 @@ Note de frais {{ object.title }}
     <div class="row mt-5">
         <div class="col-lg-12">
             <h2 class="title">Informations de la note de frais</h2>
-            <table class="table table-striped">
-                <tr>
-                    <th>Auteur</th>
-                    <td>{{ object.author }}</td>
-                </tr>
-                <tr>
-                    <th>Rôle sur le projet</th>
-                    <td>{{ object.role }}</td>
-                </tr>
-                <tr>
-                    <th>Projet</th>
-                    <td>{{ object.project }}</td>
-                </tr>
-                <tr>
-                    <th>Statut</th>
-                    {% if request.user.is_staff %}
-                    <td>
-                        <div class="input-group input-group-md">
-                            <div class="form-control"> 
-                                <select style="width: 100%;" id="select_status" pk="{{ object.pk }}">
-                                    <optgroup label="Réponse définitive">
-                                        <option value="R" {% if object.status == 'R' %} selected {% endif %}>Remboursement effectué et confirmé</option>
-                                        <option value="X" {% if object.status == 'X' %} selected {% endif %}>Remboursement refusé</option>
-                                    </optgroup>
-                                    <optgroup label="Action nécessaire côté Magellans">
-                                        <option value="F" {% if object.status == 'F' %} selected {% endif %}>A faire</option>
-                                        <option value="V" {% if object.status == 'V' %} selected {% endif %}>En attente de validation par le CA</option>
-                                    </optgroup>
-                                    <optgroup label="Action nécessaire côté utilisateur">
-                                        <option value="D" {% if object.status == 'D' %} selected {% endif %}>Demande d'informations bancaires</option>
-                                        <option value="C" {% if object.status == 'C' %} selected {% endif %}>Virement en cours</option>
-                                        <option value="J" {% if object.status == 'J' %} selected {% endif %}>Justificatif(s) manquant(s)</option>
-                                    </optgroup>
-                                </select>
+            <table class="table table-striped responsive" id="invoice-table">
+                <thead class="h-0">
+                    <th></th>
+                    <th></th>
+                </thead>
+                <tbody>
+                    <tr>
+                        <th>Auteur</th>
+                        <td><a href="{% url 'member-detail' pk=object.author.pk %}" class="text-black">{{ object.author }}</a></td>
+                    </tr>
+                    <tr>
+                        <th>Rôle sur le projet</th>
+                        <td>{{ object.role }}</td>
+                    </tr>
+                    <tr>
+                        <th>Projet</th>
+                        <td>{{ object.project }}</td>
+                    </tr>
+                    <tr>
+                        <th>Statut</th>
+                        {% if request.user.is_staff %}
+                        <td>
+                            <div class="input-group input-group-md">
+                                <div class="form-control"> 
+                                    <select style="width: 100%;" id="select_status" pk="{{ object.pk }}">
+                                        <optgroup label="Réponse définitive">
+                                            <option value="R" {% if object.status == 'R' %} selected {% endif %}>Remboursement effectué et confirmé</option>
+                                            <option value="X" {% if object.status == 'X' %} selected {% endif %}>Remboursement refusé</option>
+                                        </optgroup>
+                                        <optgroup label="Action nécessaire côté Magellans">
+                                            <option value="F" {% if object.status == 'F' %} selected {% endif %}>A faire</option>
+                                            <option value="V" {% if object.status == 'V' %} selected {% endif %}>En attente de validation par le CA</option>
+                                        </optgroup>
+                                        <optgroup label="Action nécessaire côté utilisateur">
+                                            <option value="D" {% if object.status == 'D' %} selected {% endif %}>Demande d'informations bancaires</option>
+                                            <option value="C" {% if object.status == 'C' %} selected {% endif %}>Virement en cours</option>
+                                            <option value="J" {% if object.status == 'J' %} selected {% endif %}>Justificatif(s) manquant(s)</option>
+                                        </optgroup>
+                                    </select>
+                                </div>
                             </div>
-                        </div>
-                    </td>
-                    {% else %}
-                    <td class="{% if invoice.status == 'R' or invoice.status == 'C' %}bg-success{% elif invoice.status == 'F' or invoice.status == 'D' %}bg-warning {% elif invoice.status == 'V' %}bg-info{% else %} bg-danger {% endif %}"> {{ object.get_status_display }}</td>
-                    {% endif %}
-                </tr>
-                <tr>
-                    <th>Note de frais déclarée le</th>
-                    <td>{{ object.date_created }}</td>
-                </tr>
-                <tr>
-                    <th>Commentaire</th>
-                    <td>{{object.comm}}</td>
-                </tr>
-                <tr>
-                    <th>Total</th>
-                    <td>{{ object.total }}€</td>
-                </tr>
+                        </td>
+                        {% else %}
+                        <td class="{% if invoice.status == 'R' or invoice.status == 'C' %}bg-success{% elif invoice.status == 'F' or invoice.status == 'D' %}bg-warning {% elif invoice.status == 'V' %}bg-info{% else %} bg-danger {% endif %}"> {{ object.get_status_display }}</td>
+                        {% endif %}
+                    </tr>
+                    <tr>
+                        <th>Note de frais déclarée le</th>
+                        <td>{{ object.date_created }}</td>
+                    </tr>
+                    <tr>
+                        <th>Commentaire</th>
+                        <td>{{object.comm}}</td>
+                    </tr>
+                    <tr>
+                        <th>Total</th>
+                        <td>{{ object.total }}€</td>
+                    </tr>
+                </tbody>
             </table>
-            <h2 class="title">Liste des dépenses</h2>
+            <hr>
+            <h2 class="title mt-3">Liste des dépenses</h2>
             <table class="table table-striped responsive" id="expenses-table">
                 <thead>
                     <tr>
@@ -143,12 +150,22 @@ Note de frais {{ object.title }}
 {% endif %}
 <script>
     $(document).ready(function() {
-        var table = new DataTable('#expenses-table',{
+        var invoice_table  = new DataTable('#invoice-table', {
+            paging: false,
+            ordering: false,
+            info: false,
+            searching: false
+        });
+
+        var expenses_table = new DataTable('#expenses-table',{
             order: [[2, "desc"]],
             columnDefs: [
             {responsivePriority: 1, targets: 0},
             {responsivePriority: 1, targets: 1, type: "date"},
-            ]
+            ],
+            searching: false,
+            paging: false,
+            info: false
         });
         
         //{% if request.user.is_staff%}
