@@ -33,19 +33,19 @@ Projet {{ object.name }}
             <hr>
             <ul class="list-group">
                 <li class="list-group-item">
-                     Genre : <strong>{{ object.genre }}</strong>
+                    Genre : <strong>{{ object.genre }}</strong>
                 </li>
                 <li class="list-group-item">
-                     Réalisateur.ice : <strong>{{ object.director }}</strong>
+                    Réalisateur.ice : <strong>{{ object.director }}</strong>
                 </li>
                 <li class="list-group-item">
-                     Responsable financier : <strong>{{ object.money_handler }}</strong>
+                    Responsable financier : <strong>{{ object.money_handler }}</strong>
                 </li>
                 <li class="list-group-item">
-                     Date tournage : <strong>{{ object.shoot_date }}</strong>
+                    Date tournage : <strong>{{ object.shoot_date }}</strong>
                 </li>
                 <li class="list-group-item">
-                     Date sortie : <strong>{{ object.release_date }}</strong>
+                    Date sortie : <strong>{{ object.release_date }}</strong>
                 </li>
                 <li class="list-group-item">
                     Confidentialité : <strong>{% if project.public %} Public {% else %} Privée {% endif %}</strong>
@@ -91,6 +91,7 @@ Projet {{ object.name }}
                         <option value="">Sexe...</option>
                         <option value="F">Femme</option>
                         <option value="M">Homme</option>
+                        <option value="B">Non-binaire</option>
                         <option value="O">Autre</option>
                     </select>
                     
@@ -203,23 +204,23 @@ Projet {{ object.name }}
             placeholder: "Sélectionner un.e responsable financier",
             dropdownParent: $('#editProjectForm'),
         });
-
+        
         callback_addExtUser = function(response) {
             json_response = JSON.parse(response.data);
-
+            
             let value = json_response.pk;
             let text = json_response.first_name + " " + json_response.last_name + " " + "(" + json_response.email +")";
-
+            
             select_director.find('optgroup[label="Externes"]').append($('<option>', {
                 value: value,
                 text: text    
             }));
-
+            
             select_money_handler.find('optgroup[label="Externes"]').append($('<option>', {
                 value: value,
                 text: text    
             }));
-
+            
             select_director = $('#select_director').select2({
                 placeholder: "Sélectionner un.e réalisateur.ice",
                 dropdownParent: $('#editProjectForm'),
@@ -230,7 +231,7 @@ Projet {{ object.name }}
                 dropdownParent: $('#editProjectForm'),
             });
         };
-
+        
         callback_editProject = function(response) {
             setTimeout(function() {window.location.reload()}, 2500);
         };

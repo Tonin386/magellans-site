@@ -19,6 +19,7 @@ ROLE_CHOICES = [
 GENDER_CHOICES = [
     ('M', 'Homme'),
     ('F', 'Femme'),
+    ('B', 'Non-binaire'),
     ('O', 'Autre'),
 ]
 class MemberManager(BaseUserManager):
