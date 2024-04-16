@@ -70,7 +70,7 @@ class Member(AbstractBaseUser, PermissionsMixin):
             self.site_person = site_person
             created = True
 
-        self.is_staff = self.role in ['P', 'C', 'G', 'T', 'S']
+        self.is_staff = self.site_person.role in ['P', 'C', 'G', 'T', 'S']
             
         super().save(*args, **kwargs)
         if created:

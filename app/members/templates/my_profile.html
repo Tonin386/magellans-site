@@ -28,9 +28,9 @@ Profil
                     <th>Rôle</th>
                     <td>{{ object.role }}</td>
                 </tr>
-                <tr class="{% if object.account >= 0 %}bg-success{% else %}bg-danger{% endif %}">
+                <tr>
                     <th>Compte</th>
-                    <td>{{ object.account_formatted }}</td>
+                    <td class="{% if object.account >= 0 %}bg-success{% else %}bg-danger{% endif %}">{{ object.account_formatted }}</td>
                 </tr>
             </table>
         </div>
@@ -48,9 +48,9 @@ Profil
                     <th>Sexe</th>
                     <td>{{ object.gender }}</td>
                 </tr>
-                <tr class="{% if object.donation > 0 %}bg-success{% else %}bg-warning{% endif %}">
+                <tr>
                     <th>Donation</th>
-                    <td>{{ object.donation_formatted }}</td>
+                    <td class="{% if object.donation > 0 %}bg-success{% else %}bg-warning{% endif %}">{{ object.donation_formatted }}</td>
                 </tr>
             </table>
         </div>
