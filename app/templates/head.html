@@ -1,9 +1,9 @@
 {% load static %}
 
-<title>{{ title }}</title>
+<title>{% if title %}{{ title }}{% else %}{% block title %}{% endblock %}{% endif %}</title>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<meta name="og:title" content="{{ title }}">
+<meta name="og:title" content="{% if title %}{{ title }}{% else %}Magellans{% endif %}">
 <meta name="description" content="{% block head-description %}{% endblock %}Magellans est une association d'audiovisuel. En adhérant, vous pourrez accéder à son magasin, participer à des projets ou des rencontres autour d'un verre.">
 <meta name="og:description" content="{{ og_description }}">
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
