@@ -101,8 +101,9 @@ $.extend($.fn.dataTableExt.oSort, {
     },
 });
 
-function defineStickyButtonsBehavior(heightBefore) {
+function defineStickyButtonsBehavior(stickyButtons, heightBefore) {
     const scrollPosition = window.scrollY;
+    let footer = document.querySelector("footer");
     
     if(scrollPosition + window.innerHeight + footer.offsetHeight * 0.5 >= heightBefore) {
         stickyButtons.classList.add("sticky-bottom-buttons-scrollDone");
@@ -124,11 +125,10 @@ $(window).on('load', function(){
     
     let stickyButtons = document.querySelector(".sticky-bottom-buttons");
     if(stickyButtons !== null) {
-        
-        defineStickyButtonsBehavior(heightBefore);
+        defineStickyButtonsBehavior(stickyButtons, heightBefore);
         
         window.addEventListener("scroll", function() {
-            defineStickyButtonsBehavior(heightBefore);
+            defineStickyButtonsBehavior(stickyButtons, heightBefore);
         });
     }
 });
