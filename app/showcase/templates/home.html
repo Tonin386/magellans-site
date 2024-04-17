@@ -3,23 +3,39 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>Magellans</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="title" property="og:title" content="Magellans">
-    <meta name="og:title" content="Magellans">
-    <meta name="description" content="{% block head-description %}{% endblock %}Magellans est une association d'audiovisuel. En adhérant, vous pourrez accéder à son magasin, participer à des projets ou des rencontres autour d'un verre.">
-    <meta name="og:description" content="{{ og_description }}">
+    <meta name="title"content="Magellans">
     <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+
+    <title>Magellans</title>
+    <meta name="title" content="Magellans">
+    <meta property="og:title" content="Magellans">
+
+    <meta name="description" content="{% block head-description %}{% endblock %}Magellans est une association d'audiovisuel. En adhérant, vous pourrez accéder à son magasin, participer à des projets ou des rencontres autour d'un verre.">
+    <meta property="og:description" content="{{ og_description }}">
+
     <meta name="keywords" content="association,magellans,projet,réseau,film,magasin,matériel,location,social,network,cinema,films,france,fr,paris,région parisienne">
+    <meta property="og:keywords" content="association,magellans,projet,réseau,film,magasin,matériel,location,social,network,cinema,films,france,fr,paris,région parisienne">
+
     <meta name="author" content="https://github.com/Tonin386">
-    <meta name="og:type" property="og:type" content="website">
-    <meta name="og:site_name" property="og:site_name" content="Magellans">
-    <meta name="image" property="og:image" content="{% static 'img/logo.png' %}">
-    <meta name="og:image" content="{% static 'img/logo.png' %}"> 
-    <meta name="og:image:secure_url" content="https://magellans.fr{% static 'img/logo.png' %}">
-    <meta name="og:url" property="og:url" content="https://magellans.fr{{ request.path }}">
+    <meta property="og:author" content="https://github.com/Tonin386">
+
+    <meta name="type" content="website">
+    <meta property="og:type" content="website">
+
+    <meta name="site_name" content="Magellans"> 
+    <meta property="og:site_name" content="Magellans">
+
+    <meta name="image" content="{% static 'img/logo.png' %}">
+    <meta property="og:image" content="{% static 'img/logo.png' %}"> 
+    <meta property="og:image:secure_url" content="https://magellans.fr{% static 'img/logo.png' %}">
+
+    <meta name="url" content="https://magellans.fr{{request.path}}">
+    <meta property="og:url" content="https://magellans.fr{{ request.path }}">
+
     <meta name="twitter:image" content="https://magellans.fr{% static 'img/logo.png' %}">
+    
     <!-- Favicon-->
     <link rel="shortcut icon" type="image/x-icon" href="{% static 'media/img/favicon.ico' %}">
     <!-- Font Awesome icons (free version)-->
