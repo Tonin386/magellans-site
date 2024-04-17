@@ -1,17 +1,16 @@
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 from django.contrib.auth.tokens import default_token_generator
-from django.contrib.auth.decorators import login_required
+from members.decorators import staff_required, login_required
 from dashboard.forms import ProjectFundingRequestForm
 from django.utils.decorators import method_decorator
 from django.template.loader import render_to_string
-from django.shortcuts import render, HttpResponse
-from members.decorators import staff_required
 from django.utils.encoding import force_bytes
 from django.utils.safestring import mark_safe
 from django.views.generic import DetailView
 from django.core.mail import send_mail
 from django.shortcuts import redirect
 from django.contrib import messages
+from django.shortcuts import render
 from warehouse.models import Order
 from django.conf import settings
 from .forms import RegisterForm
@@ -21,12 +20,11 @@ from .forms import *
 import secrets
 import string
 
-
-@login_required
+@login_required("Dashboard membres", "Dashboard pour les membres du site de l'association Magellans.")
 def members(request):
     return render(request, "members.html", locals())
 
-@login_required
+@login_required("Profil personnel", "Accéder à son profil personnel sur le site de l'association Magellans.")
 def my_profile(request):
     form = EditProfileForm(request.user.site_person)
     orders = Order.objects.filter(user=request.user).order_by('-date_created')
@@ -42,7 +40,7 @@ def my_profile(request):
             
     return render(request, 'my_profile.html', {'object': request.user, 'form': form, 'orders': orders, 'invoices': invoices})
 
-@login_required
+@login_required("Créer une note de frais", "Page de création d'une note de frais pour les membres du site de l'association Magellans.")
 def create_invoice(request):
     invoice_form = CreateInvoiceForm()
     if request.method == "POST":
@@ -63,7 +61,7 @@ def create_invoice(request):
 
     return render(request, "create_invoice.html", locals())
 
-@login_required
+@login_required("Demande d'aide financière", "Formulaire de demande d'aide financière pour faire financer son projet par l'association Magellans.")
 def create_funding_request(request):
     form = ProjectFundingRequestForm()
     if request.method == "POST":
@@ -80,6 +78,7 @@ def create_funding_request(request):
     return render(request, "create_funding_request.html", locals())
 
 def register(request):
+    og_description = "Inscription au site de l'association Magellans."
     form = RegisterForm(request.POST or None)
     if request.method == "POST":
         if form.is_valid():
@@ -121,6 +120,7 @@ def register(request):
     return render(request, "registration/register.html", locals())
 
 def activate(request, uidb64, token):
+    og_description = "Page d'activation de son compte utilisateur sur le site de l'association Magellans."
     try:
         uid = urlsafe_base64_decode(uidb64).decode()
         user = Member.objects.get(pk=uid)
@@ -142,17 +142,18 @@ def activate(request, uidb64, token):
     return redirect('activation_failed')
 
 def activation_done(request):
+    og_description = "Activation réussie d'un compte utilisateur sur le site de l'association Magellans."
     return render(request, 'registration/activation_done.html', locals())
 
 def activation_failed(request):
     return render(request, 'registration/activation_failed.html', locals())
 
-@method_decorator(staff_required, name="dispatch")
+@method_decorator(staff_required("Profil utilisateur", "Page du profil utilisateur d'un membre du site de l'association Magellans."), name="dispatch")
 class MemberDetailView(DetailView):
     model = Member
     template_name="member_detail.html"
 
-@method_decorator(staff_required, name="dispatch")
+@method_decorator(staff_required("Profil externe ou interne", "Page du profil d'une personne externe ou interne à l'association Magellans."), name="dispatch")
 class PersonDetailView(DetailView):
     model = Person
     template_name = "person_detail.html"

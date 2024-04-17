@@ -30,11 +30,6 @@ def home(request):
     return render(request, 'home.html', locals())
 
 def projects(request):
+    og_description = "Projets auxquels l'association Magellans a participé."
     projets = Project.objects.filter(public=True).order_by('-release_date')
     return render(request, 'projects.html', locals())
-
-def contact(request):
-    return render(request, 'contact.html', locals())
-
-def join_us(request):
-    return render(request, 'join_us.html', locals())

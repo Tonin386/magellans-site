@@ -5,8 +5,9 @@ from django.contrib import messages
 from django.shortcuts import render
 from .models import *
 
-@staff_required
+@staff_required("Trésorerie", "Page de gestion de la trésorerie de l'association Magellans.")
 def bank(request):
+    og_description = request.og_description
     operations = Operation.objects.all()
     invoices = Invoice.objects.all()
     account_money = 0
@@ -41,5 +42,6 @@ class InvoiceDetailView(DetailView):
         expenses = self.object.expense_set.all()
         
         context['expenses'] = expenses
+        context['og_description'] = "Page détaillant une note de frais pour l'association Magellans."
 
         return context

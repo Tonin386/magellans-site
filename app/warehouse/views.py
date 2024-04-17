@@ -14,6 +14,7 @@ from .models import *
 from .forms import *
 
 def warehouse(request):
+    og_description = "Magasin et liste du matériel proposé par l'association Magellans. "
     tags = Tag.objects.all().order_by('name')
     items = Item.objects.all().order_by('name')
     completeProfile = request.user.first_name != "" and request.user.last_name != "" and request.user.phone != "" if type(request.user) == Member else True
@@ -40,6 +41,7 @@ def order(request):
 
 @require_POST
 def placeOrder(request):
+    og_description = "Validation d'une commande ou réservation auprès du magasin de l'association Magellans."
     form = PlaceOrderForm(request.POST)
     
     success = False
@@ -151,5 +153,6 @@ class OrderDetailView(DetailView):
         item_set = zip(quantities, obj.items.all())
 
         context['item_set'] = item_set
+        context['og_description'] = f"Commande #{obj.pk} effectuée aurpès du magasin de l'association Magellans."
 
         return context

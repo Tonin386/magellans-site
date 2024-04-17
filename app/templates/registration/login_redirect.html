@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block title %}
+{% if title %}
+{{ title }}
+{% else %}
+Redirection vers connexion
+{% endif %}
+{% endblock %}
+
+{% block head_description %}
+{{ og_description }}
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-3">
+    <div class="card m-auto text-center col-xl-6 border-primary border-4 rounded-4">
+        <div class="card-header bg-primary text-light fs-5">Redirection vers la page de connexion</div>
+        <div class="card-body">
+            <h5 class="card-title">
+                Connexion nécessaire
+            </h5>
+            <p class="card-text">Veuillez vous connecter pour accéder à cette page.</p>
+            <a class="btn btn-primary" href="{% url 'login' %}?next={{request.path}}">Se connecter</a>
+        </div>
+    </div>
+</div>
+{% endblock %}
