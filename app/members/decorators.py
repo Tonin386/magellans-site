@@ -9,8 +9,7 @@ def staff_required(title, og_description):
                 request.title = title
                 request.og_description = og_description
                 return view_func(request, *args, **kwargs)
-        
-            return render(request, "403.html", {'title': title, 'og_description': og_description}, status=403)
+            return render(request, "403.html", {'title': title, 'og_description': og_description})
         return wrapper
     return decorator
 
