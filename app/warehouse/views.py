@@ -153,6 +153,6 @@ class OrderDetailView(DetailView):
         item_set = zip(quantities, obj.items.all())
 
         context['item_set'] = item_set
-        context['og_description'] = f"Commande #{obj.pk} effectuée aurpès du magasin de l'association Magellans."
+        context['og_description'] = f"Commande #{obj.pk} effectuée auprès du magasin de l'association Magellans."
 
         return context
