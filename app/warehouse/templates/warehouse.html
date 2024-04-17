@@ -9,6 +9,10 @@ Magasin
 <link href="{% static 'css/warehouse.css' %}" rel="stylesheet" />
 {% endblock %}
 
+{% block head_description %}
+Catalogue du magasin de l'association Magellans. Gestion des réservations et commandes de matériel du magasin de Magellans. 
+{% endblock %}
+
 {% block nav %}
 {% include "nav.html" %}
 {% endblock %}
@@ -106,7 +110,7 @@ Magasin
 </div>
 </div>
 
-<div class="sticky-bottom-buttons">
+<div class="sticky-bottom-buttons m-auto my-2">
     <a class="btn btn-info position-relative {% if not request.user.is_authenticated or not completeProfile %} disabled {% endif %} mt-2" id="orderButton" href="/magasin/commande">
         <i class="fa-solid fa-basket-shopping"></i>
         Voir ma réservation

@@ -5,6 +5,11 @@
 Dashboard utilisateurs
 {% endblock %}
 
+
+{% block head_description %}
+Gestion des membres de l'association Magellans.
+{% endblock %}
+
 {% block nav %}
 {% include "nav.html" %}
 {% endblock %}
@@ -76,7 +81,6 @@ Dashboard utilisateurs
         </table>
     </div>
 </div>
-
 
 <div class="sticky-bottom-buttons">
     <button class="btn btn-success" type="button" data-bs-toggle="modal" data-bs-target="#addExtUserForm">

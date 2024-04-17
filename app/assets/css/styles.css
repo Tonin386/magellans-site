@@ -620,6 +620,13 @@ footer {
   font-family: "Montserrat", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
 }
 
+.footer-fixed {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+
 #video-background {
   position: fixed;
   top: 0;
@@ -652,6 +659,11 @@ footer {
   right: 50%;
   transform: translateX(50%);
   z-index: 1000;
+  text-align: center;
+}
+
+.sticky-bottom-buttons-scrollDone {
+  position: static;
   text-align: center;
 }
 

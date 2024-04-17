@@ -5,9 +5,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="description" content="Magellans est une association d'audiovisuel. En la rejoignant, vous pourrez accéder à son magasin, participer à des projets ou des rencontres autour d'un verre.">
+    <meta name="description" content="Magellans c'est une association d'audiovisuel basée en région parisienne. En adhérant, vous pourrez accéder à son magasin, participer à des projets ou des rencontres autour d'un verre.">
     <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-    <meta name="keywords" content="association, magellans, projet, réseau, movie, magasin, matériel, social, network, cinema, films">
+    <meta name="keywords" content="association,magellans,projet,réseau,film,magasin,matériel,location,social,network,cinema,films,france,fr,paris,région parisienne">
     <meta name="author" content="https://github.com/Tonin386">
     <title>Magellans</title>
     <!-- Favicon-->
@@ -30,7 +30,7 @@
 </head>
 <body id="page-top">
     <p class="d-none" id="google-desc">
-        Magellans, c'est une association audiovisuelle composée de membres aux profils différents : des étudiants et des professionnels du secteur de l'audiovisuel, des comédiens… ou bien simplement des passionnés du cinéma et de l'audiovisuel !
+        Magellans, c'est une association audiovisuelle cbasée en région parisienne composée de membres aux profils différents : des étudiants et des professionnels du secteur de l'audiovisuel, des comédiens… ou bien simplement des passionnés du cinéma et de l'audiovisuel !
         Tous désireux d'apprendre de nouvelles choses, de rencontrer de nouvelles personnes… nous avons tous un but commun : réaliser sans cesse de nouveaux projets : des courts-métrages, des prestations tels que des captations d'évènements, des vidéos promotionnelles, des clips, et autres !
         Ce qui fait notre force, c'est la diversité des profils de nos membres, leur volonté de se rapprocher au mieux d'un niveau professionnel et de relever constamment de nouveaux défis. Alors si l'aventure te tente, rejoins-nous !
     </p>
@@ -380,23 +380,7 @@
         </div>
     </section>
     <!-- Footer-->
-    <footer class="footer py-4">
-        <div class="container">
-            <div class="row align-items-center">
-                <div class="col-lg-4 text-lg-start">Copyright &copy; Magellans 2024</div>
-                <div class="col-lg-4 my-3 my-lg-0">
-                    <a class="btn btn-dark btn-social mx-2" target="_blank" href="https://www.tiktok.com/@magellansproject?_t=8lMvI4Z6S0m&_r=1" aria-label="Tiktok"><i class="fab fa-tiktok"></i></a>
-                    <a class="btn btn-dark btn-social mx-2" target="_blank" href="https://www.instagram.com/magellansproject/" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
-                    <a class="btn btn-dark btn-social mx-2" target="_blank" href="https://www.youtube.com/channel/UCLU4qQfiuMThtss8TKoZx5Q" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
-                    <a class="btn btn-dark btn-social mx-2" target="_blank" href="https://www.twitch.tv/magellans_project" aria-label="Twitch"><i class="fab fa-twitch"></i></a>
-                </div>
-                <div class="col-lg-4 text-lg-end">
-                    <a class="link-light text-decoration-none me-3" href="#!">Politique de confidentialité</a>
-                    <a class="link-light text-decoration-none" href="#!">Conditions d'utilisation</a>
-                </div>
-            </div>
-        </div>
-    </footer>
+    {% include "footer.html" %}
     <!-- Portfolio Modals-->
     <!-- Portfolio item 1 modal popup-->
     {% for projet in projets %}

@@ -5,6 +5,11 @@
 Projet {{ object.name }}
 {% endblock %}
 
+
+{% block head_description %}
+Présentation détaillée du projet {{ object.name }}.
+{% endblock %}
+
 {% block nav %}
 {% include "nav.html" %}
 {% endblock %}
