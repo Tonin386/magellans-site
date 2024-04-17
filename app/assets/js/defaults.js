@@ -104,8 +104,10 @@ $.extend($.fn.dataTableExt.oSort, {
 function defineStickyButtonsBehavior(stickyButtons, heightBefore) {
     const scrollPosition = window.scrollY;
     let footer = document.querySelector("footer");
+
+    console.log(heightBefore, scrollPosition + window.innerHeight + footer.offsetHeight);
     
-    if(scrollPosition + window.innerHeight + footer.offsetHeight * 0.5 >= heightBefore) {
+    if(scrollPosition + window.innerHeight + footer.offsetHeight >= heightBefore) {
         stickyButtons.classList.add("sticky-bottom-buttons-scrollDone");
         stickyButtons.classList.remove("sticky-bottom-buttons");
     } else {
@@ -117,13 +119,14 @@ function defineStickyButtonsBehavior(stickyButtons, heightBefore) {
 $(window).on('load', function(){
     let footer = document.querySelector("footer");
     
-    if (document.body.clientHeight < window.outerHeight) {
+    if (document.body.clientHeight < window.innerHeight) {
         footer.classList.add("footer-fixed");
     }
     
     const heightBefore = document.body.scrollHeight;
     
-    let stickyButtons = document.querySelector(".sticky-bottom-buttons");
+    let stickyButtons = document.querySelector("#sticky-buttons");
+
     if(stickyButtons !== null) {
         defineStickyButtonsBehavior(stickyButtons, heightBefore);
         
