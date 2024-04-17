@@ -7,6 +7,8 @@ from .forms import ContactForm
 from dashboard.models import *
 
 def home(request):
+    title = "Magellans"
+    og_description = "Site officiel de l'association d'audiovisuel Magellans"
     if request.method == "POST":
         form = ContactForm(request.POST)
         if form.is_valid():
@@ -30,6 +32,7 @@ def home(request):
     return render(request, 'home.html', locals())
 
 def projects(request):
+    title = "Projets"
     og_description = "Projets auxquels l'association Magellans a participé."
     projets = Project.objects.filter(public=True).order_by('-release_date')
     return render(request, 'projects.html', locals())

@@ -22,10 +22,14 @@ import string
 
 @login_required("Dashboard membres", "Dashboard pour les membres du site de l'association Magellans.")
 def members(request):
+    title = request.title
+    og_description = request.og_description
     return render(request, "members.html", locals())
 
 @login_required("Profil personnel", "Accéder à son profil personnel sur le site de l'association Magellans.")
 def my_profile(request):
+    title = request.title
+    og_description = request.og_description
     form = EditProfileForm(request.user.site_person)
     orders = Order.objects.filter(user=request.user).order_by('-date_created')
     invoices = Invoice.objects.filter(author=request.user).order_by('-date_created')
@@ -38,10 +42,12 @@ def my_profile(request):
             request.user.site_person.gender = form.cleaned_data['gender']
             request.user.site_person.save()
             
-    return render(request, 'my_profile.html', {'object': request.user, 'form': form, 'orders': orders, 'invoices': invoices})
+    return render(request, 'my_profile.html', {'object': request.user, 'form': form, 'orders': orders, 'invoices': invoices, 'title': title, 'og_description': og_description})
 
 @login_required("Créer une note de frais", "Page de création d'une note de frais pour les membres du site de l'association Magellans.")
 def create_invoice(request):
+    title = request.title
+    og_description = request.og_description
     invoice_form = CreateInvoiceForm()
     if request.method == "POST":
         invoice_form = CreateInvoiceForm(request.POST)
@@ -64,6 +70,8 @@ def create_invoice(request):
 @login_required("Demande d'aide financière", "Formulaire de demande d'aide financière pour faire financer son projet par l'association Magellans.")
 def create_funding_request(request):
     form = ProjectFundingRequestForm()
+    title = request.title
+    og_description = request.og_description
     if request.method == "POST":
         form = ProjectFundingRequestForm(request.POST, request.FILES)
         if form.is_valid():
@@ -73,11 +81,12 @@ def create_funding_request(request):
             new_funding_request.save()
 
             new_funding_request.send_by_email()
-            return render(request, "create_funding_request_success.html", {})
+            return render(request, "create_funding_request_success.html", {'title': title, 'og_description': og_description})
 
     return render(request, "create_funding_request.html", locals())
 
 def register(request):
+    title = "Inscription"
     og_description = "Inscription au site de l'association Magellans."
     form = RegisterForm(request.POST or None)
     if request.method == "POST":
@@ -120,7 +129,6 @@ def register(request):
     return render(request, "registration/register.html", locals())
 
 def activate(request, uidb64, token):
-    og_description = "Page d'activation de son compte utilisateur sur le site de l'association Magellans."
     try:
         uid = urlsafe_base64_decode(uidb64).decode()
         user = Member.objects.get(pk=uid)
@@ -142,16 +150,27 @@ def activate(request, uidb64, token):
     return redirect('activation_failed')
 
 def activation_done(request):
+    title = "Activation de compte réussie"
     og_description = "Activation réussie d'un compte utilisateur sur le site de l'association Magellans."
     return render(request, 'registration/activation_done.html', locals())
 
 def activation_failed(request):
+    title = "Activation de compte échouée"
+    og_description = "Activation échouée d'un compte utilisateur sur le site de l'association Magellans."
     return render(request, 'registration/activation_failed.html', locals())
 
 @method_decorator(staff_required("Profil utilisateur", "Page du profil utilisateur d'un membre du site de l'association Magellans."), name="dispatch")
 class MemberDetailView(DetailView):
     model = Member
     template_name="member_detail.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        context['title'] = "Profil utilisateur"
+        context['og_description'] = "Page du profil utilisateur d'un membre du site de l'association Magellans."
+
+        return context
 
 @method_decorator(staff_required("Profil externe ou interne", "Page du profil d'une personne externe ou interne à l'association Magellans."), name="dispatch")
 class PersonDetailView(DetailView):
@@ -163,6 +182,9 @@ class PersonDetailView(DetailView):
 
         members = Member.objects.all()
         context['members'] = members
+
+        context['title'] = "Profil externe ou interne"
+        context['og_description'] = "Page du profil d'une personne externe ou interne à l'association Magellans."
 
         if self.request.POST:
             context['form'] = EditPersonForm(self.request.POST, instance=self.object)
@@ -179,4 +201,3 @@ class PersonDetailView(DetailView):
             return redirect('person-detail', pk=self.object.pk)
         else:
             return self.render_to_response(self.get_context_data(form=form))
-

@@ -8,11 +8,13 @@ from .models import *
 
 @staff_required("Dashboard", "Page du dashboard pour l'administration de l'association Magellans.")
 def dashboard_home(request):
+    title = request.title
     og_description = request.og_description
     return render(request, "dashboard.html", locals())
 
 @staff_required("Dashboard utilisateurs", "Page de gestion des membres de l'association Magellans.")
 def dashboard_members(request):
+    title = request.title
     og_description = request.og_description
     members = Member.objects.all()
     external_users = UnregisteredMember.objects.all()
@@ -21,6 +23,7 @@ def dashboard_members(request):
 
 @staff_required("Dashboard projets", "Page de gestion des projets de l'association Magellans.")
 def dashboard_projects(request):
+    title = request.title
     og_description = request.og_description
 
     projects = Project.objects.all()
@@ -41,6 +44,7 @@ def dashboard_projects(request):
 
 @staff_required("Dashboard commandes", "Page de gestion des réservations et commande du magasin de l'association Magellans.")
 def dashboard_orders(request):
+    title = request.title
     og_description = request.og_description
 
     orders = Order.objects.all()
@@ -68,5 +72,6 @@ class ProjectDetailView(DetailView):
 
         context["site_persons"] = site_persons
         context["ext_persons"] = ext_persons
+        context["title"] = f"Projet {self.object.name}"
         context["og_description"] = f"Page des détails du projet '{self.object.name}' auquel a participé l'association Magellans."
         return context

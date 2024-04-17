@@ -14,6 +14,7 @@ from .models import *
 from .forms import *
 
 def warehouse(request):
+    title = "Magasin"
     og_description = "Magasin et liste du matériel proposé par l'association Magellans. "
     tags = Tag.objects.all().order_by('name')
     items = Item.objects.all().order_by('name')
@@ -21,6 +22,8 @@ def warehouse(request):
     return render(request, "warehouse.html", locals())
 
 def order(request):
+    title = "Réservation"
+    og_description = "Effectuer une commande ou une réservation auprès du magasin de l'association Magellans."
     pks = request.GET.get("pks", "undefined")
     values = request.GET.get("values", "undefined")
     
@@ -41,6 +44,7 @@ def order(request):
 
 @require_POST
 def placeOrder(request):
+    title = "Validation réservation"
     og_description = "Validation d'une commande ou réservation auprès du magasin de l'association Magellans."
     form = PlaceOrderForm(request.POST)
     
@@ -63,8 +67,6 @@ def placeOrder(request):
             pu_first_name = request.POST.get("pickup_first_name", request.user.first_name())
             pu_last_name = request.POST.get("pickup_last_name", request.user.last_name())
             pu_phone = request.POST.get("pickup_phone", request.user.phone())
-
-            print(request.POST)
 
             if pu_first_name == "":
                 pu_first_name = request.user.first_name()
@@ -132,6 +134,14 @@ class EditItemDetailView(UpdateView):
     def get_object(self, queryset=None):
         return Item.objects.get(pk=self.kwargs['pk'])
     
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        context['title'] = f"Magasin - Objet {self.object.name}"
+        context['og-description'] = f"Page de gestion de l'objet {self.object.name}."
+
+        return context
+    
 class EditTagDetailView(UpdateView):
     model = Tag
     form_class = EditTagForm
@@ -140,6 +150,14 @@ class EditTagDetailView(UpdateView):
     
     def get_object(self, queryset=None):
         return Tag.objects.get(pk=self.kwargs['pk'])
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        context['title'] = f"Magasin - Tag {self.object.name}"
+        context['og-description'] = f"Page de gestion du tag {self.object.name}."
+
+        return context
     
 class OrderDetailView(DetailView):
     model = Order
@@ -153,6 +171,7 @@ class OrderDetailView(DetailView):
         item_set = zip(quantities, obj.items.all())
 
         context['item_set'] = item_set
+        context['title'] = f"Récapitulatif commande #{obj.pk}"
         context['og_description'] = f"Commande #{obj.pk} effectuée aurpès du magasin de l'association Magellans."
 
         return context

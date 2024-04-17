@@ -7,6 +7,7 @@ from .models import *
 
 @staff_required("Trésorerie", "Page de gestion de la trésorerie de l'association Magellans.")
 def bank(request):
+    title = request.title
     og_description = request.og_description
     operations = Operation.objects.all()
     invoices = Invoice.objects.all()
@@ -42,6 +43,7 @@ class InvoiceDetailView(DetailView):
         expenses = self.object.expense_set.all()
         
         context['expenses'] = expenses
+        context['title'] = f"Note de frais { self.object.title }"
         context['og_description'] = "Page détaillant une note de frais pour l'association Magellans."
 
         return context

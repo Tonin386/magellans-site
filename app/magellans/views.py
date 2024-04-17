@@ -12,5 +12,6 @@ class FileView(View):
                 file_content = file.read()
             return HttpResponse(file_content, content_type="text/plain")
         else:
+            title = "Fichier introuvable"
             return render(request, "404.html", locals())
             
