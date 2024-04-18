@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block title %}
-{% include "title.html" with title=title|default:"Dashboard membres" %}
+{% include "title.html" with title=title|default:"Tableau de bord membres" %}
 {% endblock %}
 
 {% block head_description %}
@@ -16,7 +16,7 @@ Dashboard pour les membres de l'association Magellans. Liens vers son profil, le
 {% block content %}
 
 <div class="container-fluid p-3">
-    <h1 class="display-3 text-center">Tableau de bord des membres</h1>
+    <h1 class="display-3 text-center">Tableau de bord membres</h1>
     <div class="row mt-5 pt-5">
         <div class="card border-0 col-xl-2 m-auto mt-3">
             <div class="card-body text-center hoverable-card">
@@ -24,7 +24,7 @@ Dashboard pour les membres de l'association Magellans. Liens vers son profil, le
                     <img src="{% static 'img/icons/warehouse-solid.svg' %}" class="rounded-pill bg-primary" alt="Icône accès magasin">
                 </div>
                 <h4 class="fs-5">Magasin</h4>
-                <a href="{% url 'warehouse' %}" class="stretched-link sr-only" title="Accéder au magasin">Magasin</a>
+                <a href="{% url 'warehouse' %}" class="stretched-link opacity-0" title="Accéder au magasin">Magasin</a>
             </div>
         </div>
         <div class="card border-0 col-xl-2 m-auto mt-3">
@@ -33,7 +33,7 @@ Dashboard pour les membres de l'association Magellans. Liens vers son profil, le
                     <img src="{% static 'img/icons/file-invoice-dollar-solid.svg' %}" class="rounded-pill bg-primary" alt="Icône note de frais">
                 </div>
                 <h4 class="fs-5">Note de frais</h4>
-                <a href="{% url 'create-invoice' %}" class="stretched-link sr-only" title="Accéder à l'édition d'une note de frais">Note de frais</a>
+                <a href="{% url 'create-invoice' %}" class="stretched-link opacity-0" title="Accéder à l'édition d'une note de frais">Note de frais</a>
             </div>
         </div>
         <div class="card border-0 col-xl-2 m-auto mt-3">
@@ -42,7 +42,7 @@ Dashboard pour les membres de l'association Magellans. Liens vers son profil, le
                     <img src="{% static 'img/icons/hand-holding-dollar-solid.svg' %}" class="rounded-pill bg-primary" alt="Icône demande d'aide financière">
                 </div>
                 <h4 class="fs-5">Demande d'aide financière</h4>
-                <a href="{% url 'create-funding-request' %}" class="stretched-link sr-only" title="Accéder à la demande d'aide financière">Demande d'aide financière</a>
+                <a href="{% url 'create-funding-request' %}" class="stretched-link opacity-0" title="Accéder à la demande d'aide financière">Demande d'aide financière</a>
             </div>
         </div>
         <div class="card border-0 col-xl-2 m-auto mt-3">
@@ -51,7 +51,7 @@ Dashboard pour les membres de l'association Magellans. Liens vers son profil, le
                     <img src="{% static 'img/icons/id-card-solid.svg' %}" class="rounded-pill bg-primary" alt="Icône mon profil">
                 </div>
                 <h4 class="fs-5">Mon profil</h4>
-                <a href="{% url 'my-profile' %}" class="stretched-link sr-only" title="Accéder à votre profil">Mon profil</a>
+                <a href="{% url 'my-profile' %}" class="stretched-link opacity-0" title="Accéder à votre profil">Mon profil</a>
             </div>
         </div>
     </div>

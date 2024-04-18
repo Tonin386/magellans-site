@@ -20,7 +20,7 @@ from .forms import *
 import secrets
 import string
 
-@login_required("Dashboard membres", "Dashboard pour les membres du site de l'association Magellans.")
+@login_required("Tableau de bord membres", "Dashboard pour les membres du site de l'association Magellans.")
 def members(request):
     title = request.title
     og_description = request.og_description

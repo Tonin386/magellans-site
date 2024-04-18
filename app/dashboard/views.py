@@ -6,13 +6,13 @@ from warehouse.models import *
 from members.models import *
 from .models import *
 
-@staff_required("Dashboard", "Page du dashboard pour l'administration de l'association Magellans.")
+@staff_required("Tableau de bord de Magellans", "Page du dashboard pour l'administration de l'association Magellans.")
 def dashboard_home(request):
     title = request.title
     og_description = request.og_description
     return render(request, "dashboard.html", locals())
 
-@staff_required("Dashboard utilisateurs", "Page de gestion des membres de l'association Magellans.")
+@staff_required("Tableau de bord utilisateurs", "Page de gestion des membres de l'association Magellans.")
 def dashboard_members(request):
     title = request.title
     og_description = request.og_description
@@ -21,7 +21,7 @@ def dashboard_members(request):
     
     return render(request, "dashboard_members.html", locals())
 
-@staff_required("Dashboard projets", "Page de gestion des projets de l'association Magellans.")
+@staff_required("Tableau de bord projets", "Page de gestion des projets de l'association Magellans.")
 def dashboard_projects(request):
     title = request.title
     og_description = request.og_description
@@ -42,7 +42,7 @@ def dashboard_projects(request):
 
     return render(request, "dashboard_projects.html", locals())
 
-@staff_required("Dashboard commandes", "Page de gestion des réservations et commande du magasin de l'association Magellans.")
+@staff_required("Tableau de bord commandes", "Page de gestion des réservations et commande du magasin de l'association Magellans.")
 def dashboard_orders(request):
     title = request.title
     og_description = request.og_description
