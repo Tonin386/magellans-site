@@ -2,9 +2,8 @@
 {% load static %}
 
 {% block title %}
-Projet {{ object.name }}
+{% include "title.html" with title=title|default:"Projet {{ object.name }}" %}
 {% endblock %}
-
 
 {% block head_description %}
 Présentation détaillée du projet {{ object.name }}.

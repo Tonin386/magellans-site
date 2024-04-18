@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block title %}
-Profil utilisateur
+{% include "title.html" with title=title|default:"Profil utilisateur" %}
 {% endblock %}
 
 {% block head_description %}

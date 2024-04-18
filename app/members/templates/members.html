@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block title %}
-Dashboard membres
+{% include "title.html" with title=title|default:"Dashboard membres" %}
 {% endblock %}
 
 {% block head_description %}

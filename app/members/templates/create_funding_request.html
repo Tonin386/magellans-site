@@ -2,9 +2,8 @@
 {% load static %}
 
 {% block title %}
-Demande d'aide financière
+{% include "title.html" with title=title|default:"Demande d'aide financière" %}
 {% endblock %}
-
 
 {% block head_description %}
 Création d'une demande de financement d'un projet personnel ou professionnel par l'association Magellans.

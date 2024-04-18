@@ -2,9 +2,8 @@
 {% load static %}
 
 {% block title %}
-Dashboard utilisateurs
+{% include "title.html" with title=title|default:"Dashboard utilisateurs" %}
 {% endblock %}
-
 
 {% block head_description %}
 Gestion des membres de l'association Magellans.

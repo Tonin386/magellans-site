@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block title %}
-Magasin - {{ tag.name }}
+{% include "title.html" with title=title|default:"Magasin - {{ tag.name }}" %}
 {% endblock %}
 
 {% block head_description %}

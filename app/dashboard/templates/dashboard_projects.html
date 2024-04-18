@@ -2,9 +2,8 @@
 {% load static %}
 
 {% block title %}
-Dashboard projets
+{% include "title.html" with title=title|default:"Dashboard projets" %}
 {% endblock %}
-
 
 {% block head_description %}
 Liste de tous les projets dans lesquels l'association Magellans a eu un rôle a joué : réalisation, production, co-production, financement.

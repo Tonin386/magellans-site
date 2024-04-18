@@ -2,12 +2,11 @@
 {% load static %}
 
 {% block title %}
-Note de frais {{ object.title }}
+{% include "title.html" with title=title|default:"Note de frais {{ object.title }}" %}
 {% endblock %}
 
 {% block extra_head %}
 {% endblock %}
-
 
 {% block head_description %}
 Récapitulatif d'une note de frais contractée auprès de l'association Magellans.

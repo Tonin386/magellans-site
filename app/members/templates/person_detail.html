@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block title %}
-Profil externe ou interne
+{% include "title.html" with title=title|default:"Profil externe ou interne" %}
 {% endblock %}
 
 {% block head_description %}

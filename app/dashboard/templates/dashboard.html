@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block title %}
-Dashboard
+{% include "title.html" with title=title|default:"Dashboard" %}
 {% endblock %}
 
 

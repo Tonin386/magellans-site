@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block title %}
-Récapitulatif commande #{{ object.pk }}
+{% include "title.html" with title=title|default:"Récapitulatif commande #{{ object.pk }}" %}
 {% endblock %}
 
 {% block head_description %}

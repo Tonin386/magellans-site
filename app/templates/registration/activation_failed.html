@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block title %}
-Activation de compte
+{% include "title.html" with title=title|default:"Activation de compte échouée" %}
 {% endblock %}
 
 {% block head_description %}

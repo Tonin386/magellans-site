@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block title %}
-Magasin - Réservation
+{% include "title.html" with title=title|default:"Magasin - Réservation" %}
 {% endblock %}
 
 {% block head_description %}

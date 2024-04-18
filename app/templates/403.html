@@ -1,11 +1,7 @@
 {% extends "base.html" %}
 
 {% block title %}
-{% if title %}
-{{ title }}
-{% else %}
-Interdit
-{% endif %}
+{% include "title.html" with title=title|default:"403 Interdit" %}
 {% endblock %}
 
 {% block head_description %}

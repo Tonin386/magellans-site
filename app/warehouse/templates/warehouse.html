@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block title %}
-Magasin
+{% include "title.html" with title=title|default:"Magasin" %}
 {% endblock %}
 
 {% block extra_head %}

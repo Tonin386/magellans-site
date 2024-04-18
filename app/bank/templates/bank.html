@@ -2,8 +2,9 @@
 {% load static %}
 
 {% block title %}
-Trésorerie
+{% include "title.html" with title=title|default:"Trésorerie" %}
 {% endblock %}
+
 
 {% block head_description %}
 Gestion de la trésorerie de l'association Magellans. 

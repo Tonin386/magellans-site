@@ -2,9 +2,8 @@
 {% load static %}
 
 {% block title %}
-Créer une note de frais
+{% include "title.html" with title=title|default:"Créer une note de frais" %}
 {% endblock %}
-
 
 {% block head_description %}
 Edition d'une note de frais auprès de l'association Magellans.

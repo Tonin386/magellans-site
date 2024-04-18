@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block title %}
-Déconnexion
+{% include "title.html" with title=title|default:"Déconnexion réussie" %}
 {% endblock %}
 
 {% block head_description %}

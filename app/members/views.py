@@ -26,7 +26,7 @@ def members(request):
     og_description = request.og_description
     return render(request, "members.html", locals())
 
-@login_required("Profil personnel", "Accéder à son profil personnel sur le site de l'association Magellans.")
+@login_required("Mon profil", "Accéder à son profil personnel sur le site de l'association Magellans.")
 def my_profile(request):
     title = request.title
     og_description = request.og_description
