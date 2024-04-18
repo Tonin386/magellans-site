@@ -8,7 +8,7 @@
     <meta name="title"content="Magellans">
     <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 
-    <title>Magellans</title>
+    <title>Association Magellans - Site Officiel</title>
     <meta name="title" content="Magellans">
     <meta property="og:title" content="Magellans">
 
@@ -64,7 +64,7 @@
     <nav class="navbar navbar-expand-xl navbar-dark fixed-top" id="mainNav">
         <div class="container">
             <a class="navbar-brand" href="#page-top">
-                <img src="{% static 'img/logo.webp' %}" alt="Magellans" /> Magellans
+                <img src="{% static 'img/logo.webp' %}" alt="Logo de l'association Magellans" /> Magellans
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
                 <i class="fas fa-bars ms-1"></i>
@@ -153,7 +153,7 @@
                             <div class="portfolio-hover">
                                 <div class="portfolio-hover-content"><i class="fas fa-plus fa-3x"></i></div>
                             </div>
-                            <img class="img-fluid" style="aspect-ratio: 2/3;" src="{{ MEDIA_URL }}{{ projet.poster.url }}" alt="{{ projet.name }} poster" /> <!-- Image projet -->
+                            <img class="img-fluid" style="aspect-ratio: 2/3;" src="{{ MEDIA_URL }}{{ projet.poster.url }}" alt="Affiche du projet {{ projet.name }}" /> <!-- Image projet -->
                         </a> 
                         <div class="portfolio-caption">
                             <div class="portfolio-caption-heading">{{ projet.name }}</div>  <!-- Titre -->
@@ -178,7 +178,7 @@
             </div>
             <ul class="timeline">
                 <li>
-                    <div class="timeline-image"><img class="rounded-circle img-fluid" src="{% static 'img/about/1.jpg' %}" alt="..." /></div>
+                    <div class="timeline-image"><img class="rounded-circle img-fluid" src="{% static 'img/about/1.jpg' %}" alt="Image du conseil administratif initial de Magellans" /></div>
                     <div class="timeline-panel">
                         <div class="timeline-heading">
                             <h4>Février 2020</h4>
@@ -188,7 +188,7 @@
                     </div>
                 </li>
                 <li class="timeline-inverted">
-                    <div class="timeline-image"><img class="rounded-circle img-fluid" src="{% static 'img/about/2.jpg' %}" alt="..." /></div>
+                    <div class="timeline-image"><img class="rounded-circle img-fluid" src="{% static 'img/about/2.jpg' %}" alt="Pictogramme d'une réunion" /></div>
                     <div class="timeline-panel">
                         <div class="timeline-heading">
                             <h4>Avril 2020</h4>
@@ -198,7 +198,7 @@
                     </div>
                 </li>
                 <li>
-                    <div class="timeline-image"><img class="rounded-circle img-fluid" src="{% static 'img/about/3.jpg' %}" alt="..." /></div>
+                    <div class="timeline-image"><img class="rounded-circle img-fluid" src="{% static 'img/about/3.jpg' %}" alt="Logo de Magellans sur fond beige" /></div>
                     <div class="timeline-panel">
                         <div class="timeline-heading">
                             <h4>Septembre 2020</h4>
@@ -208,7 +208,7 @@
                     </div>
                 </li>
                 <li class="timeline-inverted">
-                    <div class="timeline-image"><img class="rounded-circle img-fluid" src="{% static 'img/about/4.jpg' %}" alt="..." /></div>
+                    <div class="timeline-image"><img class="rounded-circle img-fluid" src="{% static 'img/about/4.jpg' %}" alt="Logo de 48 Hour Film Project" /></div>
                     <div class="timeline-panel">
                         <div class="timeline-heading">
                             <h4>Octobre 2020</h4>
@@ -218,7 +218,7 @@
                     </div>
                 </li>
                 <li>
-                    <div class="timeline-image"><img class="rounded-circle img-fluid" src="{% static 'img/about/5.jpg' %}" alt="..." /></div>
+                    <div class="timeline-image"><img class="rounded-circle img-fluid" src="{% static 'img/about/5.jpg' %}" alt="Pictograme d'une boutique" /></div>
                     <div class="timeline-panel">
                         <div class="timeline-heading">
                             <h4>Début 2021</h4>
@@ -228,13 +228,23 @@
                     </div>
                 </li>
                 <li class="timeline-inverted">
-                    <div class="timeline-image"><img class="rounded-circle img-fluid" src="{% static 'img/about/6.jpg' %}" alt="..." /></div>
+                    <div class="timeline-image"><img class="rounded-circle img-fluid" src="{% static 'img/about/6.jpg' %}" alt="Logo de 'Le Goûter' une émission de Magellans." /></div>
                     <div class="timeline-panel">
                         <div class="timeline-heading">
                             <h4>Mai 2022</h4>
                             <h4 class="subheading">Emission Le Goûter</h4>
                         </div>
                         <div class="timeline-body"><p class="text-light-50">Le Goûter est le premier projet aidé financièrement par Magellans. Il s'agit d'une émission restransmise en live sur Twitch.</p></div>
+                    </div>
+                </li>
+                <li>
+                    <div class="timeline-image"><img class="rounded-circle img-fluid" src="{% static 'img/about/7.png' %}" alt="Pictogramme de code dans une fenêtre d'ordinateur" /></div>
+                    <div class="timeline-panel">
+                        <div class="timeline-heading">
+                            <h4>Avril 2024</h4>
+                            <h4 class="subheading">Nouveau site internet officiel</h4>
+                        </div>
+                        <div class="timeline-body"><p class="text-light-50">Le site officiel de Magellans est désormais en ligne ! De nombreuses fonctionnalités y sont disponibles : location de matériel, demande de financement, notes de frais et bien plus encore.</p></div>
                     </div>
                 </li>
                 <li class="timeline-inverted">
@@ -261,7 +271,7 @@
             <div class="row">
                 <div class="col-lg-4">
                     <div class="team-member">
-                        <img class="mx-auto rounded-circle" src="{% static 'img/ca/charlotte_sire.jpg' %}" alt="..." />
+                        <img class="mx-auto rounded-circle" src="{% static 'img/ca/charlotte_sire.jpg' %}" alt="Photo de profil de Charlotte Sire" />
                         <h4>Charlotte Sire</h4>
                         <p class="text-muted m-0">Présidente</p>
                         <p class="text-muted m-0 mb-2"> 
@@ -276,7 +286,7 @@
                 </div>
                 <div class="col-lg-4">
                     <div class="team-member">
-                        <img class="mx-auto rounded-circle" src="{% static 'img/ca/lena_delaval.jpg' %}" alt="..." />
+                        <img class="mx-auto rounded-circle" src="{% static 'img/ca/lena_delaval.jpg' %}" alt="Photo de profil de Léna Delaval" />
                         <h4>Léna Delaval</h4>
                         <p class="text-muted m-0">Secrétaire</p>
                         <p class="text-muted m-0 mb-2"> 
@@ -291,7 +301,7 @@
                 </div>
                 <div class="col-lg-4">
                     <div class="team-member">
-                        <img class="mx-auto rounded-circle" src="{% static 'img/ca/antonin_mathubert.jpg' %}" alt="..." />
+                        <img class="mx-auto rounded-circle" src="{% static 'img/ca/antonin_mathubert.jpg' %}" alt="Photo de profil de Antonin Mathubert" />
                         <h4>Antonin Mathubert</h4>
                         <p class="text-muted m-0">Trésorier</p>
                         <p class="text-muted m-0 mb-2"> 
@@ -306,7 +316,7 @@
                 </div>
                 <div class="col-lg-4">
                     <div class="team-member">
-                        <img class="mx-auto rounded-circle" src="{% static 'img/ca/axelle_servat.jpg' %}" alt="..." />
+                        <img class="mx-auto rounded-circle" src="{% static 'img/ca/axelle_servat.jpg' %}" alt="Photo de profil de Axelle Servat" />
                         <h4>Axelle Servat</h4>
                         <p class="text-muted m-0">Responsable communication et magasinière</p>
                         <p class="text-muted m-0 mb-2"> 
@@ -321,7 +331,7 @@
                 </div>
                 <div class="col-lg-4">
                     <div class="team-member">
-                        <img class="mx-auto rounded-circle" src="{% static 'img/ca/sarah_duvallet.jpg' %}" alt="..." />
+                        <img class="mx-auto rounded-circle" src="{% static 'img/ca/sarah_duvallet.jpg' %}" alt="Photo de profil de Sarah Duvallet" />
                         <h4>Sarah Duvallet</h4>
                         <p class="text-muted m-0">Adjointe responsable communication</p>
                         <p class="text-muted m-0 mb-2"> 
@@ -335,30 +345,8 @@
                     </div>
                 </div>
             </div>
-            <!-- <div class="row">
-                <div class="col-lg-8 mx-auto text-center"><p class="large text-muted">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aut eaque, laboriosam veritatis, quos non quis ad perspiciatis, totam corporis ea, alias ut unde.</p></div>
-            </div> -->
         </div>
     </section>
-    <!-- Clients-->
-    <!-- <div class="py-5">
-        <div class="container">
-            <div class="row align-items-center">
-                <div class="col-md-3 col-sm-6 my-3">
-                    <a href="#!"><img class="img-fluid img-brand d-block mx-auto" src="{% static 'img/logos/microsoft.svg' %}" alt="..." aria-label="Microsoft Logo" /></a>
-                </div>
-                <div class="col-md-3 col-sm-6 my-3">
-                    <a href="#!"><img class="img-fluid img-brand d-block mx-auto" src="{% static 'img/logos/google.svg' %}" alt="..." aria-label="Google Logo" /></a>
-                </div>
-                <div class="col-md-3 col-sm-6 my-3">
-                    <a href="#!"><img class="img-fluid img-brand d-block mx-auto" src="{% static 'img/logos/facebook.svg' %}" alt="..." aria-label="Facebook Logo" /></a>
-                </div>
-                <div class="col-md-3 col-sm-6 my-3">
-                    <a href="#!"><img class="img-fluid img-brand d-block mx-auto" src="{% static 'img/logos/ibm.svg' %}" alt="..." aria-label="IBM Logo" /></a>
-                </div>
-            </div>
-        </div>
-    </div> -->
     <!-- Contact-->
     <section class="page-section" id="contact">
         <div class="container">
@@ -408,7 +396,6 @@
     <!-- Footer-->
     {% include "footer.html" %}
     <!-- Portfolio Modals-->
-    <!-- Portfolio item 1 modal popup-->
     {% for projet in projets %}
     <div class="portfolio-modal modal fade" id="{{ projet.slug }}-modal" tabindex="-1" role="dialog" aria-hidden="true">
         <div class="modal-dialog">
@@ -421,7 +408,7 @@
                                 <!-- Project details-->
                                 <h2 class="text-uppercase">{{ projet.name }}</h2>
                                 <p class="item-intro text-muted">{{ projet.short_desc }}</p>
-                                <img class="img-fluid d-block mx-auto" style="max-height: 600px;" src="{{ MEDIA_URL }}{{ projet.poster.url }}" alt="{{ projet.name }} poster" />
+                                <img class="img-fluid d-block mx-auto" style="max-height: 600px;" src="{{ MEDIA_URL }}{{ projet.poster.url }}" alt="Affiche du projet {{ projet.name }}" />
                                 <p>{{ projet.desc }}</p>
                                 <ul class="list-inline">
                                     <li>

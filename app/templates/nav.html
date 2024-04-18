@@ -4,7 +4,7 @@
 <nav class="navbar navbar-expand-xl navbar-dark" id="mainNav" style="background-color: #212529;">
 	<div class="container-fluid">
 		<a class="navbar-brand" href="{% url 'home' %}">
-			<img src="{% static 'img/logo.webp' %}" alt="Magellans"> Magellans
+			<img src="{% static 'img/logo.webp' %}" alt="Logo de Magellans"> Magellans
 		</a>
 		<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarResponsive" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
 			<span class="navbar-toggler-icon"></span>
@@ -14,13 +14,18 @@
 				{% if request.user.is_superuser %}
 				<li class="nav-item">
 					<a class="nav-link" href="{% url 'admin:index' %}">
-						Administration site
+						Django Admin
 					</a>
 				</li>
 				{% endif %} 
 				<li class="nav-item">
-					<a class="nav-link" href="{% url 'warehouse' %}">
+					<a class="nav-link" href="{% url 'warehouse' %}" title="Accéder au magasin">
 						Magasin
+					</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link" href="{% url 'projects' %}" title="Ce que nous avons fait chez Magellans">
+						Projets
 					</a>
 				</li>
 				{% if request.user.is_authenticated %}
@@ -30,7 +35,7 @@
 					</a>
 					<ul class="dropdown-menu">
 						<li>
-							<a class="dropdown-item" href="{% url 'members' %}">Accueil</a>
+							<a class="dropdown-item" href="{% url 'members' %}">Tableau de bord</a>
 						</li>
 						<li>
 							<a class="dropdown-item" href="{% url 'my-profile' %}">Mon profil</a>
@@ -46,11 +51,11 @@
 				{% if request.user.is_staff %}
 				<li class="nav-item dropdown">
 					<a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-						Outils CA
+						Espace administrateurs
 					</a>
 					<ul class="dropdown-menu">
 						<li>
-							<a class="dropdown-item" href="{% url 'dashboard-home' %}">Dashboard</a>
+							<a class="dropdown-item" href="{% url 'dashboard-home' %}">Tableau de bord de Magellans</a>
 						</li>
 						<li>
 							<a class="dropdown-item" href="{% url 'dashboard-orders' %}">Commandes</a>
@@ -74,12 +79,12 @@
 				</li>
 				{% else %}
 				<li class="nav-item">
-					<a class="nav-link" href="{% url 'login' %}?next={{ request.path }}">
+					<a class="nav-link" href="{% url 'login' %}?next={{ request.path }}" title="Se connecter au site">
 						Se connecter
 					</a>
 				</li>
 				<li class="nav-item">
-					<a class="nav-link" href="{% url 'register' %}">
+					<a class="nav-link" href="{% url 'register' %}" title="S'inscrire sur le site">
 						S'inscrire
 					</a>
 				</li>

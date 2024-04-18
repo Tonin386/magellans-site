@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block title %}
-Projets
+{% include "title.html" with title=title|default:"Projets" %}
 {% endblock %}
 
 {% block head_description %}
@@ -32,7 +32,7 @@ Liste de tous les projets dans lesquels l'association Magellans a eu un rôle a 
                         <div class="portfolio-hover">
                             <div class="portfolio-hover-content"><i class="fas fa-plus fa-3x"></i></div>
                         </div>
-                        <img class="img-fluid" style="aspect-ratio: 2/3;" src="{{ MEDIA_URL }}{{ projet.poster.url }}" alt="{{ projet.name }} poster" /> <!-- Image projet -->
+                        <img class="img-fluid" style="aspect-ratio: 2/3;" src="{{ MEDIA_URL }}{{ projet.poster.url }}" alt="Affiche du projet '{{ projet.name }}'" /> <!-- Image projet -->
                     </a> 
                     <div class="portfolio-caption">
                         <div class="portfolio-caption-heading">{{ projet.name }}</div>  <!-- Titre -->
@@ -58,7 +58,7 @@ Liste de tous les projets dans lesquels l'association Magellans a eu un rôle a 
                             <!-- Project details-->
                             <h2 class="text-uppercase">{{ projet.name }}</h2>
                             <p class="item-intro text-muted">{{ projet.short_desc }}</p>
-                            <img class="img-fluid d-block mx-auto" style="max-height: 600px;" src="{{ MEDIA_URL }}{{ projet.poster.url }}" alt="{{ projet.name }} poster" />
+                            <img class="img-fluid d-block mx-auto" style="max-height: 600px;" src="{{ MEDIA_URL }}{{ projet.poster.url }}" alt="Affiche du projet '{{ projet.name }}'" />
                             <p>{{ projet.desc }}</p>
                             <ul class="list-inline">
                                 <li>

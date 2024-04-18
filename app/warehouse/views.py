@@ -2,13 +2,17 @@ from django.views.decorators.http import require_POST
 from django.template.loader import render_to_string
 from django.views.generic.edit import UpdateView
 from django.db.models.base import Model as Model
+from django.core.files.base import ContentFile
 from django.utils.safestring import mark_safe
 from django.db.models.query import QuerySet
 from django.views.generic import DetailView
 from datetime import datetime, timedelta
 from django.core.mail import send_mail
+from django.forms import BaseModelForm
 from django.urls import reverse_lazy
+from django.http import HttpResponse
 from django.shortcuts import render
+from api.utils import resize_image
 from django.conf import settings
 from .models import *
 from .forms import *
@@ -141,6 +145,18 @@ class EditItemDetailView(UpdateView):
         context['og-description'] = f"Page de gestion de l'objet {self.object.name}."
 
         return context
+    
+    def form_valid(self, form: BaseModelForm) -> HttpResponse:
+        image_file = form.cleaned_data['image']
+        content = image_file.read()
+        image = ContentFile(content, name=image_file.name)
+        image = resize_image(image)
+        if image:
+            new_item = self.object
+            path = f"{new_item.pk}.png"
+            new_item.image.save(path, image)
+
+        return super().form_valid(form)
     
 class EditTagDetailView(UpdateView):
     model = Tag

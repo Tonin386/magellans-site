@@ -209,8 +209,10 @@ def api_dashboard(request):
                 image_data = poster.split(",")
                 extension = image_data[0].replace("data:image/", "").replace(";base64", "")
                 poster = ContentFile(base64.b64decode(image_data[1]))
-                path = f"{project.slug}.{extension}"
-                project.poster.save(path, poster)
+                poster = resize_image(poster, 1000)
+                if poster:
+                    path = f"{project.slug}.{extension}"
+                    project.poster.save(path, poster)
             except Exception as e:
                 project.delete()
                 createNotification("Ajout projet", "add-project", app_id, 3, f"Erreur lors de l'import de l'image. Veuillez réessayer.<hr>{str(e)}", user, str(e))
@@ -278,8 +280,10 @@ def api_dashboard(request):
                 image_data = poster.split(",")
                 extension = image_data[0].replace("data:image/", "").replace(";base64", "")
                 poster = ContentFile(base64.b64decode(image_data[1]))
-                path = f"{project.slug}.{extension}"
-                project.poster.save(path, poster)
+                poster = resize_image(poster, 1000)
+                if poster:
+                    path = f"{project.slug}.{extension}"
+                    project.poster.save(path, poster)
             except Exception as e:
                 createNotification("Edition projet", "edit-project", app_id, 2, f"Erreur lors de l'import de l'image. Veuillez réessayer. Le reste du projet a bien été modifié. Actualisation en cours...<hr>{str(e)}", user, str(e))
                 return JsonResponse({"status": "error", "error": str(e), "message": "There was a problem when decoding image"})
@@ -473,8 +477,10 @@ def api_warehouse(request):
                 image_data = image.split(",")
                 extension = image_data[0].replace("data:image/", "").replace(";base64", "")
                 image = ContentFile(base64.b64decode(image_data[1]))
-                path = f"{new_item.pk}.{extension}"
-                new_item.image.save(path, image)
+                image = resize_image(image)
+                if image:
+                    path = f"{new_item.pk}.{extension}"
+                    new_item.image.save(path, image)
             except Exception as e:
                 new_item.delete()
                 createNotification("Ajout objet", "add-item", app_id, 3, f"Erreur lors de l'import de l'image. Veuillez réessayer.<hr>{str(e)}", user, str(e))
@@ -576,7 +582,17 @@ def api_warehouse(request):
             pass
         
         if not image == "undefined":
-            pass
+            try:
+                image_data = image.split(",")
+                extension = image_data[0].replace("data:image/", "").replace(";base64", "")
+                image = ContentFile(base64.b64decode(image_data[1]))
+                image = resize_image(image)
+                if image:
+                    path = f"{new_item.pk}.{extension}"
+                    item.image.save(path, image)
+            except Exception as e:
+                createNotification("Edition objet", "edit-item", app_id, 3, f"Erreur lors de l'import de l'image. Veuillez réessayer.<hr>{str(e)}", user, str(e))
+                return JsonResponse({"status": "error", "error": str(e), "message": "There was a problem when decoding image"})
         
         if not max_stock == -1:
             update_dict['max_stock'] = max_stock

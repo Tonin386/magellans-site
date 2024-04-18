@@ -37,7 +37,7 @@ SECRET_KEY = 'django-insecure-7cxr-qg^cmmmpun1x-q9136c3-w8a$@#$%yagj&s5sjob%t0^+
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv("DEBUG") == str(1)
 ALLOWED_HOSTS = ["django"]
-CSRF_TRUSTED_ORIGINS = ['http://localhost', 'http://192.168.137.128']
+CSRF_TRUSTED_ORIGINS = ['http://localhost', 'http://192.168.137.128', 'http://dev.magellans.fr']
 
 if not DEBUG:
     SECRET_KEY = os.getenv("SECRET_KEY")
