@@ -7,7 +7,7 @@ from .forms import ContactForm
 from dashboard.models import *
 
 def home(request):
-    title = "Magellans"
+    title = "Associations Magellans - Site officiel"
     og_description = "Site officiel de l'association d'audiovisuel Magellans"
     if request.method == "POST":
         form = ContactForm(request.POST)
