@@ -115,7 +115,7 @@ def api_bank(request):
                 createNotification("Edition note de frais", "edit-invoice_status", app_id, 0, "La note de frais a bien été modifiée.", user)
                 return JsonResponse({"status": "success", "message": "Invoice updated successfully"})
             except Exception as e:
-                createNotification("Edition note de frais", "edit-invoice_status", app_id, 3, f"Une erreur est survenue.<hr>Erreur : {str(e)}", user, str(e)).show()
+                createNotification("Edition note de frais", "edit-invoice_status", app_id, 3, f"Une erreur est survenue.<hr>Erreur : {str(e)}", user, str(e))
                 return JsonResponse({"status": "error", "message": f"An error occured\n{str(e)}"})
 
     if action == "email-invoice_status":
@@ -136,7 +136,7 @@ def api_bank(request):
                 createNotification("Email note de frais", "email-invoice_status", app_id, 0, "L'email a bien été envoyé.", user)
                 return JsonResponse({"status": "success", "message": "Invoice updated successfully"})
             except Exception as e:
-                createNotification("Email note de frais", "email-invoice_status", app_id, 3, f"Une erreur est survenue.<hr>Erreur : {str(e)}", user, str(e)).show()
+                createNotification("Email note de frais", "email-invoice_status", app_id, 3, f"Une erreur est survenue.<hr>Erreur : {str(e)}", user, str(e))
                 return JsonResponse({"status": "error", "message": f"An error occured<\n{str(e)}"})
 
                     
@@ -219,7 +219,7 @@ def api_dashboard(request):
                 return JsonResponse({"status": "error", "error": str(e), "message": "There was a problem when decoding image"})
         
         project.save()
-        createNotification("Ajout projet", "add-project", app_id, 0, "Le projet a bien été créé.")
+        createNotification("Ajout projet", "add-project", app_id, 0, "Le projet a bien été créé.", user)
         return JsonResponse({"status": "success", "message": "Project successfully created."})
 
     if action == "edit-project":
@@ -553,14 +553,14 @@ def api_warehouse(request):
         pk = int(body_post.get("pk", "-1"))
         
         if pk == -1:
-            createNotification("Edition objet", "edit-item", app_id, 3, "Requête invalide.", user).show()
+            createNotification("Edition objet", "edit-item", app_id, 3, "Requête invalide.", user)
             return JsonResponse({"status": "error", "message": "The PK was set to -1, bad request."})
         
         item = None
         try:
             item = Item.objects.get(pk=pk)
         except Item.DoesNotExist:
-            createNotification("Edition objet", "edit-item", app_id, 3, "L'objet demandé n'existe pas.", user, f"Item with pk {pk} not found.").show()
+            createNotification("Edition objet", "edit-item", app_id, 3, "L'objet demandé n'existe pas.", user, f"Item with pk {pk} not found.")
             return JsonResponse({"status": "error", "message": f"Item with pk {pk} not found."})
 
         name = body_post.get("name", "undefined")
@@ -616,10 +616,10 @@ def api_warehouse(request):
             for key in update_dict:
                 setattr(item, key, update_dict[key])
             item.save()
-            createNotification("Edition objet", "edit-item", app_id, 0, "L'objet a été modifié.", user, json.dumps(update_dict)).show()
+            createNotification("Edition objet", "edit-item", app_id, 0, "L'objet a été modifié.", user, json.dumps(update_dict))
             return JsonResponse({"status": "success", "message": "Item was edited with sucess"})
         except Exception as e:
-            createNotification("Edition objet", "edit-item", app_id, 3, f"Une erreur est survenue.<hr>Erreur : {str(e)}", user, str(e)).show()
+            createNotification("Edition objet", "edit-item", app_id, 3, f"Une erreur est survenue.<hr>Erreur : {str(e)}", user, str(e))
             return JsonResponse({"status": "error", "message": f"An error occured<hr>{str(e)}"})
     
     if action == "edit-order_status":
@@ -643,11 +643,11 @@ def api_warehouse(request):
                 createNotification("Edition commande", "edit-order_status", app_id, 0, "La commande a bien été modifiée", user)
                 return JsonResponse({"status": "success", "message": "Order updated successfully"})
             except Exception as e:
-                createNotification("Edition commande", "edit-order_status", app_id, 3, f"Une erreur est survenue.<hr>Erreur : {str(e)}", user, str(e)).show()
+                createNotification("Edition commande", "edit-order_status", app_id, 3, f"Une erreur est survenue.<hr>Erreur : {str(e)}", user, str(e))
                 return JsonResponse({"status": "error", "message": f"An error occured<hr>{str(e)}"})
         
     if action == "email-order_status":
-        if not 'write' in permissions['bank'] + permissions['fullpower']:
+        if not 'write' in permissions['warehouse'] + permissions['fullpower']:
             createNotification("Email commande", "email-order_status", app_id, 3, "Vous n'avez pas les permissions suffisantes pour effectuer cette action.", user)
             return JsonResponse({"status": "error", "message": "Insufficient permissions"})
         
@@ -664,7 +664,7 @@ def api_warehouse(request):
                 createNotification("Email commande", "email-order_status", app_id, 0, "L'email a bien été envoyé.", user)
                 return JsonResponse({"status": "success", "message": "Invoice updated successfully"})
             except Exception as e:
-                createNotification("Email commande", "email-order_status", app_id, 3, f"Une erreur est survenue.<hr>Erreur : {str(e)}", user, str(e)).show()
+                createNotification("Email commande", "email-order_status", app_id, 3, f"Une erreur est survenue.<hr>Erreur : {str(e)}", user, str(e))
                 return JsonResponse({"status": "error", "message": f"An error occured<hr>{str(e)}"})
                     
     createNotification("Erreur inconnue", "unknown error", app_id, 3, "Une erreur inconnue est survenue.", user)
