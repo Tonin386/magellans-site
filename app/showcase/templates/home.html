@@ -7,33 +7,33 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="title"content="Magellans">
     <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-
+    
     <title>Association Magellans - Site Officiel</title>
     <meta name="title" content="Associations Magellans - Site officiel">
     <meta property="og:title" content="Associations Magellans - Site officiel">
-
+    
     <meta name="description" content="{% block head-description %}{% endblock %}Magellans est une association d'audiovisuel. En adhérant, vous pourrez accéder à son magasin, participer à des projets ou des rencontres autour d'un verre.">
     <meta property="og:description" content="{{ og_description }}">
-
+    
     <meta name="keywords" content="association,magellans,projet,réseau,film,magasin,matériel,location,social,network,cinema,films,france,fr,paris,région parisienne">
     <meta property="og:keywords" content="association,magellans,projet,réseau,film,magasin,matériel,location,social,network,cinema,films,france,fr,paris,région parisienne">
-
+    
     <meta name="author" content="https://github.com/Tonin386">
     <meta property="og:author" content="https://github.com/Tonin386">
-
+    
     <meta name="type" content="website">
     <meta property="og:type" content="website">
-
+    
     <meta name="site_name" content="Magellans"> 
     <meta property="og:site_name" content="Magellans">
-
+    
     <meta name="image" content="{% static 'img/logo.png' %}">
     <meta property="og:image" content="{% static 'img/logo.png' %}"> 
     <meta property="og:image:secure_url" content="https://magellans.fr{% static 'img/logo.png' %}">
-
+    
     <meta name="url" content="https://magellans.fr{{request.path}}">
     <meta property="og:url" content="https://magellans.fr{{ request.path }}">
-
+    
     <meta name="twitter:image" content="https://magellans.fr{% static 'img/logo.png' %}">
     
     <!-- Favicon-->
@@ -55,11 +55,6 @@
     </style>
 </head>
 <body id="page-top">
-    <p class="d-none" id="google-desc">
-        Magellans, c'est une association audiovisuelle cbasée en région parisienne composée de membres aux profils différents : des étudiants et des professionnels du secteur de l'audiovisuel, des comédiens… ou bien simplement des passionnés du cinéma et de l'audiovisuel !
-        Tous désireux d'apprendre de nouvelles choses, de rencontrer de nouvelles personnes… nous avons tous un but commun : réaliser sans cesse de nouveaux projets : des courts-métrages, des prestations tels que des captations d'évènements, des vidéos promotionnelles, des clips, et autres !
-        Ce qui fait notre force, c'est la diversité des profils de nos membres, leur volonté de se rapprocher au mieux d'un niveau professionnel et de relever constamment de nouveaux défis. Alors si l'aventure te tente, rejoins-nous !
-    </p>
     <!-- Navigation-->
     <nav class="navbar navbar-expand-xl navbar-dark fixed-top" id="mainNav">
         <div class="container">
@@ -72,8 +67,9 @@
             <div class="collapse navbar-collapse" id="navbarResponsive">
                 <ul class="navbar-nav text-uppercase ms-auto py-4 py-lg-0 text-center">
                     <li class="nav-item"><a class="nav-link" href="#services">Services</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#identity">A propos</a></li>
                     <li class="nav-item"><a class="nav-link" href="#portfolio">Projets</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#about">A propos</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#about">Histoire</a></li>
                     <li class="nav-item"><a class="nav-link" href="#team">Equipe</a></li>
                     <li class="nav-item"><a class="nav-link" href="#contact">Contact</a></li>
                     <li class="nav-item"><a class="nav-link" href="{% url 'members' %}">Espace membres <i class="fa-solid fa-arrow-up-right-from-square"></i> </a></li>
@@ -84,7 +80,7 @@
     <!-- Masthead-->
     <header class="masthead">
         
-        <video id="video-background" preload="auto" muted autoplay="autoplay" loop="loop" muted defaultMuted playsinline oncontextmenu="return false;">
+        <video id="video-background" preload="auto" autoplay="autoplay" loop="loop" muted defaultMuted playsinline oncontextmenu="return false;">
             <source src="{% static 'media/video/presentation.mp4' %}" type="video/mp4">
         </video>
         <div class="container">
@@ -94,7 +90,7 @@
         </div>
     </header>
     <!-- Services-->
-    <section class="page-section" id="services">
+    <section class="page-section bg-light" id="services">
         <div class="container">
             <div class="text-center">
                 <h2 class="section-heading text-uppercase">Services</h2>
@@ -136,6 +132,23 @@
             </div>
         </div>
     </section>
+    <section class="page-section bg-white" id="identity">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12 mx-auto text-center">
+                    <div>
+                        <h2 class="section-heading text-uppercase">A propos</h2>
+                        <h3 class="section-subheading text-muted">Magellans, c'est quoi ?</h3>
+                    </div>
+                    <p class="fs-5">
+                        Magellans, c'est une association audiovisuelle basée en région parisienne composée de membres aux profils différents : des étudiants et des professionnels du secteur de l'audiovisuel, des comédiens… ou bien simplement des passionnés du cinéma et de l'audiovisuel.<br><br>
+                        Tous désireux d'apprendre de nouvelles choses, de rencontrer de nouvelles personnes… Nous avons tous un but commun : réaliser sans cesse de nouveaux projets. Des courts-métrages, des prestations tels que des captations d'évènements, des vidéos promotionnelles, des clips, et bien d'autres.<br><br>
+                        Ce qui fait notre force, c'est la diversité des profils de nos membres, leur volonté de se rapprocher au mieux d'un niveau professionnel et de relever constamment de nouveaux défis. Alors si l'aventure te tente, rejoins-nous !
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
     <!-- Portfolio Grid-->
     <section class="page-section bg-light" id="portfolio">
         <div class="container">
@@ -173,7 +186,7 @@
     <section class="page-section" id="about">
         <div class="container">
             <div class="text-center">
-                <h2 class="section-heading text-uppercase">A propos</h2>
+                <h2 class="section-heading text-uppercase">Historique</h2>
                 <h3 class="section-subheading text-light-50">L'histoire de Magellans.</h3>
             </div>
             <ul class="timeline">
@@ -184,7 +197,7 @@
                             <h4>Février 2020</h4>
                             <h4 class="subheading">Création de Magellans</h4>
                         </div>
-                        <div class="timeline-body"><p class="text-light-50">Ca y est, Magellans vient de naître grâce à Tristan PEUREY, Axelle SERVAT, Maël AUNAVE, Solène OLIVIER, Aïmen CHAÏBI et Julien PARADIS</p></div>
+                        <div class="timeline-body"><p class="text-light-50">Ca y est, Magellans vient de naître grâce à ses membres  fondateurs.</p></div>
                     </div>
                 </li>
                 <li class="timeline-inverted">
@@ -218,7 +231,7 @@
                     </div>
                 </li>
                 <li>
-                    <div class="timeline-image"><img class="rounded-circle img-fluid" src="{% static 'img/about/5.jpg' %}" alt="Pictograme d'une boutique" /></div>
+                    <div class="timeline-image"><img class="rounded-circle img-fluid" src="{% static 'img/about/5.jpg' %}" alt="Pictograme d'une boutique"/></div>
                     <div class="timeline-panel">
                         <div class="timeline-heading">
                             <h4>Début 2021</h4>
