@@ -11,54 +11,57 @@ S'inscrire sur le site de l'association Magellans.
 
 {% block content %}
 <div class="container">
-    <div class="row m-auto">
-        <h1 class="display-5 mt-3 text-magellans-dark">S'inscrire</h1>
-        <div class="col-lg-12 m-auto">
-            <div class="alert alert-warning alert-dismissible fade show" role="alert">
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                Attention ! Vous inscrire sur le site ne fait pas de vous (pour le moment) un membre de l'association.<br>
-                Si vous voulez devenir membre, merci de vous inscrire sur <a href="https://www.helloasso.com/associations/magellans" target="_blank" class="link text-info">HelloAsso</a>.
+    <div class="row">
+        <div class="col-xl-12">
+            <div class="row m-auto">
+                <h1 class="display-5 mt-3 text-magellans-dark">S'inscrire sur le site</h1>
+        
+                <form method="post" class="needs-validation" novalidate>
+                    {% csrf_token %}
+                    <div class="input-group input-group-md col-lg-12 mt-3">
+                        <input class="form-control" type="text" name="email" placeholder="Courriel" aria-describedby="email-span" required>
+                    </div>
+                    <div class="input-group input-group-md col-lg-12 mt-3">
+                        <input class="form-control" type="password" name="password1" placeholder="Mot de passe" aria-describedby="password1-span" required>
+                        <input class="form-control" type="password" name="password2" placeholder="Confirmez votre  mot de passe" required>
+                    </div>
+                    <div class="input-group input-group-md col-lg-12 mt-3">
+                        <input class="form-control" type="text" name="first_name" placeholder="Prénom" aria-describedby="name-span" required>
+                        <input class="form-control" type="text" name="last_name" placeholder="Nom de famille" required>
+                    </div>
+                    <div class="input-group input-group-md col-lg-12 mt-3">
+                        <input class="form-control" type="text" name="phone" placeholder="Téléphone" aria-describedby="phone-span">
+                    </div>
+                    <div class="input-group input-group-md col-lg-12 mt-3">
+                        <select class="form-control" name="gender" aria-describedby="gender-span">
+                            <option value="">Sexe...</option>
+                            <option value="F">Femme</option>
+                            <option value="M">Homme</option>
+                            <option value="B">Non-binaire</option>
+                            <option value="O">Autre</option>
+                        </select>
+                    </div>
+                    <div class="col-lg-6 m-auto mt-3">
+                        <div class="form-check">
+                            <label for="tos">En m'inscrivant, j'accepte les CGU et la Politique de confidentialité de Magellans.</label>
+                            <input class="form-check-input" type="checkbox" name="tos" id="tos" required>
+                            <div class="invalid-feedback">
+                                Vous devez avoir accepté les CGU et la Politique de confidentialité de Magellans pour vous inscrire.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="input-group input-group-md mt-3">
+                        <button class="btn btn-primary m-auto" type="submit">S'inscrire</button>
+                    </div>
+                </form>
             </div>
         </div>
-
-        <form method="post" class="needs-validation" novalidate>
-            {% csrf_token %}
-            <div class="input-group input-group-md col-lg-12 mt-3">
-                <input class="form-control" type="text" name="email" placeholder="Courriel" aria-describedby="email-span" required>
+        <div class="col-xl-12 mt-3">
+            <div class="row m-auto">
+                <h1 class="display-5 mt-3 text-magellans-dark mb-4">Devenir membre</h1>
+                <iframe id="haWidget" allowtransparency="true" scrolling="auto" src="https://www.helloasso.com/associations/magellans/adhesions/adhesion-magellans-2023-2024/widget" style="width: 100%; height: 100%; min-height: 750px; border: none;"></iframe>
             </div>
-            <div class="input-group input-group-md col-lg-12 mt-3">
-                <input class="form-control" type="password" name="password1" placeholder="Mot de passe" aria-describedby="password1-span" required>
-                <input class="form-control" type="password" name="password2" placeholder="Confirmez votre  mot de passe" required>
-            </div>
-            <div class="input-group input-group-md col-lg-12 mt-3">
-                <input class="form-control" type="text" name="first_name" placeholder="Prénom" aria-describedby="name-span" required>
-                <input class="form-control" type="text" name="last_name" placeholder="Nom de famille" required>
-            </div>
-            <div class="input-group input-group-md col-lg-12 mt-3">
-                <input class="form-control" type="text" name="phone" placeholder="Téléphone" aria-describedby="phone-span">
-            </div>
-            <div class="input-group input-group-md col-lg-12 mt-3">
-                <select class="form-control" name="gender" aria-describedby="gender-span">
-                    <option value="">Sexe...</option>
-                    <option value="F">Femme</option>
-                    <option value="M">Homme</option>
-                    <option value="B">Non-binaire</option>
-                    <option value="O">Autre</option>
-                </select>
-            </div>
-            <div class="col-lg-6 m-auto mt-3">
-                <div class="form-check">
-                    <label for="tos">En m'inscrivant, j'accepte les CGU et la Politique de confidentialité de Magellans.</label>
-                    <input class="form-check-input" type="checkbox" name="tos" id="tos" required>
-                    <div class="invalid-feedback">
-                        Vous devez avoir accepté les CGU et la Politique de confidentialité de Magellans pour vous inscrire.
-                    </div>
-                </div>
-            </div>
-            <div class="input-group input-group-md mt-3">
-                <button class="btn btn-primary m-auto" type="submit">S'inscrire</button>
-            </div>
-        </form>
+        </div>
     </div>
 </div>
 <hr>
@@ -143,6 +146,7 @@ S'inscrire sur le site de l'association Magellans.
                 }, false)
             })
         })();
+        document.querySelector("iframe").addEventListener("load", resizeIFrame);
     });
 </script>
 

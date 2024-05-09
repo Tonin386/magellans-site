@@ -69,6 +69,7 @@
                     <li class="nav-item"><a class="nav-link" href="#services">Services</a></li>
                     <li class="nav-item"><a class="nav-link" href="#identity">A propos</a></li>
                     <li class="nav-item"><a class="nav-link" href="#portfolio">Projets</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#join">Nous rejoindre</a></li>
                     <li class="nav-item"><a class="nav-link" href="#about">Histoire</a></li>
                     <li class="nav-item"><a class="nav-link" href="#team">Equipe</a></li>
                     <li class="nav-item"><a class="nav-link" href="#contact">Contact</a></li>
@@ -150,11 +151,11 @@
         </div>
     </section>
     <!-- Portfolio Grid-->
-    <section class="page-section bg-light" id="portfolio">
+    <section class="page-section" id="portfolio">
         <div class="container">
             <div class="text-center">
-                <h2 class="section-heading text-uppercase">Projets</h2>
-                <h3 class="section-subheading text-muted">Ce que nous avons fait chez Magellans.</h3>
+                <h2 class="section-heading text-uppercase text-white">Projets</h2>
+                <h3 class="section-subheading text-white">Ce que nous avons fait chez Magellans.</h3>
             </div>
             <div class="row">
                 <!-- ------------------------------------------------------------------------------------------- -->
@@ -178,7 +179,18 @@
                 <!-- ------------------------------------------------------------------------------------------- -->
             </div>
             <div class="text-center">
-                <a class="link link-primary fs-4 text-center text-decoration-none" href="{% url 'projects' %}"> Voir tous nos projets </a>
+                <a class="btn btn-primary btn-xl text-uppercase" href="{% url 'projects' %}">Voir tous nos projets</a>
+            </div>
+        </div>
+    </section>
+
+    <section class="page-section bg-white" id="join">
+        <div class="container">
+            <div class="text-center">
+                <h2 class="section-heading">Nous rejoindre</h2>
+                <h3 class="section-subheading">Devenez un membre de Magellans</h3>
+                <a class="btn btn-primary btn-xl text-uppercase" href="{% url 'register' %}">Je rejoins Magellans</a>
+                <!-- <iframe id="haWidget" allowtransparency="true" scrolling="auto" src="https://www.helloasso.com/associations/magellans/adhesions/adhesion-magellans-2023-2024/widget" style="width: 100%; height: 750px; border: none;"></iframe> -->
             </div>
         </div>
     </section>
