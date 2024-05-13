@@ -7,7 +7,7 @@ Téléphone : {{ user.phone }}
 Vous pouvez afficher toutes les informations de la commande et de son suivi ici :
 https://magellans.fr{% url 'order-detail' pk=new_order.pk %}
 
-Dates de réservation : {{ new_order.date_start|date:"l d F Y H:i"|capfirst }} à {{ new_order.date_end|date:"l d F Y H:i"|capfirst }}
+Dates de réservation : {{ formatted_startDate|date:"l d F Y H:i"|capfirst }} à {{ formatted_endDate|date:"l d F Y H:i"|capfirst }}
 
 Message lié à la demande :
 {{ message }}
