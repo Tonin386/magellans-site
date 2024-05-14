@@ -16,9 +16,12 @@ async function editOrderStatus(pk, value, callback = function(){}) {
 
 async function sendOrderStatusEmail(pk, callback = function(){}) {
     let action = "email-order_status";
+    let message = document.querySelector("#custom_message");
+
     let params = {
         token: api_token,
         action: action,
+        message: message.value,
         pk: pk,
     };
     

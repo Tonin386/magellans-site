@@ -36,7 +36,9 @@ $.extend($.fn.dataTable.defaults, {
     },
     responsive: true,
     initComplete: function(settings, json) {
-        this.responsive.recalc();
+        if(this.responsive){
+            this.responsive.recalc();
+        }
     },
     pagingType: "numbers"
 })

@@ -57,6 +57,7 @@ class Order(models.Model):
     items = models.ManyToManyField(Item, verbose_name="Objets réservés")
     quantities = models.TextField(verbose_name="Quantité demandée pour chaque objet")
     message = models.TextField(verbose_name="Message personnalisé du demandeur", null=True, blank=True)
+    answer_message = models.TextField(verbose_name="Messages de réponse", default="", blank=True)
     user = models.ForeignKey(Member, verbose_name="Demandeur", blank=True, null=True, on_delete=models.SET_NULL)
     pickup_first_name = models.TextField("Prénom de la personne chargée de récupérer la commande", max_length=255, blank=True, default="Non-renseigné")
     pickup_last_name = models.TextField("Nom de la personne chargée de récupérer la commande", max_length=255, blank=True, default="Non-renseigné")

@@ -4,5 +4,8 @@ Vous recevez cet email car le statut de votre commande #{{ order.pk }} vient d'�
 Nouveau statut : {{ order.get_status_display }}
 Pour plus d'informations, allez consulter votre commande en ligne : https://magellans.fr{% url 'order-detail' pk=order.pk %}
 
+Nous vous prions de bien vouloir prendre connaissance du message suivant :
+{{ custom_message }}
+
 En vous souhaitant une excellente journée,
 L'équipe Magellans.

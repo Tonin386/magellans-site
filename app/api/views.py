@@ -1,5 +1,6 @@
 from django.core.files.base import ContentFile
 from django.core.mail import send_mail
+from django.utils.html import escape
 from django.http import JsonResponse
 from dashboard.models import *
 from warehouse.models import *
@@ -94,7 +95,7 @@ def api_bank(request):
                 return JsonResponse({"status": "error", "error": str(e), "message": "There was a problem when decoding image"})
         
         expense.save()
-        createNotification("Ajout dépense", "add-expense", app_id, 0, "La dépense a bien été créée.")
+        createNotification("Ajout dépense", "add-expense", app_id, 0, "La dépense a bien été créée.", user)
         return JsonResponse({"status": "success", "message": "Expense successfully created.", "id": expense.pk})
     
     if action == "edit-invoice_status":
@@ -289,7 +290,7 @@ def api_dashboard(request):
                 return JsonResponse({"status": "error", "error": str(e), "message": "There was a problem when decoding image"})
         
         project.save()
-        createNotification("Edition projet", "edit-project", app_id, 0, "Le projet a bien été modifié. Actualisation en cours...")
+        createNotification("Edition projet", "edit-project", app_id, 0, "Le projet a bien été modifié. Actualisation en cours...", user)
         return JsonResponse({"status": "success", "message": "Project successfully edited."})
 
     return JsonResponse({"status": "error", "message": "Uncaught error."})
@@ -652,14 +653,19 @@ def api_warehouse(request):
             return JsonResponse({"status": "error", "message": "Insufficient permissions"})
         
         pk = body_post.get("pk", "undefined")
+        custom_message = body_post.get("message", "")
         
         if not pk == "undefined":
-            try:    
+            try:
                 order = Order.objects.get(pk=int(pk))
+                if custom_message != "":
+                    custom_message = escape(custom_message).replace("\n", "<br>")
+                    order.answer_message = "Réponse reçue le %s <br><br>" % datetime.now().strftime("%d/%m/%Y à %H:%M") + custom_message + '<hr>' + order.answer_message
+                    order.save()
 
                 subject = "Modification du statut de votre commande"
-                message = mark_safe(render_to_string('email_order_status_changed.html', {'order': order}))
-                send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [order.user.email])
+                email_message = mark_safe(render_to_string('email_order_status_changed.html', {'order': order, 'custom_message': custom_message}))
+                send_mail(subject, email_message, settings.DEFAULT_FROM_EMAIL, [order.user.email])
 
                 createNotification("Email commande", "email-order_status", app_id, 0, "L'email a bien été envoyé.", user)
                 return JsonResponse({"status": "success", "message": "Invoice updated successfully"})
