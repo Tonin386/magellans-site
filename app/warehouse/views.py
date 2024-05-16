@@ -1,3 +1,4 @@
+from django.db.models.fields.files import ImageFieldFile
 from django.views.decorators.http import require_POST
 from django.template.loader import render_to_string
 from django.views.generic.edit import UpdateView
@@ -150,7 +151,9 @@ class EditItemDetailView(UpdateView):
         return context
     
     def form_valid(self, form: BaseModelForm) -> HttpResponse:
-        image_file = form.cleaned_data['image']
+        image_file =  form.cleaned_data['image']
+        if type(image_file) == ImageFieldFile:
+            return super().form_valid(form)
         content = image_file.read()
         image = ContentFile(content, name=image_file.name)
         image = resize_image(image)
