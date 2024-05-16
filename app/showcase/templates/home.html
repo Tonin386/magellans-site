@@ -57,7 +57,7 @@
 <body id="page-top">
     <!-- Navigation-->
     <nav class="navbar navbar-expand-xl navbar-dark fixed-top" id="mainNav">
-        <div class="container">
+        <div class="container-fluid w-75">
             <a class="navbar-brand" href="#page-top">
                 <img src="{% static 'img/logo.webp' %}" alt="Logo de l'association Magellans" /> Magellans
             </a>
@@ -68,7 +68,7 @@
                 <ul class="navbar-nav text-uppercase ms-auto py-4 py-lg-0 text-center">
                     <li class="nav-item"><a class="nav-link" href="#services">Services</a></li>
                     <li class="nav-item"><a class="nav-link" href="#identity">A propos</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#portfolio">Projets</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#portfolio">Catalogue</a></li>
                     <li class="nav-item"><a class="nav-link" href="#join">Nous rejoindre</a></li>
                     <li class="nav-item"><a class="nav-link" href="#about">Histoire</a></li>
                     <li class="nav-item"><a class="nav-link" href="#team">Equipe</a></li>
@@ -154,8 +154,8 @@
     <section class="page-section" id="portfolio">
         <div class="container">
             <div class="text-center">
-                <h2 class="section-heading text-uppercase text-white">Projets</h2>
-                <h3 class="section-subheading text-white">Ce que nous avons fait chez Magellans.</h3>
+                <h2 class="section-heading text-uppercase text-white">Catalogue</h2>
+                <h3 class="section-subheading text-white">Magellans produit des films de courte durée : fiction, animation, clip, documentaire...</h3>
             </div>
             <div class="row">
                 <!-- ------------------------------------------------------------------------------------------- -->
@@ -190,7 +190,6 @@
                 <h2 class="section-heading">Nous rejoindre</h2>
                 <h3 class="section-subheading">Devenez un membre de Magellans</h3>
                 <a class="btn btn-primary btn-xl text-uppercase" href="{% url 'register' %}">Je rejoins Magellans</a>
-                <!-- <iframe id="haWidget" allowtransparency="true" scrolling="auto" src="https://www.helloasso.com/associations/magellans/adhesions/adhesion-magellans-2023-2024/widget" style="width: 100%; height: 750px; border: none;"></iframe> -->
             </div>
         </div>
     </section>
@@ -203,31 +202,11 @@
             </div>
             <ul class="timeline">
                 <li>
-                    <div class="timeline-image"><img class="rounded-circle img-fluid" src="{% static 'img/about/1.jpg' %}" alt="Image du conseil administratif initial de Magellans" /></div>
-                    <div class="timeline-panel">
-                        <div class="timeline-heading">
-                            <h4>Février 2020</h4>
-                            <h4 class="subheading">Création de Magellans</h4>
-                        </div>
-                        <div class="timeline-body"><p class="text-light-50">Ca y est, Magellans vient de naître grâce à ses membres  fondateurs.</p></div>
-                    </div>
-                </li>
-                <li class="timeline-inverted">
-                    <div class="timeline-image"><img class="rounded-circle img-fluid" src="{% static 'img/about/2.jpg' %}" alt="Pictogramme d'une réunion" /></div>
-                    <div class="timeline-panel">
-                        <div class="timeline-heading">
-                            <h4>Avril 2020</h4>
-                            <h4 class="subheading">Première réunion</h4>
-                        </div>
-                        <div class="timeline-body"><p class="text-light-50">Les membres créateurs se réunissent une première fois pour décider du futur de l'association.</p></div>
-                    </div>
-                </li>
-                <li>
                     <div class="timeline-image"><img class="rounded-circle img-fluid" src="{% static 'img/about/3.jpg' %}" alt="Logo de Magellans sur fond beige" /></div>
                     <div class="timeline-panel">
                         <div class="timeline-heading">
                             <h4>Septembre 2020</h4>
-                            <h4 class="subheading">Officialisation</h4>
+                            <h4 class="subheading">Création Magellans</h4>
                         </div>
                         <div class="timeline-body"><p class="text-light-50">Magellans devient officiellement une association loi 1901. Première projection d'un projet. Premières adhésions enregistrées.</p></div>
                     </div>
@@ -290,7 +269,7 @@
     <section class="page-section bg-light" id="team">
         <div class="container">
             <div class="text-center">
-                <h2 class="section-heading text-uppercase">Notre conseil administratif</h2>
+                <h2 class="section-heading text-uppercase">Le conseil d'administration 2023-2024</h2>
                 <h3 class="section-subheading text-muted">Les membres qui orchestrent tout Magellans.</h3>
             </div>
             <div class="row">
