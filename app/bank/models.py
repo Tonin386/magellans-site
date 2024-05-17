@@ -36,7 +36,6 @@ class Operation(models.Model):
             if last_object:
                 last_pk = last_object.id
                 last_number = int(last_pk.split('-')[1])
-                print(last_number)
                 new_number = last_number + 1
                 self.id = f'OPE-{new_number}'
             else:

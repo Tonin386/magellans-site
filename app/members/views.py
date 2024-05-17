@@ -91,7 +91,6 @@ def register(request):
     form = RegisterForm(request.POST or None)
     if request.method == "POST":
         if form.is_valid():
-            print("valid form")
             new_user = form.save()
             new_user.is_active = False
 

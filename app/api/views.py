@@ -1,4 +1,5 @@
 from django.core.files.base import ContentFile
+from django.utils.html import strip_tags
 from django.core.mail import send_mail
 from django.utils.html import escape
 from django.http import JsonResponse
@@ -659,12 +660,11 @@ def api_warehouse(request):
             try:
                 order = Order.objects.get(pk=int(pk))
                 if custom_message != "":
-                    custom_message = escape(custom_message).replace("\n", "<br>")
-                    order.answer_message = "Réponse reçue le %s <br><br>" % datetime.now().strftime("%d/%m/%Y à %H:%M") + custom_message + '<hr>' + order.answer_message
+                    order.answer_message = "Réponse reçue le %s <br><br>" % datetime.now().strftime("%d/%m/%Y à %H:%M") + custom_message.replace("\n", "<br>") + '<hr>' + order.answer_message
                     order.save()
 
                 subject = "Modification du statut de votre commande"
-                email_message = mark_safe(render_to_string('email_order_status_changed.html', {'order': order, 'custom_message': custom_message}))
+                email_message = render_to_string('email_order_status_changed.html', {'order': order, 'custom_message': custom_message})
                 send_mail(subject, email_message, settings.DEFAULT_FROM_EMAIL, [order.user.email])
 
                 createNotification("Email commande", "email-order_status", app_id, 0, "L'email a bien été envoyé.", user)

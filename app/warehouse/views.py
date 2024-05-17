@@ -115,7 +115,6 @@ def placeOrder(request):
             formatted_startDate = datetime.strptime(startDate, "%Y-%m-%dT%H:%M")
             formatted_endDate = datetime.strptime(endDate, "%Y-%m-%dT%H:%M")
             email_message = render_to_string('email_order.html', locals())
-            print(email_message)
             recipients = ["contact@magellans.fr", user.email]
 
             for warehouse_handler in Member.objects.filter(site_person__role="G"):
