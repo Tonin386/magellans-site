@@ -36,7 +36,7 @@ def order(request):
     
     if not pks == "undefined":
         pks = [int(pk) for pk in pks.replace(" ", "").split(",")]
-        items = Item.objects.filter(pk__in=pks)
+        items = [Item.objects.get(pk=pk) for pk in pks] #Important to keep mapping intact
         
     if not values == "undefined":
         values = [int(value) for value in values.replace(" ", "").split(",")]

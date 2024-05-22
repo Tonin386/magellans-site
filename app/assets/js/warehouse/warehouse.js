@@ -236,7 +236,6 @@ function updateOrder() {
 
     document.querySelector("#nbOrderedItems").innerText = totalItems;
 
-
     let params = new URLSearchParams();
     params.append("pks", pks);
     params.append("values", values);
