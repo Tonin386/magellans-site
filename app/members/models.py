@@ -146,6 +146,7 @@ class Person(models.Model):
     site_profile = models.OneToOneField(Member, on_delete=models.SET_NULL, null=True, blank=True, verbose_name="Profil site lié", related_name="site_person")
     ext_profile = models.OneToOneField(UnregisteredMember, on_delete=models.SET_NULL, null=True, blank=True, verbose_name="Profil externe lié", related_name="ext_person")
     role = models.CharField(max_length=2, choices=ROLE_CHOICES, default='X', verbose_name="Role")
+    additional_notes = models.TextField(verbose_name="Notes supplémentaires", null=True, blank=True)
     class Meta:
         verbose_name = "Personne"
         

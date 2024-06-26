@@ -132,10 +132,11 @@ def api_bank(request):
                 invoice = Invoice.objects.get(pk=int(pk))
 
                 subject = "Modification du statut de votre note de frais"
-                message = mark_safe(render_to_string('email_invoice_status_changed.html', {'invoice': invoice}))
+                message = render_to_string('email_invoice_status_changed.html', {'invoice': invoice})
                 send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [invoice.author.email])
 
                 createNotification("Email note de frais", "email-invoice_status", app_id, 0, "L'email a bien été envoyé.", user)
+
                 return JsonResponse({"status": "success", "message": "Invoice updated successfully"})
             except Exception as e:
                 createNotification("Email note de frais", "email-invoice_status", app_id, 3, f"Une erreur est survenue.<hr>Erreur : {str(e)}", user, str(e))
