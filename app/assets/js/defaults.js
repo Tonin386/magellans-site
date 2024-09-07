@@ -7,7 +7,7 @@ var role_map = {
     "Secrétaire":95,
     "Membre Magellans & site":50,
     "Membre Magellans & pas site":49,
-    "Inscrit site":48,
+    "Inscrit site": 48,
     'Organisation': 1,
     'Externe site': 10
 };
@@ -117,19 +117,23 @@ $.extend($.fn.dataTableExt.oSort, {
     },
 
     "magellansRole-desc": function(a, b) {
+        a = a.replace("&amp;", "&");
+        b = b.replace("&amp;", "&");
+        console.log(a, b, role_map[a] - role_map[b]);
         return role_map[a] - role_map[b];
     },
 
     "magellansRole-asc": function(b, a) {
-        return role_map[b] - role_map[a];
+        a = a.replace("&amp;", "&");
+        b = b.replace("&amp;", "&");
+        console.log(a, b, role_map[a] - role_map[b]);
+        return role_map[a] - role_map[b];
     },
 });
 
 function defineStickyButtonsBehavior(stickyButtons, heightBefore) {
     const scrollPosition = window.scrollY;
     let footer = document.querySelector("footer");
-
-    console.log(heightBefore, scrollPosition + window.innerHeight + footer.offsetHeight);
     
     if(scrollPosition + window.innerHeight + footer.offsetHeight >= heightBefore) {
         stickyButtons.classList.add("sticky-bottom-buttons-scrollDone");
