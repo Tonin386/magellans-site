@@ -375,7 +375,8 @@ def api_members(request):
             person = Person.objects.get(pk=pk)
             person.role = role
             person.save()
-            person.site_profile.save()
+            if person.site_profile:
+                person.site_profile.save()
 
             createNotification("Modification utilisateur", "edit-user_role", app_id, 0, "Le rôle de l'utilisateur a été modifié.", user)
             return JsonResponse({"status": "success", "message": "User role modified."})
