@@ -81,7 +81,7 @@ class Member(AbstractBaseUser, PermissionsMixin):
         return "%s %s (%s)" % (self.site_person.first_name, self.site_person.last_name, self.email)
     
     def phone_formatted(self):
-        return ' '.join(self.site_person.phone[i:i+2] for i in range(0, len(self.site_person.phone), 2))
+        return ' '.join(self.site_person.phone[i:i+2] for i in range(0, len(self.site_person.phone), 2)) if self.site_person.phone != "Non-rensigné" else self.site_person.phone
     
     def account_formatted(self):
         if self.account == 0:
@@ -117,7 +117,7 @@ class UnregisteredMember(models.Model):
         return "%s %s (%s)" % (self.ext_person.first_name, self.ext_person.last_name, self.ext_person.email)
     
     def phone_formatted(self):
-        return ' '.join(self.ext_person.phone[i:i+2] for i in range(0, len(self.ext_person.phone), 2))
+        return ' '.join(self.ext_person.phone[i:i+2] for i in range(0, len(self.ext_person.phone), 2)) if self.ext_person.phone != "Non-rensigné" else self.ext_person.phone
 
     def first_name(self):
         return self.ext_person.first_name
