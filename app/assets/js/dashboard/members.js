@@ -64,3 +64,18 @@ async function redirectExtPerson(pk_person, callback = function(){}) {
         callback(response);
     }
 }
+
+async function resetMembers(callback = function(){}) {
+    let action = "reset-members";
+
+    let params = {
+        token: api_token,
+        action: action,
+    }
+
+    let response = await sendApiRequest(params, "members");
+
+    if(response.status == "success") {
+        callback(response);
+    }
+}

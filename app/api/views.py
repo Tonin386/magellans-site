@@ -435,6 +435,20 @@ def api_members(request):
         except Exception as e:
             createNotification("Redirection profil externe", "redirect-ext_person", app_id, 3, f"Une erreur est survenue. Veuillez réessayer.<hr>Erreur : {str(e)}", user, str(e))
             return JsonResponse({"status": "error", "message": str(e)})
+        
+    if action == "reset-members":
+        if not 'write' in permissions['dashboard'] + permissions['fullpower']:
+            createNotification("Réinitialisation membres", "reset-members", app_id, 3, "Vous n'avez pas les permissions suffisantes pour effectuer cette action.", user)
+            return JsonResponse({"status": "error", "message": "Insufficient permissions"})
+        
+        site_members = Person.objects.filter(role="M")
+        other_members = Person.objects.filter(role="MX")
+
+        site_members.update(role="E")
+        other_members.update(role="X")
+
+        createNotification("Reinitialisation membres", "reset-members", app_id, 0, "Les membres ont bien été réinitialisés. Rafraichissez la page pour voir les modifications", user)
+        return JsonResponse({"status": "success", "message": "Project successfully edited."})
     
     return JsonResponse({"status": "error", "message": "Uncaught error."})
 

@@ -86,6 +86,10 @@ Gestion des membres de l'association Magellans.
         <i class="fa-solid fa-plus"></i>
         Ajouter un profil externe
     </button>
+    <button class="btn btn-danger" type="button" data-bs-toggle="modal" data-bs-target="#resetMembersDialog">
+        <i class="fa-solid fa-arrow-rotate-left"></i>
+        Réinitialiser les membres
+    </button>
 </div>
 
 <!-- ADD EXTERNAL USER MODAL -->
@@ -149,6 +153,29 @@ Gestion des membres de l'association Magellans.
         </div>
     </div>
 </div>
+
+<div class="modal fade" id="resetMembersDialog" data-bs-backdrop="static" data-bs-keyboard="true" tabindex="-1" aria-labelledby="resetMembersDialogLabel" aria-hidden="true">
+    <div class="modal-dialog modal-md">
+        <div class="modal-content">
+            <div class="modal-header bg-primary">
+                <h1 class="modal-title fs-5" id="resetMembersDialogLabel">Réinitialiser les membres</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Annuler"></button>
+            </div>
+            <div class="modal-body">
+                En effectuant cette action, les membres de l'association redeviendront "externe". 
+                <br>
+                Si la personne est inscrite sur le site, elle sera réinitialisée à "inscrit site".
+                <br>
+                Êtes-vous sûr.e de vouloir réinitialiser les membres ?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Annuler</button>
+                <button type="button" class="btn btn-warning" onclick="resetMembers()" data-bs-dismiss="modal">Réinitialiser les membres</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
     $(document).ready(function() {
         var table = new DataTable('#members-table', {
