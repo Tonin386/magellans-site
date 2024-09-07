@@ -18,7 +18,7 @@
 					</a>
 				</li>
 				{% endif %}
-				{% if request.user.site_profile != 'M' %}
+				{% if request.user.site_person.role != 'M' %}
 				<li class="nav-item">
 					<a class="nav-link" href="{% url 'join-magellans' %}" title="Devenir membre">
 						Devenir membre
