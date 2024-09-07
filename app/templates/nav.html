@@ -17,7 +17,14 @@
 						Django Admin
 					</a>
 				</li>
-				{% endif %} 
+				{% endif %}
+				{% if request.user.site_profile != 'M' %}
+				<li class="nav-item">
+					<a class="nav-link" href="{% url 'join-magellans' %}" title="Devenir membre">
+						Devenir membre
+					</a>
+				</li>
+				{% endif %}
 				<li class="nav-item">
 					<a class="nav-link" href="{% url 'warehouse' %}" title="Accéder au magasin">
 						Magasin

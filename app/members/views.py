@@ -127,6 +127,12 @@ def register(request):
             
     return render(request, "registration/register.html", locals())
 
+def join_magellans(request):
+    title = "Devenir membre"
+    og_description = "Devenir un membre de l'association Magellans."
+
+    return render(request, "registration/join_magellans.html", locals())
+
 def activate(request, uidb64, token):
     try:
         uid = urlsafe_base64_decode(uidb64).decode()
