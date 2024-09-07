@@ -42,7 +42,7 @@ Gestion des membres de l'association Magellans.
                 <tbody class="table-group-divider">
                     
                     {% for member in members %}
-                    {% if member.site_person.role == "M" or member.ext_person.role == "M" or member.is_staff %}
+                    {% if member.site_person.role == "M" or member.ext_person.role == "MX" or member.is_staff %}
                     <tr id="member{{member.pk}}">
                         <td>
                             <a class="btn btn-warning" href="{% url 'member-detail' pk=member.pk %}"><i class="fa-eye fa-solid text-light"></i></a>
@@ -103,7 +103,7 @@ Gestion des membres de l'association Magellans.
                 <tbody class="table-group-divider">
                     
                     {% for member in members %}
-                    {% if member.site_person.role != "M" and member.ext_person.role != "M" and not member.is_staff %}
+                    {% if member.site_person.role != "M" and member.ext_person.role != "MX" and not member.is_staff %}
                     <tr id="member{{member.pk}}">
                         <td>
                             <a class="btn btn-warning" href="{% url 'member-detail' pk=member.pk %}"><i class="fa-eye fa-solid text-light"></i></a>
@@ -252,6 +252,7 @@ Gestion des membres de l'association Magellans.
             {responsivePriority: 1, targets: 2},
             {responsivePriority: 1, targets: 3},
             {responsivePriority: 2, targets: 4},
+            {responsivePriority: 3, targets: 6, type: "magellansRole"},
             ]
         });
 
@@ -263,6 +264,7 @@ Gestion des membres de l'association Magellans.
             {responsivePriority: 1, targets: 2},
             {responsivePriority: 1, targets: 3},
             {responsivePriority: 2, targets: 4},
+            {responsivePriority: 3, targets: 6, type: "magellansRole"},
             ]
         });
         

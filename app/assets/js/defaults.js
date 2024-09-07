@@ -1,4 +1,17 @@
 var monthFrNames = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"];
+var role_map = {
+    "Président.e": 100,
+    "Communication":97,
+    "Gestionnaire magasin":99,
+    "Trésorier.ère": 98,
+    "Secrétaire":95,
+    "Membre Magellans & site":50,
+    "Membre Magellans & pas site":49,
+    "Inscrit site":48,
+    'Organisation': 1,
+    'Externe site': 10
+};
+
 function convertFrDate(str_date) {
     
     let parts = str_date.split(' ');
@@ -44,6 +57,7 @@ $.extend($.fn.dataTable.defaults, {
 })
 
 $.extend($.fn.dataTableExt.oSort, {
+    
     "ope-desc": function (a, b) {
         var numA = parseInt(a.replace('OPE-', ''), 10);
         var numB = parseInt(b.replace('OPE-', ''), 10);
@@ -100,6 +114,14 @@ $.extend($.fn.dataTableExt.oSort, {
     
     "frdate-asc": function(b, a) {
         return convertFrDate(b).getTime() - convertFrDate(a).getTime();
+    },
+
+    "magellansRole-desc": function(a, b) {
+        return role_map[a] - role_map[b];
+    },
+
+    "magellansRole-asc": function(b, a) {
+        return role_map[b] - role_map[a];
     },
 });
 
