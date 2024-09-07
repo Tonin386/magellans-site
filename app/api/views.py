@@ -373,6 +373,10 @@ def api_members(request):
 
         try:
             person = Person.objects.get(pk=pk)
+            if not role in ['P', 'C', 'G', 'S', 'T']:
+                person.is_staff = False
+            else:
+                person.is_staff = True
             person.role = role
             person.save()
 
