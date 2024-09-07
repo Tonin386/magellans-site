@@ -373,12 +373,9 @@ def api_members(request):
 
         try:
             person = Person.objects.get(pk=pk)
-            if not role in ['P', 'C', 'G', 'S', 'T']:
-                person.site_profile.is_staff = False
-            else:
-                person.site_profile.is_staff = True
             person.role = role
             person.save()
+            person.site_profile.save()
 
             createNotification("Modification utilisateur", "edit-user_role", app_id, 0, "Le rôle de l'utilisateur a été modifié.", user)
             return JsonResponse({"status": "success", "message": "User role modified."})
@@ -447,6 +444,8 @@ def api_members(request):
         
         site_members = Person.objects.filter(role="M")
         other_members = Person.objects.filter(role="Mx")
+
+        Member.objects.all().update(donation=0)
 
         site_members.update(role="E")
         other_members.update(role="X")
