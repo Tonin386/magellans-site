@@ -442,7 +442,7 @@ def api_members(request):
             return JsonResponse({"status": "error", "message": "Insufficient permissions"})
         
         site_members = Person.objects.filter(role="M")
-        other_members = Person.objects.filter(role="MX")
+        other_members = Person.objects.filter(role="Mx")
 
         site_members.update(role="E")
         other_members.update(role="X")

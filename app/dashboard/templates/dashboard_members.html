@@ -59,7 +59,7 @@ Gestion des membres de l'association Magellans.
                     {% endfor %}
                     
                     {% for ext_user in external_users %}
-                    {% if ext_user.ext_person.role == "MX" %}
+                    {% if ext_user.ext_person.role == "Mx" %}
                     <tr id="extUser{{ext_user.pk}}">
                         <td>
                             <a class="btn btn-warning" href="{% url 'person-detail' pk=ext_user.ext_person.pk %}">
@@ -120,7 +120,7 @@ Gestion des membres de l'association Magellans.
                     {% endfor %}
                     
                     {% for ext_user in external_users %}
-                    {% if ext_user.ext_person.role != "MX" %}
+                    {% if ext_user.ext_person.role != "Mx" %}
                     <tr id="extUser{{ext_user.pk}}">
                         <td>
                             <a class="btn btn-warning" href="{% url 'person-detail' pk=ext_user.ext_person.pk %}">
