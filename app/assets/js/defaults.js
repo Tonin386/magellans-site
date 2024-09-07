@@ -119,14 +119,12 @@ $.extend($.fn.dataTableExt.oSort, {
     "magellansRole-desc": function(a, b) {
         a = a.replace("&amp;", "&");
         b = b.replace("&amp;", "&");
-        console.log(a, b, role_map[a] - role_map[b]);
         return role_map[a] - role_map[b];
     },
 
     "magellansRole-asc": function(b, a) {
         a = a.replace("&amp;", "&");
         b = b.replace("&amp;", "&");
-        console.log(a, b, role_map[a] - role_map[b]);
         return role_map[a] - role_map[b];
     },
 });

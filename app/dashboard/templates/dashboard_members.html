@@ -42,7 +42,7 @@ Gestion des membres de l'association Magellans.
                 <tbody class="table-group-divider">
                     
                     {% for member in members %}
-                    {% if member.site_person.role == "M" or member.ext_person.role == "MX" or member.is_staff %}
+                    {% if member.site_person.role == "M" or member.is_staff %}
                     <tr id="member{{member.pk}}">
                         <td>
                             <a class="btn btn-warning" href="{% url 'member-detail' pk=member.pk %}"><i class="fa-eye fa-solid text-light"></i></a>
@@ -59,7 +59,7 @@ Gestion des membres de l'association Magellans.
                     {% endfor %}
                     
                     {% for ext_user in external_users %}
-                    {% if ext_user.role == "MX" %}
+                    {% if ext_user.ext_person.role == "MX" %}
                     <tr id="extUser{{ext_user.pk}}">
                         <td>
                             <a class="btn btn-warning" href="{% url 'person-detail' pk=ext_user.ext_person.pk %}">
@@ -103,7 +103,7 @@ Gestion des membres de l'association Magellans.
                 <tbody class="table-group-divider">
                     
                     {% for member in members %}
-                    {% if member.site_person.role != "M" and member.ext_person.role != "MX" and not member.is_staff %}
+                    {% if member.site_person.role != "M" and not member.is_staff %}
                     <tr id="member{{member.pk}}">
                         <td>
                             <a class="btn btn-warning" href="{% url 'member-detail' pk=member.pk %}"><i class="fa-eye fa-solid text-light"></i></a>
@@ -120,7 +120,7 @@ Gestion des membres de l'association Magellans.
                     {% endfor %}
                     
                     {% for ext_user in external_users %}
-                    {% if ext_user.role != "MX" %}
+                    {% if ext_user.ext_person.role != "MX" %}
                     <tr id="extUser{{ext_user.pk}}">
                         <td>
                             <a class="btn btn-warning" href="{% url 'person-detail' pk=ext_user.ext_person.pk %}">

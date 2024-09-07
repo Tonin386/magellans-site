@@ -2,6 +2,7 @@ from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, Permis
 from django.db import models
 import secrets
 import string
+import re
 
 ROLE_CHOICES = [
     ('P', "Président.e"),
@@ -81,8 +82,11 @@ class Member(AbstractBaseUser, PermissionsMixin):
         return "%s %s (%s)" % (self.site_person.first_name, self.site_person.last_name, self.email)
     
     def phone_formatted(self):
-        return ' '.join(self.site_person.phone[i:i+2] for i in range(0, len(self.site_person.phone), 2)) if self.site_person.phone != "Non-rensigné" else self.site_person.phone
-    
+        if re.match(r"[0-9]{10}$", self.site_person.phone):
+            return ' '.join(self.site_person.phone[i:i+2] for i in range(0, len(self.site_person.phone), 2))
+        elif re.match(r"\+[0-9]{11}", self.site_person.phone):
+            return self.site_person.phone[:3] + " " + self.site_person.phone[3] + " " + ' '.join(self.site_person.phone[i:i+2] for i in range(4, len(self.site_person.phone), 2))
+        return "Non-renseigné"
     def account_formatted(self):
         if self.account == 0:
             return "±0.00€"
@@ -117,7 +121,11 @@ class UnregisteredMember(models.Model):
         return "%s %s (%s)" % (self.ext_person.first_name, self.ext_person.last_name, self.ext_person.email)
     
     def phone_formatted(self):
-        return ' '.join(self.ext_person.phone[i:i+2] for i in range(0, len(self.ext_person.phone), 2)) if self.ext_person.phone != "Non-rensigné" else self.ext_person.phone
+        if re.match(r"[0-9]{10}$", self.ext_person.phone):
+            return ' '.join(self.ext_person.phone[i:i+2] for i in range(0, len(self.ext_person.phone), 2))
+        elif re.match(r"\+[0-9]{11}", self.ext_person.phone):
+            return self.ext_person.phone[:3] + " " + self.ext_person.phone[3] + " " + ' '.join(self.ext_person.phone[i:i+2] for i in range(4, len(self.ext_person.phone), 2))
+        return "Non-renseigné"
 
     def first_name(self):
         return self.ext_person.first_name
