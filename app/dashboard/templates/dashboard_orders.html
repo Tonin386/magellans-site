@@ -26,6 +26,7 @@ Gestion des commandes et réservations du magasin de matériel de l'association 
                         <th scope="col" style="max-width: 80px;;"></th>
                         <th scope="col" style="max-width: 75px;">#</th>
                         <th scope="col">Demandeur</th>
+                        <th scope="col">Projet</th>
                         <th scope="col">Récupération</th>
                         <th scope="col">Début</th>
                         <th scope="col">Fin</th>
@@ -41,6 +42,7 @@ Gestion des commandes et réservations du magasin de matériel de l'association 
                         </td>
                         <td>{{ order.pk }}</td>
                         <td><a href="{% url 'member-detail' pk=order.user.pk %}" class="text-black">{{ order.user }}</a></td>
+                        <td>{{ order.project_name }}</td>
                         <td>{{ order.pickup_first_name }} {{ order.pickup_last_name }} ({{ order.pickup_phone_formatted }})</td>
                         <td>{{ order.date_start }}</td>
                         <td>{{ order.date_end }}</td>

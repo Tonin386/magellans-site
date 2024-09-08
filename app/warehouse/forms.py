@@ -36,6 +36,7 @@ class EditTagForm(forms.ModelForm):
 class PlaceOrderForm(forms.Form):
     start_date = forms.DateTimeInput()
     end_date = forms.DateTimeInput()
+    project_name = forms.TextInput()
     message = forms.TextInput()
     pks = forms.HiddenInput()
     quantities = forms.HiddenInput()

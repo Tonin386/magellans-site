@@ -58,6 +58,14 @@ Effectuer une commande ou une réservation auprès du magasin de l'association M
                             <div class="invalid-feedback">Veuillez sélectionner une date de début et une date de fin.</div>
                             <div class="invalid-feedback" id="dateError">La date de début doit être avant la date de fin.</div>
                         </div>
+                        <div class="input-group input-group mt-3">
+                            <span class="input-group-text col-xl-2 bg-secondary text-white" id="projectNameSpan">
+                                Projet
+                                <a class="badge text-dark" data-bs-toggle="tooltip" data-bs-title="Le nom du projet pour lequel vous effectuez cette commande.">?</a>
+                            </span>
+                            <input aria-describedby="projectNameSpan" type="text" class="form-control" id="id_project_name" name="project_name" placeholder="Nom du projet" required>
+                            <div class="invalid-feedback">Veuillez entrer le nom du projet.</div>
+                        </div>
                     </div>
                     <hr>
                     <div class="col-lg-12">

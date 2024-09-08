@@ -66,6 +66,7 @@ def placeOrder(request):
         try:
             startDate = request.POST.get('start_date')
             endDate = request.POST.get('end_date')
+            project_name = request.POST.get('project_name')
             message = mark_safe(request.POST.get('message'))
             pks = request.POST.get("pks", "undefined")
             quantities = request.POST.get("quantities", "undefined")
@@ -100,6 +101,7 @@ def placeOrder(request):
                 user=request.user,
                 date_start=startDate, 
                 date_end=endDate, 
+                project_name=project_name,
                 message=message,
                 quantities=quantities,
                 pickup_first_name=pu_first_name,
