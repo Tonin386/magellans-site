@@ -71,9 +71,6 @@ class Member(AbstractBaseUser, PermissionsMixin):
             self.site_person = site_person
             created = True
 
-        print("SAVED !!!! *************************")
-        print(args, kwargs)
-
         self.is_staff = self.site_person.role in ['P', 'C', 'G', 'T', 'S']
             
         super().save(*args, **kwargs)

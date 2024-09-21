@@ -56,6 +56,10 @@ services:
     stop_grace_period: 15s
     container_name: magellans-nginx
     image: nginx:latest
+    logging:
+      driver: "local"  # ou un autre driver
+      options:
+        max-size: "10m"
     volumes:
       - ./nginx/${NGINX_CONF_FILE}:/etc/nginx/conf.d/default.conf
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf

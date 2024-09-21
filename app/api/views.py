@@ -1,8 +1,14 @@
+from django.contrib.auth.tokens import default_token_generator
+from django.core.exceptions import ObjectDoesNotExist
+from django.views.decorators.csrf import csrf_exempt
+from django.utils.http import urlsafe_base64_encode
+from django.template.loader import render_to_string
 from django.core.files.base import ContentFile
-from django.utils.html import strip_tags
+from django.utils.encoding import force_bytes
+from django.utils.safestring import mark_safe
 from django.core.mail import send_mail
-from django.utils.html import escape
 from django.http import JsonResponse
+from warehouse.models import Order
 from dashboard.models import *
 from warehouse.models import *
 from datetime import datetime
@@ -694,3 +700,70 @@ def api_warehouse(request):
                     
     createNotification("Erreur inconnue", "unknown error", app_id, 3, "Une erreur inconnue est survenue.", user)
     return JsonResponse({"status": "error", "message": "Uncaught error."})
+
+@csrf_exempt
+def webhook_helloasso(request):
+    print("HelloAsso request received")
+    if not request.method == "POST":
+        print("BAD HELLOASSO REQUEST RECEIVED")
+        return
+    
+    try:
+        data = json.loads(request.body)
+        if 'eventType' in data and data['eventType'] == 'Order':
+
+            data = data['data']
+            print("New member joined Magellans!")
+            firstName = data['items'][0]['user']['firstName']
+            lastName = data['items'][0]['user']['lastName']
+            email = ""
+            phone = ""
+
+            payment = data["amount"]["total"] / 100
+
+            for field in data['items'][0]['customFields']:
+                if field['type'] == "TextInput":
+                    email = field['answer']
+                elif field['type'] == "Phone":
+                    phone = field['answer']
+
+            try:
+                member = Member.objects.get(email=email)
+                member.role = 'M'
+                member.save()            
+                return JsonResponse({'status': 'success', 'message': "Existing member updated."}, status=200)
+
+            except ObjectDoesNotExist:
+                pass
+
+
+            token = ''.join(secrets.choice(string.ascii_letters + string.digits) for _ in range(128))
+            new_member = Member.objects.create(
+                email=email,
+                is_active=False,
+                donation=payment,
+                api_token=token
+            )
+
+            new_member.site_person.email=email
+            new_member.site_person.first_name=firstName
+            new_member.site_person.last_name=lastName
+            new_member.site_person.phone=phone
+            new_member.site_person.role="M"
+
+            new_member.site_person.save()
+
+            new_member.save()
+
+            token = default_token_generator.make_token(new_member)
+            uidb64 = urlsafe_base64_encode(force_bytes(new_member.pk))
+            activation_url = "https://magellans.fr/membres/activate/{}/{}".format(uidb64, token)
+            
+            subject = "Activation de votre compte magellans.fr"
+            message = mark_safe(render_to_string('registration/activation_email.html', {'user': new_member, 'activation_url': activation_url}))
+            send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [new_member.email])
+
+            return JsonResponse({'status': 'success', 'message': "A new member has joined Magellans."}, status=200)
+    except json.JSONDecodeError:
+        return JsonResponse({'status': 'error', 'message': 'Invalid JSON'}, status=400)
+    return JsonResponse({'status': 'error', 'message': 'Invalid request method'}, status=400)
