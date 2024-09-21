@@ -20,21 +20,6 @@ services:
     networks:
       - magellans_site
 
-  postgres-mail: 
-    restart: always
-    stop_grace_period: 15s
-    container_name: magellans-mail-pgsql
-    image: postgres:16-bullseye
-    environment:
-      POSTGRES_DB: ${DB_MAIL_NAME}
-      POSTGRES_USER: ${DB_USER}
-      POSTGRES_PASSWORD: ${DB_PASSWORD}
-    volumes:
-      - postgres_data_mail:/var/lib/postgresql/data
-    networks:
-      - magellans_site
-
-
   # Redis service
   redis:
     restart: always
@@ -81,67 +66,9 @@ services:
       - "443:443"
     depends_on:
       - django
-      - mail-server
-      - roundcube
-    networks:
-      - magellans_site
-
-  mail-server:
-    image: ghcr.io/docker-mailserver/docker-mailserver:latest
-    container_name: magellans-mail
-    # Provide the FQDN of your mail server here (Your DNS MX record should point to this value)
-    hostname: mail.magellans.fr
-    env_file: mailserver.env
-    ports:
-      - "25:25"    # SMTP  (explicit TLS => STARTTLS, Authentication is DISABLED => use port 465/587 instead)
-      - "143:143"  # IMAP4 (explicit TLS => STARTTLS)
-      - "465:465"  # ESMTP (implicit TLS)
-      - "587:587"  # ESMTP (explicit TLS => STARTTLS)
-      - "993:993"  # IMAP4 (implicit TLS)
-    # More information about the mail-server ports:
-    # https://docker-mailserver.github.io/docker-mailserver/latest/config/security/understanding-the-ports/
-    # To avoid conflicts with yaml base-60 float, DO NOT remove the quotation marks.
-    volumes:
-      - ./volumes/mail/data/:/var/mail/
-      - ./volumes/mail/state/:/var/mail-state/
-      - ./volumes/mail/logs/:/var/log/mail/
-      - ./volumes/mail/config/:/tmp/docker-mailserver/
-      - /etc/localtime:/etc/localtime:ro
-      - ${SSL_LETSENCRYPT}:${SSL_LETSENCRYPT}
-    restart: always
-    stop_grace_period: 15s
-    # Uncomment if using `ENABLE_FAIL2BAN=1`:
-    # cap_add:
-    #   - NET_ADMIN
-    healthcheck:
-      test: "ss --listening --tcp | grep -P 'LISTEN.+:smtp' || exit 1"
-      timeout: 3s
-      retries: 0
-    networks:
-      - magellans_site
-
-  roundcube:
-    image: roundcube/roundcubemail:latest
-    container_name:  magellans-webmail
-    restart: always
-    stop_grace_period: 15s
-    environment:
-      - ROUNDCUBEMAIL_DB_TYPE=pgsql
-      - ROUNDCUBEMAIL_DB_HOST=postgres-mail
-      - ROUNDCUBEMAIL_DB_PORT=5432
-      - ROUNDCUBEMAIL_DB_USER=${DB_USER}
-      - ROUNDCUBEMAIL_DB_PASSWORD=${DB_PASSWORD}
-      - ROUNDCUBEMAIL_DB_NAME=${DB_MAIL_NAME}
-      - ROUNDCUBEMAIL_DEFAULT_HOST=${IMAP_HOST}
-      - ROUNDCUBEMAIL_DEFAULT_PORT=${IMAP_PORT}
-      - ROUNDCUBEMAIL_SMTP_SERVER=${SMTP_HOST}
-      - ROUNDCUBEMAIL_SMTP_PORT=${SMTP_PORT}
-    depends_on:
-      - postgres-mail
     networks:
       - magellans_site
 
 volumes:
   postgres_data_django:
-  postgres_data_mail:
   redis_data:

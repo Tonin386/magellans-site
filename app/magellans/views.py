@@ -14,4 +14,7 @@ class FileView(View):
         else:
             title = "Fichier introuvable"
             return render(request, "404.html", locals())
+        
+def maintenance(request):
+    return render(request, "maintenance.html")
             
