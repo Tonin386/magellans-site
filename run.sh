@@ -3,9 +3,9 @@
 PID_FILE="pids.txt"
 
 run_scripts() {
-  python3 "utils/docker-logs.py" &
+  python3 "utils/docker-logs.py" > /dev/null &
   echo $! >> "$PID_FILE"
-  python3 "security/main.py" &
+  python3 "security/main.py" > /dev/null &
   echo $! >> "$PID_FILE"
 }
 
