@@ -134,20 +134,21 @@ def capture_output(process):
             continue
 
         infos['ip'] = ip.str_discord()
-        log_in_discord(message, infos)
-        time.sleep(0.5)
         if infos['abuseConfidenceScore'] >= CONFIDENCE_THRESHHOLD and not infos['domain'] in AUTHORIZED_DOMAINS:
             manager.banIP(ip.ip)
-            log_in_discord(ip.str_discord() + " a été bannie.")
+            message += "\n" + ip.str_discord() + " a été bannie."
+            log_in_discord(message,infos)
             continue
 
         elif infos['totalReports'] < 100 and infos['abuseConfidenceScore'] > 0 and not infos['domain'] in AUTHORIZED_DOMAINS:
             print(f"{Fore.YELLOW}{ip.ip} est incertaine. Aucune action effectuée.")
-            log_in_discord(ip.str_discord() + " est incertaine. Aucune action effectuée.")
+            message += "\n" + ip.str_discord() + " est incertaine. Aucune action effectuée."
+            log_in_discord(message, infos)
             continue
         
         print(f"{Fore.GREEN}L'adresse IP n'est pas dangereuse. Ajout à la whitelist.")
-        log_in_discord("L'adresse IP n'est pas dangeureuse. Ajout à la whitelist.")
+        message += "\nL'adresse IP n'est pas dangeureuse. Ajout à la whitelist."
+        log_in_discord(message, infos)
         manager.addIP(ip.ip, "whitelist")
 
 def execute_command(command):
