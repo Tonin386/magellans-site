@@ -25,6 +25,7 @@ Récapitulatif d'une note de frais contractée auprès de l'association Magellan
 </script>
 {% endif %}
 
+{% if request.user.is_staff or request.user == object.author %}
 <div class="container">
     <h1 class="display-5 text-center"> Note de frais {{ object.title }} </h1>
     <div class="row mt-5">
@@ -123,6 +124,23 @@ Récapitulatif d'une note de frais contractée auprès de l'association Magellan
         </div>
     </div>
 </div>
+{% else %}
+<div class="container-fluid mt-3">
+    <div class="card m-auto text-center col-xl-6 border-danger border-4 rounded-4">
+        <div class="card-header bg-danger text-light fs-5">Interdit (403)</div>
+        <div class="card-body">
+            <h5 class="card-title">
+                Vous n'êtes pas censé.e être ici.
+            </h5>
+            <p class="card-text">Veuillez cliquer sur le bouton ci-dessous pour retourner à l'accueil membres.</p>
+            <a class="btn btn-primary" href="{% url 'members' %}">Retour</a>
+        </div>
+        <div class="card-footer bg-danger fs-5 text-light">
+            Espace réservé aux administrateurs et à la personne émettrice de cette note de frais.
+        </div>
+    </div>
+</div>
+{% endif %}
 
 {% if request.user.is_staff %}
 <!-- SEND EMAIL NOTIFICATION MODAL -->
@@ -160,7 +178,7 @@ Récapitulatif d'une note de frais contractée auprès de l'association Magellan
             info: false,
             searching: false
         });
-
+        
         var expenses_table = new DataTable('#expenses-table',{
             order: [[2, "desc"]],
             columnDefs: [
@@ -173,16 +191,16 @@ Récapitulatif d'une note de frais contractée auprès de l'association Magellan
         });
         
         //{% if request.user.is_staff%}
-
+        
         function callback_editInvoiceStatus(response) {
             $('#sendEmailNotificationModal').modal('show');
         }
-
+        
         var select_status = $('#select_status').select2();
         select_status.on("change", function() {
             var value = $(this).val();
             var pk = $(this).attr("pk");
-
+            
             editInvoiceStatus(pk, value, callback_editInvoiceStatus);
         })
         //{% endif %}
