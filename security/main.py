@@ -134,6 +134,7 @@ def capture_output(process):
 
         infos['ip'] = ip.str_discord()
         log_in_discord(message, infos)
+        time.sleep(0.2)
         if infos['abuseConfidenceScore'] >= CONFIDENCE_THRESHHOLD and not infos['domain'] in AUTHORIZED_DOMAINS:
             manager.banIP(ip.ip)
             log_in_discord(ip.str_discord() + " a été bannie.")
