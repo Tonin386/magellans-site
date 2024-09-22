@@ -177,3 +177,8 @@ app/assets/media/img/projects/*
 app/assets/media/img/proofs/*
 !app/assets/media/img/proofs/default.png
 !migrations/__init__.py
+
+#Security data
+security/lists
+ips.json
+pids.txt
