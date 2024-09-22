@@ -76,6 +76,10 @@ elif [ "$1" = "gitupdate" ]; then
   git merge dev
   git push
   git checkout dev
+elif [ "$1" = "stopscripts" ]; then
+  stop_scripts
+elif [ "$1" = "runscripts" ]; then
+  run_scripts
 else
   echo "Invalid argument."
   exit 1
