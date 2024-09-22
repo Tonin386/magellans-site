@@ -41,7 +41,7 @@ class IP():
         self.port_dst = port_dst
 
     def str_discord(self):
-        return self.ip + "(:" + self.port_src + " > :"+ self.port_dest +")"
+        return self.ip + "(:" + self.port_src + " > :"+ self.port_dst +")"
     
     def __str__(self):
         return f"{self.ip}{Fore.LIGHTMAGENTA_EX}(:{self.port_src} > :{self.port_dst}){Fore.RESET}"
