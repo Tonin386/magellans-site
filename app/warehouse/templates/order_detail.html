@@ -25,6 +25,7 @@ Récapitulatif des détails d'une commande ou réservation du magasin de l'assoc
 </script>
 {% endif %}
 
+{% if request.user.is_staff or request.user == object.author %}
 <div class="container">
     <h1 class="display-5 text-center"> Commande #{{ object.pk }} </h1>
     <div class="row mt-3">
@@ -128,6 +129,23 @@ Récapitulatif des détails d'une commande ou réservation du magasin de l'assoc
         </div>
     </div>
 </div>
+{% else %}
+<div class="container-fluid mt-3">
+    <div class="card m-auto text-center col-xl-6 border-danger border-4 rounded-4">
+        <div class="card-header bg-danger text-light fs-5">Interdit (403)</div>
+        <div class="card-body">
+            <h5 class="card-title">
+                Vous n'êtes pas censé.e être ici.
+            </h5>
+            <p class="card-text">Veuillez cliquer sur le bouton ci-dessous pour retourner à l'accueil membres.</p>
+            <a class="btn btn-primary" href="{% url 'members' %}">Retour</a>
+        </div>
+        <div class="card-footer bg-danger fs-5 text-light">
+            Espace réservé aux administrateurs et à la personne émettrice de cette commande.
+        </div>
+    </div>
+</div>
+{% endif %}
 
 {% if request.user.is_staff %}
 <!-- SEND EMAIL NOTIFICATION MODAL -->

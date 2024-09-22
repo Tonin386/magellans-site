@@ -1,0 +1,20 @@
+{{ instance.author }} a déposé une note de frais de {{ instance.total}}€ liée au projet {{ instance.project }} intitulée {{instance.title}}.
+Reçue le {{ instance.date_created|date:"l d F Y H:i"|capfirst}}.
+
+Voici le message lié à la demande : 
+"{{ instance.comm }}"
+
+Détails des dépenses :
+----------------------
+{% for expense in instance.expense_set.all %}
+{{ expense.title }}
+{{ expense.amount }}€
+{{ expense.date|date:"l d F Y"|capfirst }}
+{{ expense.comm|safe }}
+----------------------
+{% endfor %}
+
+Vous trouverez en pièces jointes les justificatifs de cette note de frais.
+
+Très bonne réception,
+L'équipe Magellans.

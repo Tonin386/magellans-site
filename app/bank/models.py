@@ -1,5 +1,9 @@
+from django.template.loader import render_to_string
+from django.utils.safestring import mark_safe
+from django.core.mail import EmailMessage
 from members.models import Member, Person
 from dashboard.models import Project
+from django.conf import settings
 from datetime import datetime
 from django.db import models
 
@@ -69,6 +73,30 @@ class Invoice(models.Model):
 
         self.total = "%.2f" % total_amount
         super().save(*args, **kwargs)
+
+    def send_by_email(self):
+        subject = f"Nouvelle note de frais reçue par {self.author}"
+        email_render = mark_safe(render_to_string("new_invoice_email.html", {'instance': self}))
+
+        bank_manager = Member.objects.get(site_person__role="T")
+
+        email = EmailMessage(
+            subject=subject,
+            body=email_render,
+            to=[bank_manager.email]
+        )
+
+        attached_files = []
+
+        # Attach all FileField files to the email
+        expenses = self.expense_set.all()
+        for expense in expenses:
+            file_field = expense.proof
+            if file_field:
+                email.attach_file(file_field.path)
+                attached_files.append(file_field.name)
+
+        email.send()
 
     
     class Meta:

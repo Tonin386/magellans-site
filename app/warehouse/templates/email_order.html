@@ -11,7 +11,7 @@ https://magellans.fr{% url 'order-detail' pk=new_order.pk %}
 Dates de réservation : {{ formatted_startDate|date:"l d F Y H:i"|capfirst }} à {{ formatted_endDate|date:"l d F Y H:i"|capfirst }}
 
 Message lié à la demande :
-{{ message }}
+{{ message|safe }}
 
 Personne chargée de la récupération : 
 {{ new_order.pickup_first_name }} {{ new_order.pickup_last_name }} {{ new_order.pickup_phone_formatted }} 

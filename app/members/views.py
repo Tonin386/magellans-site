@@ -63,6 +63,8 @@ def create_invoice(request):
                 expense.linked_invoice = new_invoice
                 expense.save()
             
+            new_invoice.save()
+            new_invoice.send_by_email()
             messages.success(request, 'La note de frais a bien été créée et envoyée au trésorier.')
 
     return render(request, "create_invoice.html", locals())
