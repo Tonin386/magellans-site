@@ -87,6 +87,7 @@ def extract_ip_addresses(text):
 def capture_output(process):
     last_ips = deque(maxlen=10000000)
     for line in iter(process.stdout.readline, b''):
+        time.sleep(0.25)
         str_line = line.decode('utf-8')
 
         ip_src, port_src, ip_dest, port_dest = extract_ip_addresses(str_line)
@@ -134,7 +135,7 @@ def capture_output(process):
 
         infos['ip'] = ip.str_discord()
         log_in_discord(message, infos)
-        time.sleep(0.2)
+        time.sleep(0.5)
         if infos['abuseConfidenceScore'] >= CONFIDENCE_THRESHHOLD and not infos['domain'] in AUTHORIZED_DOMAINS:
             manager.banIP(ip.ip)
             log_in_discord(ip.str_discord() + " a été bannie.")
