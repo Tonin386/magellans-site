@@ -40,6 +40,9 @@ class IP():
         self.port_src = port_src
         self.port_dst = port_dst
 
+    def str_discord(self):
+        return self.ip + "(:" + self.port_src + " > :"+ self.port_dest +")"
+    
     def __str__(self):
         return f"{self.ip}{Fore.LIGHTMAGENTA_EX}(:{self.port_src} > :{self.port_dst}){Fore.RESET}"
     
@@ -112,16 +115,16 @@ def capture_output(process):
 
         if ip.ip in manager.getList("whitelist"):
             print(f"{Fore.LIGHTGREEN_EX}{str(ip)}{Fore.LIGHTGREEN_EX} est présente dans la whitelist.")
-            log_in_discord(str(ip) + " est présente dans la whitelist.")
+            log_in_discord(ip.str_discord() + " est présente dans la whitelist.")
             continue
 
         if ip.ip in manager.getList("blacklist"):
             print(f"{Fore.LIGHTRED_EX}{str(ip)}{Fore.LIGHTRED_EX} est présente dans la blacklist.")
-            log_in_discord(str(ip) + " est présente dans la blacklist.")
+            log_in_discord(ip.str_discord() + " est présente dans la blacklist.")
             continue
 
         print(f"{Fore.LIGHTBLUE_EX}Nouvelle IP détectée : {str(ip)}{Fore.LIGHTBLUE_EX}.")
-        message = "Nouvelle IP détectée : " + str(ip)
+        message = "Nouvelle IP détectée : " + ip.str_discord()
         infos = CHECKER.checkIP(ip.ip)
         if 'errors' in infos.keys():
             log_in_discord(infos["errors"] + "\n" + "Mise en pause du service. Reprise demain à 00h00.")
@@ -129,16 +132,16 @@ def capture_output(process):
             time.sleep(waiting_time)
             continue
 
-        infos['ip'] = str(ip)
+        infos['ip'] = ip.str_discord()
         log_in_discord(message, infos)
         if infos['abuseConfidenceScore'] >= CONFIDENCE_THRESHHOLD and not infos['domain'] in AUTHORIZED_DOMAINS:
             manager.banIP(ip.ip)
-            log_in_discord(str(ip) + " a été bannie.")
+            log_in_discord(ip.str_discord() + " a été bannie.")
             continue
 
         elif infos['totalReports'] < 100 and infos['abuseConfidenceScore'] > 0 and not infos['domain'] in AUTHORIZED_DOMAINS:
             print(f"{Fore.YELLOW}{ip.ip} est incertaine. Aucune action effectuée.")
-            log_in_discord(str(ip) + " est incertaine. Aucune action effectuée.")
+            log_in_discord(ip.str_discord() + " est incertaine. Aucune action effectuée.")
             continue
         
         print(f"{Fore.GREEN}L'adresse IP n'est pas dangereuse. Ajout à la whitelist.")
