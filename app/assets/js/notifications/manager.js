@@ -1,4 +1,8 @@
-function createNotification(id, title, application, text, status) {
+function createNotification(id, title, application, text, status, target) {
+    if(target != api_token) {
+        return;
+    }
+    
     let toastId = 'notification' + id;
 
     let status_map = ['success', 'info', 'warning', 'danger'];
@@ -47,7 +51,7 @@ try {
     }
     unsecureNotificationSocket.onmessage = (event) => {
         let json_data = JSON.parse(event.data).notification;
-        let notification = createNotification(json_data.id, json_data.title, json_data.application, json_data.message, json_data.status);
+        let notification = createNotification(json_data.id, json_data.title, json_data.application, json_data.message, json_data.status, json_data.target);
     }
     unsecureNotificationSocket.onclose = () => {
         console.log("Unsecure notification socket closed.");
@@ -66,7 +70,7 @@ catch(error) {
     }
     secureNotificationSocket.onmessage = (event) => {
         let json_data = JSON.parse(event.data).notification;
-        let notification = createNotification(json_data.id, json_data.title, json_data.application, json_data.message, json_data.status);
+        let notification = createNotification(json_data.id, json_data.title, json_data.application, json_data.message, json_data.status, json_data.target);
     }
     secureNotificationSocket.onclose = () => {
         console.log("Secure notification socket closed.");

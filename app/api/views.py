@@ -514,7 +514,7 @@ def api_warehouse(request):
                 return JsonResponse({"status": "error", "error": str(e), "message": "There was a problem when decoding image"})
         
         new_item.save()
-        createNotification("Ajout objet", "add-item", app_id, 0, "L'objet a bien été ajouté au magasin.")
+        createNotification("Ajout objet", "add-item", app_id, 0, "L'objet a bien été ajouté au magasin.", user)
         return JsonResponse({"status": "success", "message": "The item was successfully added"})
         
     if action == "add-tag":

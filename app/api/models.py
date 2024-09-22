@@ -44,7 +44,8 @@ class Notification(models.Model):
                     application=self.application,
                     status=self.status,
                     message=self.message,
-                    time=str(self.time)
+                    time=str(self.time),
+                    target=self.user.api_token
                 )
             }
         )

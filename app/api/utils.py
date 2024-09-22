@@ -5,7 +5,7 @@ from PIL import Image
 import PIL
 import os
 
-def createNotification(title, subtitle, application, status, message, user=None, extra_field=None):
+def createNotification(title, subtitle, application, status, message, user, extra_field=None):
     notification = Notification.objects.create(
         title=title,
         subtitle=subtitle,
