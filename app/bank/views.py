@@ -20,17 +20,7 @@ def bank(request):
 
     account_money = ("+%.2f" % account_money) if account_money > 0 else ("%.2f" % account_money)
     operation_form = CreateOperationForm()
-    if request.method == "POST":
-        operation_form = CreateOperationForm(request.POST)
-        if operation_form.is_valid():
-            if request.user.site_person.role in ['P', 'T'] or request.user.is_superuser:
-                operation_form.save()
-                messages.success(request, 'Opération ajoutée.')
-            else:
-                messages.error(request, "Vous n'avez pas les permissions suffisantes pour gérer les opérations de trésorerie.<br>Seuls les Prédsident.e et Trésorier.ère peuvent les gérer.")
-        else:
-            messages.error(request, "Erreur lors de l'ajout de l'opération.")
-
+    
     return render(request, "bank.html", locals())
 
 class InvoiceDetailView(DetailView):

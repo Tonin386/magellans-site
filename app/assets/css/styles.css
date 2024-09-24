@@ -612,6 +612,7 @@ section#contact form#contactForm :-ms-input-placeholder {
 footer {
   background-color: #212529;
   color: white;
+  z-index: -1000;
 }
 
 .footer {

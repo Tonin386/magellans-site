@@ -18,6 +18,7 @@ Gestion de la trésorerie de l'association Magellans.
 
 <script>
     var callback_addExtUser = function(response) {};
+    //var callback_addOperation = function(response) {};
 </script>
 
 <div class="container-fluid p-3">
@@ -124,7 +125,7 @@ Gestion de la trésorerie de l'association Magellans.
                         <button class="btn btn-primary" type="button" data-bs-toggle="modal" data-bs-target="#addExtUserForm">Ajouter un profil</button>
                     </div>
                     <div class="col-md-3">
-                        <button type="submit" class="btn btn-success w-100 my-1">Créer</button>
+                        <button type="button" class="btn btn-success w-100 my-1" onclick="addOperation()" data-bs-dismiss="modal">Créer</button>
                     </div>
                     <div class="col-md-3">
                         <a class="btn btn-danger w-100 my-1" data-bs-dismiss="modal">Annuler</a>
@@ -199,6 +200,7 @@ Gestion de la trésorerie de l'association Magellans.
 
 <script src="{% static 'js/api/api.js' %}"></script>
 <script src="{% static 'js/dashboard/members.js' %}"></script>
+<script src="{% static 'js/dashboard/bank.js' %}"></script>
 
 <script>
     $(document).ready(function() {
@@ -246,6 +248,17 @@ Gestion de la trésorerie de l'association Magellans.
                 text: text    
             }));
         };
+
+        /**callback_addOperation = function(response) {
+            console.log(response);
+            let operation = JSON.parse(response.data)
+
+            operations_table.row.add(
+                [operation['pk'], operation['type'], operation['third_party'], operation['amount'], operation['desc'], operation['date']]
+            )
+
+            operations_table.draw();
+        }**/
     });
 </script>
 {% endblock %}

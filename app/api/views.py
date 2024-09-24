@@ -53,10 +53,10 @@ def verify_token_permissions(request):
             permissions['bank'] += ['read']
             
         if user.site_person.role == "T":
-            permissions['bank'] += ['read', 'write']
+            permissions['bank'] += ['read', 'write', 'write-operation']
         
     if user.is_superuser:
-        permissions['fullpower'] = ['read', 'write']
+        permissions['fullpower'] = ['read', 'write', 'write-operation']
         
     return permissions, user
 
@@ -67,6 +67,34 @@ def api_bank(request):
     body_post = json.loads(request.body.decode("utf-8"))
 
     action = body_post.get("action", "undefined")
+
+    if action == "add-operation":
+        if not 'write-operation' in permissions['bank'] + permissions['fullpower']:
+            createNotification("Ajout opération", "add-operation", app_id, 3, "Vous n'avez pas les permissions suffisantes pour effectuer cette action.", user)
+            return JsonResponse({"status": "error", "message": "Insufficient permissions"})
+        
+        desc = body_post.get("desc", "undefined")
+        type = body_post.get("type", "undefined")
+        third_party = body_post.get("third_party", "undefined")
+        amount = body_post.get("amount", "undefined")
+        date = body_post.get("date", "undefined")
+
+        if "undefined" in [desc, type, third_party, amount, date]:
+            createNotification("Ajout opération", "add-operation", app_id, 3, f"Informations manquantes. Veuillez vérifier que vous avez bien rempli tous les champs.", user)
+            return JsonResponse({"status": "error", "error": str(e), "message": "There was some missing informations"})
+        
+        third_party = Person.objects.get(pk=third_party)
+
+        new_operation = Operation.objects.create(
+            desc=desc,
+            type=type,
+            third_party=third_party,
+            amount=amount,
+            date=date
+        )
+
+        createNotification("Ajout opération", "add-operation", app_id, 0, "L'opération a bien été créée.<br>Veuillez rafraîchir la page pour afficher les modifications.", user)
+        return JsonResponse({"status": "success", "message": "New operation created."})
 
     if action == "add-expense":
         if not 'write-expense' in permissions['bank'] + permissions['fullpower']:

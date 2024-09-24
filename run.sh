@@ -14,10 +14,13 @@ run_scripts() {
     echo "Application is in debug mode. Skipping log sending."
     return 0
   fi
+
   python3 "utils/docker-logs.py" > /dev/null &
   echo $! >> "$PID_FILE"
   python3 "security/main.py" > /dev/null &
   echo $! >> "$PID_FILE"
+
+  echo "Log sender connections established."  
 }
 
 stop_scripts() {

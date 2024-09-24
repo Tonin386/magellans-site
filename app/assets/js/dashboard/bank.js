@@ -28,3 +28,22 @@ async function sendInvoiceStatusEmail(pk, callback = function(){}) {
         callback(response);
     }
 }
+
+async function addOperation(callback = function(){}) {
+    let action = "add-operation";
+    let params = {
+        token: api_token,
+        action: action,
+        desc: document.querySelector("#id_desc").value,
+        type: document.querySelector("#id_type").value,
+        third_party: document.querySelector("#id_third_party").value,
+        amount: document.querySelector("#id_amount").value,
+        date: document.querySelector("#id_date").value
+    }
+
+    let response = await sendApiRequest(params, "bank");
+
+    if(response.status == "success") {
+        callback(response);
+    }
+}
