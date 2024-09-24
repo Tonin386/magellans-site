@@ -12,5 +12,6 @@ urlpatterns = [
     path('devenir-membre/', join_magellans, name="join-magellans"),
     path('activation-reussie', activation_done, name="activation_done"),
     path('activation-echec', activation_failed, name='activation_failed'),
+    path('activation-deja-effectuee', activation_already, name="activation_already"),
     path('activate/<str:uidb64>/<str:token>/', activate, name='activate'),
 ]

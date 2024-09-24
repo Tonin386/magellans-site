@@ -143,12 +143,16 @@ def activate(request, uidb64, token):
         user = None
 
     if user is not None and default_token_generator.check_token(user, token):
+
+        if user.is_active:
+            return redirect("activation_already")
+
         # Activate user account
         user.is_active = True
         user.save()
-
+    
         subject = "Nouvelle inscription"
-        message = mark_safe(f"Un nouvel utilisateur vient d'activer son compte sur le site internet !\nPrénom : {user.first_name()}\nNom : {user.last_name()}\nEmail : {user.email}\nDate d'inscription : {user.date_joined}")
+        message = mark_safe(f"Un nouvel utilisateur vient d'activer son compte sur le site internet !\nPrénom : {user.first_name()}\nNom : {user.last_name()}\nEmail : {user.email}\nDate d'inscription : {user.date_joined.strftime('%A %d %B %Y %H:%M')}")
         send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [settings.DEFAULT_FROM_EMAIL])
 
         # Redirect to success page or login page
@@ -165,6 +169,11 @@ def activation_failed(request):
     title = "Activation de compte échouée"
     og_description = "Activation échouée d'un compte utilisateur sur le site de l'association Magellans."
     return render(request, 'registration/activation_failed.html', locals())
+
+def activation_already(request):
+    title = "Activation de compte déjà effectuée"
+    og_description = "Activation d'un compte utilisateur déjà effectuée sur le site de l'association Magellans."
+    return render(request, 'registration/activation_already.html', locals())
 
 @method_decorator(staff_required("Profil utilisateur", "Page du profil utilisateur d'un membre du site de l'association Magellans."), name="dispatch")
 class MemberDetailView(DetailView):

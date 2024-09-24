@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block title %}
+{% include "title.html" with title=title|default:"Activation de compte échouée" %}
+{% endblock %}
+
+{% block head_description %}
+Echec de l'activation d'un compte du site de l'association Magellans.
+{% endblock %}
+
+{% block nav %}
+{% include "nav.html" %}
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row m-auto">
+        <h1 class="display-3 mt-3 text-magellans-dark">Activation déjà effectuée.</h1>
+
+        <div class="alert alert-info">
+            L'activation de votre compte a déjà été effectuée. Si vous n'arrivez pas à vous connecter au site, vous pouvez essayer de <a href="{% url 'password_reset' %}">réinitialiser votre mot de passe.</a><br>
+            Si vous n'arrivez pas à résoudre votre problème, merci de contacter un administrateur <a href="mailto:contact@magellans.fr">Magellans Contact</a>.
+        </div>
+    </div>
+</div>
+{% endblock %}

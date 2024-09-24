@@ -729,8 +729,8 @@ def webhook_helloasso(request):
 
             try:
                 member = Member.objects.get(email=email)
-                member.role = 'M'
-                member.save()            
+                member.site_person.role = 'M'
+                member.site_person.save()
                 return JsonResponse({'status': 'success', 'message': "Existing member updated."}, status=200)
 
             except ObjectDoesNotExist:

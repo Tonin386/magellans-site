@@ -1,8 +1,19 @@
 #!/bin/bash
 
+if [ -f "app/.env" ]; then
+  source "app/.env"
+else
+  echo ".env file not found!"
+  exit 1
+fi
+
 PID_FILE="pids.txt"
 
 run_scripts() {
+  if [ "$DEBUG" = "1" ]; then
+    echo "Application is in debug mode. Skipping log sending."
+    return 0
+  fi
   python3 "utils/docker-logs.py" > /dev/null &
   echo $! >> "$PID_FILE"
   python3 "security/main.py" > /dev/null &
