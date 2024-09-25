@@ -24,3 +24,4 @@ asgiref
 daphne
 django_registration
 olefile
+ipython

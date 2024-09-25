@@ -1,5 +1,5 @@
 # Use an official Python runtime as a parent image
-FROM python:3.11.6-bookworm
+FROM python:3.12.3-bookworm
 
 # Set environment variables
 ENV PYTHONDONTWRITEBYTECODE 1
