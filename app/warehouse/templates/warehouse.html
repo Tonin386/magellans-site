@@ -251,6 +251,13 @@ Catalogue du magasin de l'association Magellans. Gestion des réservations et co
 <div id="csrf" class="d-none">
     {% csrf_token %}
 </div>
+
+{% if request.user.is_authenticated %}
+<script>
+    var saved_order = "{{ saved_order_pk }}";
+</script>
+{% endif %}
+
 <script src="{% static 'js/api/api.js' %}"></script>
 <script src="{% static 'js/warehouse/warehouse.js' %}"></script>
 

@@ -1,3 +1,4 @@
+from django.core.signing import Signer
 from dotenv import load_dotenv
 from pathlib import Path
 import os
@@ -33,7 +34,6 @@ LOGIN_URL = '/connexion/'
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-7cxr-qg^cmmmpun1x-q9136c3-w8a$@#$%yagj&s5sjob%t0^+'
-
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv("DEBUG") == str(1)
 ALLOWED_HOSTS = ["django"]
@@ -173,6 +173,11 @@ LOGGING = {
         'handlers': ['console'],
         'level': 'DEBUG',
     },
+    'loggers': {
+        'asyncio': {
+            'level': 'WARNING',
+        },
+    },
 }
 
 #Email configuration
@@ -187,3 +192,5 @@ EMAIL_RECEIVER = os.getenv("EMAIL_RECEIVER")
 DEFAULT_FROM_EMAIL = f'"Contact Magellans" <{EMAIL_RECEIVER}>'
 
 TREASURER_PK = 1
+
+MAGELLANS_SIGNER = Signer()

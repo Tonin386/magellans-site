@@ -24,6 +24,31 @@ def warehouse(request):
     tags = Tag.objects.all().order_by('name')
     items = Item.objects.all().order_by('name')
     completeProfile = request.user.first_name != "" and request.user.last_name != "" and request.user.phone != "" if type(request.user) == Member else True
+
+    if request.user.is_authenticated:
+        saved_order_pk = request.GET.get("order", "undefined")
+        saved_order = None
+        if not saved_order_pk == "undefined":
+            try:
+                print(f"Trying to retrieve order in URL for {request.user}.")
+                settings.MAGELLANS_SIGNER.unsign(saved_order_pk)
+                saved_order = Order.objects.get(pk=saved_order_pk, user=request.user, status=0)
+                print("Success.")
+            except:
+                print("Failed.")
+                saved_order_pk = "undefined"
+
+        if saved_order_pk == "undefined":
+            query = Order.objects.filter(user=request.user, status=0)
+            if query.count() >= 1:
+                print("Found temp order for this user. Using this one.")
+                saved_order = query[0]
+            else:
+                print("Creating a new order for this user.")
+                saved_order = Order.objects.create(user=request.user)
+                
+            saved_order_pk = settings.MAGELLANS_SIGNER.sign(saved_order.pk)
+
     return render(request, "warehouse.html", locals())
 
 def order(request):

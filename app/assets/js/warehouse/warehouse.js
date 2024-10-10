@@ -126,6 +126,38 @@ async function deleteTags() {
     }
 }
 
+async function addItemToTempOrder(pk_order, pk_item) {
+    let action = "add-item-tempOrder";
+    let params = {
+        action: action,
+        pk_order: pk_order,
+        pk_item: pk_item,
+    }
+
+    let response = await sendApiRequest(params, "warehouse");
+
+    if(response.status == "success") {
+        // do things 
+        return;
+    }
+}
+
+async function removeItemFromTempOrder(pk_order, pk_item) {
+    let action = "remove-item-tempOrder";
+    let params = {
+        action: action,
+        pk_order: pk_order,
+        pk_item: pk_item,
+    }
+
+    let response = await sendApiRequest(params, "warehouse");
+
+    if(response.status == "success") {
+        // do things 
+        return;
+    }
+}
+
 function colorAvailability(id = -1) {
     id = parseInt(id) || -1;
     var availabilitySelectors = document.querySelectorAll(".availability-selector");
