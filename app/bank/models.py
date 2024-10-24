@@ -109,7 +109,7 @@ class Expense(models.Model):
     comm = models.TextField(verbose_name="Description de la dépense...", null=True, blank=True)
     amount = models.FloatField(verbose_name="Montant")
     author = models.ForeignKey(Member, verbose_name="Auteur de la dépense", on_delete=models.DO_NOTHING)
-    proof = models.ImageField(verbose_name="Justificatif de paiement", null=True, blank=True, upload_to="img/proofs/")
+    proof = models.ImageField(verbose_name="Justificatif de paiement", null=True, blank=True, upload_to="img/proofs/") #TODO: change to FileField
     linked_invoice = models.ForeignKey(Invoice, verbose_name="Note de frais liée", null=True, blank=True, on_delete=models.DO_NOTHING)
     date_created = models.DateField(verbose_name="Date d'ajout", auto_now_add=True, editable=False)
 
