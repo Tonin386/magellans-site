@@ -176,6 +176,8 @@ app/assets/media/img/projects/*
 !app/assets/media/img/projects/default.png
 app/assets/media/img/proofs/*
 !app/assets/media/img/proofs/default.png
+app/assets/media/resources/*
+!app/assets/media/resources/example.png
 !migrations/__init__.py
 
 #Security data
