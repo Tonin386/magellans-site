@@ -32,7 +32,7 @@
 			</li>
 			<li class="nav-item">
 				<a class="nav-link" href="{% url 'projects' %}" title="Ce que nous avons fait chez Magellans">
-					Catalogue à projets
+					Catalogue des projets
 				</a>
 			</li>
 			{% if request.user.is_authenticated %}
@@ -41,6 +41,11 @@
 			</li>
 			<li class="nav-item">
 				<a class="nav-link" href="{% url 'create-funding-request' %}">Demande d'aide à projets</a>
+			</li>
+			<li class="nav-item">
+				<a class="nav-link" href="{% url 'resources' %}" title="Des ressources et des fichiers utiles">
+					Ressources pour les membres
+				</a>
 			</li>
 			{% endif %}
 			{% if request.user.is_staff %}
