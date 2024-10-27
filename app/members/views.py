@@ -20,12 +20,6 @@ from .forms import *
 import secrets
 import string
 
-@login_required("Tableau de bord membres", "Dashboard pour les membres du site de l'association Magellans.")
-def members(request):
-    title = request.title
-    og_description = request.og_description
-    return render(request, "members.html", locals())
-
 @login_required("Mon profil", "Accéder à son profil personnel sur le site de l'association Magellans.")
 def my_profile(request):
     title = request.title
