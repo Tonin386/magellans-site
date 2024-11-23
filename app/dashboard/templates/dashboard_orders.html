@@ -17,8 +17,19 @@ Gestion des commandes et réservations du magasin de matériel de l'association 
 {% block content %}
 
 <div class="container-fluid p-3">
+    
     <h1 class="display-5 text-center">Dashboard commandes</h1>
     <div class="row mt-5 pt-5">
+        <div class="col-lg-12">
+            <div class="input-group mb-3 w-25 m-auto">
+                <span class="input-group-text" id="basic-addon1">Inclure les commandes non finalisées</span>
+                <div class="form-control">
+                    <div class="form-check form-switch">
+                        <input class="form-check-input w-75 mx-auto" type="checkbox" id="includeTempOrders">
+                    </div>
+                </div>
+            </div>
+        </div>
         <div class="col-lg-12">
             <table class="table table-striped align-middle display responsive" id="orders-table">
                 <thead>
@@ -69,6 +80,22 @@ Gestion des commandes et réservations du magasin de matériel de l'association 
             {targets: 7, type: "frdatetime"},
             ]
         });
+        
+        function applyFilter() {
+            table.column(7).search('^(?!Commande non-effectuée).*', true, false).draw();
+        }
+        
+        $('#includeTempOrders').change(function() {
+            if (!this.checked) {
+                applyFilter();
+            } else {
+                table.column(7).search('').draw();
+            }
+        });
+        
+        if (!$('#includeTempOrders').prop('checked')) {
+            applyFilter();
+        }
     });
 </script>
 

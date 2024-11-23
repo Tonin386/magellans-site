@@ -60,7 +60,7 @@ Catalogue du magasin de l'association Magellans. Gestion des réservations et co
     </div>
     <div class="row" id="item-list">
         {% for item in items %}
-        <div class="col-xl-2 col-lg-4 col-md-6 my-1" id="item{{item.pk}}">
+        <div class="col-xxl-2 col-lg-4 col-md-6 my-1" id="item{{item.pk}}">
             <div class="card tag-card">
                 
                 {% if request.user.is_staff %}
@@ -86,14 +86,21 @@ Catalogue du magasin de l'association Magellans. Gestion des réservations et co
                 </div>
                 <ul class="list-group list-group-flush">
                     <li class="list-group-item">
-                        {% for tag in item.tags.all %}
+                        {% for tag in item.tags.all %}  
                         <span class="badge badge-tag text-light fs-6 my-1" style="background-color: {{ tag.color }};"> {{ tag.name }}</span>
                         {% endfor %}
                     </li>              
-                    <li class="list-group-item">
-                        <div class="input-group input-group-md">
-                            <input aria-describedby="place-order" type="number" class="form-control place-order-input" id="itemOrder{{item.pk}}" value=0 min="0" max="{{ item.max_stock }}" {% if item.now_available == 0 or item.availability != 1 %} disabled {% endif %}>
-                            <span class="input-group-text col-sm-8 bg-light" id="place-order"> réservé(s)</span>
+                    <li class="list-group-item text-center">
+                        <div class="row">
+                            <div class="col-3 text-end">
+                                <button class="btn btn-danger w-75 removeItemOrderBtn" id="removeItemOrderBtn{{item.pk}}" onclick="removeItemFromTempOrder({{ saved_order_pk }}, {{ item.pk }})" {% if not item.pk in quantities %} disabled {% endif %}>-</button>
+                            </div>
+                            <div class="col-6">
+                                <div class="btn bg-primary text-white w-50 p-1 cursor-none" style="cursor: default;" id="itemOrderCount{{item.pk}}"> {% if item.pk in quantities %} {{ quantities|get_item:item.pk }} {% else %} 0 {% endif %} </div>
+                            </div>
+                            <div class="col-3 text-start">
+                                <button class="btn btn-success w-75 addItemOrderBtn" id="addItemOrderBtn{{item.pk}}" onclick="addItemToTempOrder({{ saved_order_pk }}, {{ item.pk }})" {% if quantities|get_item:item.pk >= item.max_stock or item.availability != 1 %} disabled {% endif %} max="{{ item.max_stock }}">+</button>
+                            </div>
                         </div>
                     </li>
                     {% if item.availability == 1 %}
@@ -112,10 +119,10 @@ Catalogue du magasin de l'association Magellans. Gestion des réservations et co
     </div>
     
     <div class="m-auto my-2" id="sticky-buttons">
-        <a class="btn btn-info position-relative {% if not request.user.is_authenticated or not completeProfile %} disabled {% endif %} mt-2" id="orderButton" href="/magasin/commande">
+        <a class="btn btn-info position-relative {% if not request.user.is_authenticated or not completeProfile %} disabled {% endif %} mt-2" id="orderButton" href="{% url 'order' pk=saved_order_pk%}">
             <i class="fa-solid fa-basket-shopping"></i>
             Voir ma réservation
-            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="nbOrderedItems">0</span>
+            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="nbOrderedItems">{{ total_items }}</span>
         </a>
         
         {% if request.user.is_staff %}
@@ -254,7 +261,7 @@ Catalogue du magasin de l'association Magellans. Gestion des réservations et co
 
 {% if request.user.is_authenticated %}
 <script>
-    var saved_order = "{{ saved_order_pk }}";
+    var saved_order = "{{ saved_order_pk }}" || null;
 </script>
 {% endif %}
 

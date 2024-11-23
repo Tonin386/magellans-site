@@ -1,4 +1,3 @@
-from django.core.signing import Signer
 from dotenv import load_dotenv
 from pathlib import Path
 import os
@@ -192,5 +191,3 @@ EMAIL_RECEIVER = os.getenv("EMAIL_RECEIVER")
 DEFAULT_FROM_EMAIL = f'"Contact Magellans" <{EMAIL_RECEIVER}>'
 
 TREASURER_PK = 1
-
-MAGELLANS_SIGNER = Signer()
