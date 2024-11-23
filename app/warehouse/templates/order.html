@@ -18,9 +18,25 @@ Effectuer une commande ou une réservation auprès du magasin de l'association M
 {% endblock %}
 
 {% block content %}
+{% if request.user != order.user %}
+<div class="container-fluid mt-3">
+    <div class="card m-auto text-center col-xl-6 border-danger border-4 rounded-4">
+        <div class="card-header bg-danger text-light fs-5">Interdit (403)</div>
+        <div class="card-body">
+            <h5 class="card-title">
+                Vous n'êtes pas censé.e être ici.
+            </h5>
+            <p class="card-text">Veuillez cliquer sur le bouton ci-dessous pour retourner à l'accueil membres.</p>
+            <a class="btn btn-primary" href="{% url 'members' %}">Retour</a>
+        </div>
+        <div class="card-footer bg-danger fs-5 text-light">
+            Espace réservé à la personne à l'origine de cette commande.
+        </div>
+    </div>
+</div>
+{% else %}
 <form method="post" action="{% url 'place-order' %}" class="needs-validation" novalidate>
-    <input type="hidden" id="id_pks" name="pks" value="{{ pks }}">
-    <input type="hidden" id="id_quantities" name="quantities" value="{{ values }}">
+    <input type="hidden" id="order_pk" name="order_pk" value="{{ order_pk }}">
     {% csrf_token %}
     <div class="card col-lg-10 mx-lg-auto mt-3 mx-2">
         <div class="card-header bg-primary">
@@ -122,5 +138,6 @@ Effectuer une commande ou une réservation auprès du magasin de l'association M
 </script>
 
 <script src="{% static 'js/warehouse/order.js' %}"></script>
+{% endif %}
 
 {% endblock %}

@@ -37,9 +37,10 @@ def verify_token_permissions(request):
     
     if token == "undefined" or user == None:
         permissions['warehouse'] += ['read']
-        return permissions
+        return permissions, user
     else:
         permissions['bank'] += ['write-expense']
+        permissions['warehouse'] += ['order']
         
     if user.is_staff:
         permissions['fullpower'] += ['read']
@@ -56,7 +57,7 @@ def verify_token_permissions(request):
             permissions['bank'] += ['read', 'write', 'write-operation']
         
     if user.is_superuser:
-        permissions['fullpower'] = ['read', 'write', 'write-operation']
+        permissions['fullpower'] = ['read', 'write', 'write-operation', 'order']
         
     return permissions, user
 
@@ -529,14 +530,14 @@ def api_members(request):
 def api_warehouse(request):
     permissions, user = verify_token_permissions(request)
     app_id = 6
-    
+
     body_post = json.loads(request.body.decode("utf-8"))
             
     action = body_post.get("action", "undefined")
     
     if action == "add-item":
         if not 'write' in permissions['warehouse'] + permissions['fullpower']:
-            createNotification("Ajout objet", "add-item", app_id, 3, "Vous n'avez pas les permissions suffisantes pour effectuer cette action.", user)
+            createNotification("Ajout objet à la commande", "add-item", app_id, 3, "Vous n'avez pas les permissions suffisantes pour effectuer cette action.", user)
             return JsonResponse({"status": "error", "message": "Insufficient permissions"})
         
         name = body_post.get("name", "undefined")
@@ -574,11 +575,11 @@ def api_warehouse(request):
                     new_item.image.save(path, image)
             except Exception as e:
                 new_item.delete()
-                createNotification("Ajout objet", "add-item", app_id, 3, f"Erreur lors de l'import de l'image. Veuillez réessayer.<hr>{str(e)}", user, str(e))
+                createNotification("Ajout objet à la commande", "add-item", app_id, 3, f"Erreur lors de l'import de l'image. Veuillez réessayer.<hr>{str(e)}", user, str(e))
                 return JsonResponse({"status": "error", "error": str(e), "message": "There was a problem when decoding image"})
         
         new_item.save()
-        createNotification("Ajout objet", "add-item", app_id, 0, "L'objet a bien été ajouté au magasin.", user)
+        createNotification("Ajout objet à la commande", "add-item", app_id, 0, "L'objet a bien été ajouté au magasin.", user)
         return JsonResponse({"status": "success", "message": "The item was successfully added"})
         
     if action == "add-tag":
@@ -761,13 +762,92 @@ def api_warehouse(request):
             except Exception as e:
                 createNotification("Email commande", "email-order_status", app_id, 3, f"Une erreur est survenue.<hr>Erreur : {str(e)}", user, str(e))
                 return JsonResponse({"status": "error", "message": f"An error occured<hr>{str(e)}"})
-                    
+            
+    if action == "add-item-tempOrder":
+        if not 'order' in permissions['warehouse'] + permissions['fullpower']:
+            createNotification("Ajout à la commande", "add-item-tempOrder", app_id, 3, "Vous n'avez pas les permissions suffisantes pour effectuer cette action.", user)
+            return JsonResponse({"status": "error", "message": "Insufficient permissions"})
+        
+        pk_order = body_post.get("pk_order", "undefined")
+        pk_item = body_post.get("pk_item", "undefined")
+
+
+        if not "undefined" in [pk_order, pk_item]:
+            try:
+                current_order = Order.objects.get(pk=pk_order)
+                if current_order.user.api_token != user.api_token:
+                    createNotification("Ajout à la commande", "add-item-tempOrder", app_id, 3, f"Vous ne pouvez pas modifier une commande temporaire qui n'est pas la vôtre.", user, str(e))
+                    return JsonResponse({"status": "error", "message": f"403 forbidden!"})
+                item = Item.objects.get(pk=pk_item)
+                quantities = current_order.load_quantities()
+                print(item)
+                item_pk = str(item.pk)
+                if item_pk in quantities:
+                    quantities[item_pk] += 1
+                else:
+                    print("not found")
+                    quantities[item_pk] = 1
+
+                current_order.quantities = json.dumps(quantities)
+                current_order.save()
+
+                total_items = sum([int(quantities[x]) for x in quantities])
+                print(current_order.quantities)
+                createNotification("Ajout à la commande", "add-item-tempOrder", app_id, 0, f"Ajout de 1 {item.name}", user)
+                return JsonResponse({"status": "success", "message": "Invoice updated successfully", "total_items": total_items, "new_count": quantities[item_pk]})
+
+            except Exception as e:
+                createNotification("Ajout à la commande", "add-item-tempOrder", app_id, 3, f"Une erreur est survenue.<hr>Erreur : {str(e)}", user, str(e))
+                return JsonResponse({"status": "error", "message": f"An error occured<hr>{str(e)}"})
+            
+    if action == "remove-item-tempOrder":
+        if not 'order' in permissions['warehouse'] + permissions['fullpower']:
+            createNotification("Retrait de la commande", "remove-item-tempOrder", app_id, 3, "Vous n'avez pas les permissions suffisantes pour effectuer cette action.", user)
+            return JsonResponse({"status": "error", "message": "Insufficient permissions"})
+        
+        pk_order = body_post.get("pk_order", "undefined")
+        pk_item = body_post.get("pk_item", "undefined")
+
+
+        if not "undefined" in [pk_order, pk_item]:
+            try:
+                current_order = Order.objects.get(pk=pk_order)
+                if current_order.user.api_token != user.api_token:
+                    createNotification("Retrait de la commande", "remove-item-tempOrder", app_id, 3, f"Vous ne pouvez pas modifier une commande temporaire qui n'est pas la vôtre.", user, str(e))
+                    return JsonResponse({"status": "error", "message": f"403 forbidden!"})
+                item = Item.objects.get(pk=pk_item)
+                quantities = current_order.load_quantities()
+
+                item_pk = str(item.pk)
+                new_count = 0
+                if item_pk in quantities:
+                    quantities[item_pk] -= 1
+                    if quantities[item_pk] <= 0:
+                        del quantities[item_pk]
+                        new_count = 0
+                    else:
+                        new_count = quantities[item_pk]
+
+                current_order.quantities = json.dumps(quantities)
+                current_order.save()
+
+                total_items = sum([int(quantities[x]) for x in quantities])
+                print(current_order.quantities)
+                createNotification("Retrait de la commande", "remove-item-tempOrder", app_id, 0, f"Retrait de 1 {item.name}", user)
+                return JsonResponse({"status": "success", "message": "Invoice updated successfully", "total_items": total_items, "new_count": new_count})
+
+            except Exception as e:
+                createNotification("Retrait de la commande", "remove-item-tempOrder", app_id, 3, f"Une erreur est survenue.<hr>Erreur : {str(e)}", user, str(e))
+                return JsonResponse({"status": "error", "message": f"An error occured<hr>{str(e)}"})
+            
+        
+
+
     createNotification("Erreur inconnue", "unknown error", app_id, 3, "Une erreur inconnue est survenue.", user)
     return JsonResponse({"status": "error", "message": "Uncaught error."})
 
 @csrf_exempt
 def webhook_helloasso(request):
-    print("HelloAsso request received")
     if not request.method == "POST":
         print("BAD HELLOASSO REQUEST RECEIVED")
         return

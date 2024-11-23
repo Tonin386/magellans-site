@@ -3,6 +3,7 @@ from django.views.decorators.http import require_POST
 from django.template.loader import render_to_string
 from django.views.generic.edit import UpdateView
 from django.db.models.base import Model as Model
+from django.template.defaulttags import register
 from django.core.files.base import ContentFile
 from django.utils.safestring import mark_safe
 from django.db.models.query import QuerySet
@@ -18,28 +19,54 @@ from django.conf import settings
 from .models import *
 from .forms import *
 
+@register.filter
+def get_item(dictionary, key):
+    return dictionary.get(key)
+
 def warehouse(request):
     title = "Magasin"
-    og_description = "Magasin et liste du matériel proposé par l'association Magellans. "
+    og_description = "Magasin et liste du matériel proposé par l'association Magellans."
     tags = Tag.objects.all().order_by('name')
     items = Item.objects.all().order_by('name')
     completeProfile = request.user.first_name != "" and request.user.last_name != "" and request.user.phone != "" if type(request.user) == Member else True
+
+    if request.user.is_authenticated:
+        saved_order_pk = request.GET.get("order", "undefined")
+        saved_order = None
+        if not saved_order_pk == "undefined":
+            try:
+                saved_order = Order.objects.get(pk=saved_order_pk, user=request.user, status=0)
+            except:
+                saved_order_pk = "undefined"
+
+        if saved_order_pk == "undefined":
+            query = Order.objects.filter(user=request.user, status=0)
+            if query.count() >= 1:
+                saved_order = query[0]
+            else:
+                saved_order = Order.objects.create(user=request.user)
+            
+            saved_order_pk = saved_order.pk
+            quantities = saved_order.load_quantities()
+            keys = list(quantities.keys())
+            for key in keys:
+                quantities[int(key)] = quantities[key]
+                del quantities[key]
+
+        total_items = sum([int(quantities[x]) for x in quantities])
+
     return render(request, "warehouse.html", locals())
 
-def order(request):
+def order(request, pk):
     title = "Réservation"
     og_description = "Effectuer une commande ou une réservation auprès du magasin de l'association Magellans."
-    pks = request.GET.get("pks", "undefined")
-    values = request.GET.get("values", "undefined")
+    order_pk = pk
+    order = Order.objects.get(pk=order_pk)
+    quantities = order.load_quantities()
+    pks = list(quantities.keys())
+    values = list(quantities.values())
     
-    items = []
-    
-    if not pks == "undefined":
-        pks = [int(pk) for pk in pks.replace(" ", "").split(",")]
-        items = [Item.objects.get(pk=pk) for pk in pks] #Important to keep mapping intact
-        
-    if not values == "undefined":
-        values = [int(value) for value in values.replace(" ", "").split(",")]
+    items = [Item.objects.get(pk=pk) for pk in pks] #Important to keep mapping intact
         
     items_values = list(zip(items, values))
     values = ",".join([str(x) for x in values])
@@ -64,12 +91,11 @@ def placeOrder(request):
     
     if form.is_valid():
         try:
+            order_pk = request.POST.get("order_pk", "undefined")
             startDate = request.POST.get('start_date')
             endDate = request.POST.get('end_date')
             project_name = request.POST.get('project_name')
             message = mark_safe(request.POST.get('message'))
-            pks = request.POST.get("pks", "undefined")
-            quantities = request.POST.get("quantities", "undefined")
             pu_first_name = request.POST.get("pickup_first_name", request.user.first_name())
             pu_last_name = request.POST.get("pickup_last_name", request.user.last_name())
             pu_phone = request.POST.get("pickup_phone", request.user.phone())
@@ -85,32 +111,19 @@ def placeOrder(request):
 
             pu_phone = pu_phone.replace(" ", "").replace(".", "")
 
-            if pks in ["undefined", ""] or quantities in ["undefined", ""]:
-                return render(request, "place_order.html", locals())
-            
-            pks = pks.split(",")
-            
-            items = Item.objects.filter(pk__in=pks)
-            items_values = list(zip(items, quantities))
+            order = Order.objects.get(pk=order_pk)
+            order.date_start = startDate
+            order.date_end = endDate
+            order.project_name = project_name
+            order.message = message
 
-            quantity_str = ""
-            for item, quantity in items_values:
-                quantity_str += str(quantity) + ","
+            order.pickup_first_name = pu_first_name
+            order.pickup_last_name = pu_last_name
+            order.pickup_phone = pu_phone
 
-            new_order = Order.objects.create(
-                user=request.user,
-                date_start=startDate, 
-                date_end=endDate, 
-                project_name=project_name,
-                message=message,
-                quantities=quantities,
-                pickup_first_name=pu_first_name,
-                pickup_last_name=pu_last_name,
-                pickup_phone=pu_phone,
-            )
+            order.status = 1
 
-            new_order.items.set(items)
-            new_order.save()
+            order.save()
 
             subject = "Demande de réservation de matériel"
             user = request.user
@@ -190,8 +203,9 @@ class OrderDetailView(DetailView):
         context =  super().get_context_data(**kwargs)
 
         obj = self.object
-        quantities = obj.quantities.split(",")
-        item_set = zip(quantities, obj.items.all())
+        quantities = obj.load_quantities()
+        items = [Item.objects.get(pk=pk) for pk in list(quantities.keys())]
+        item_set = zip(quantities.values(), items)
 
         context['item_set'] = item_set
         context['title'] = f"Récapitulatif commande #{obj.pk}"

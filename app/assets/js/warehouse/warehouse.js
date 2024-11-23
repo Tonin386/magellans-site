@@ -126,6 +126,71 @@ async function deleteTags() {
     }
 }
 
+async function addItemToTempOrder(pk_order, pk_item) {
+    let action = "add-item-tempOrder";
+    let params = {
+        token: api_token,
+        action: action,
+        pk_order: pk_order,
+        pk_item: pk_item,
+    }
+
+    let response = await sendApiRequest(params, "warehouse");
+
+    if(response.status == "success") {
+        let button = document.querySelector("#addItemOrderBtn" + pk_item);
+
+        let totalItems = response.total_items;
+        document.querySelector("#nbOrderedItems").innerText = totalItems;
+
+        let newCount = response.new_count;
+
+        if($(button).attr('max') <= newCount) {
+            button.disabled = true;
+        }
+
+        let orderCount = document.querySelector("#itemOrderCount" + pk_item);
+        orderCount.innerText = newCount;
+
+        let friendButton = document.querySelector("#removeItemOrderBtn" + pk_item);
+        if(friendButton.disabled) {
+            $(friendButton).removeAttr("disabled");
+        }
+    }
+}
+
+async function removeItemFromTempOrder(pk_order, pk_item) {
+    let action = "remove-item-tempOrder";
+    let params = {
+        token: api_token,
+        action: action,
+        pk_order: pk_order,
+        pk_item: pk_item,
+    }
+
+    let response = await sendApiRequest(params, "warehouse");
+
+    if(response.status == "success") {
+        let button = document.querySelector("#removeItemOrderBtn" + pk_item);
+
+        let totalItems = response.total_items;
+        document.querySelector("#nbOrderedItems").innerText = totalItems;
+
+        let newCount = response.new_count;
+        if(newCount <= 0) {
+            button.disabled = true;
+        }
+
+        let orderCount = document.querySelector("#itemOrderCount" + pk_item);
+        orderCount.innerText = newCount;
+
+        let friendButton = document.querySelector("#addItemOrderBtn" + pk_item);
+        if(friendButton.disabled) {
+            $(friendButton).removeAttr("disabled");
+        }
+    }
+}
+
 function colorAvailability(id = -1) {
     id = parseInt(id) || -1;
     var availabilitySelectors = document.querySelectorAll(".availability-selector");
@@ -193,7 +258,6 @@ function filterTagItems() {
         }
 
         var showItem = false;
-        console.log(selectedTags);
 
         selectedTags.forEach(selectedTag => {
             if(item.tagNames.includes(selectedTag)) {
@@ -223,33 +287,11 @@ function displayItems() {
     });
 }
 
-function updateOrder() {
-    let totalItems = 0;
-    let pks = [];
-    let values = [];
-
-    for(itemPk in orderedItems) {
-        totalItems += parseInt(orderedItems[itemPk]);
-        pks.push(itemPk);
-        values.push(orderedItems[itemPk]);
-    }
-
-    document.querySelector("#nbOrderedItems").innerText = totalItems;
-
-    let params = new URLSearchParams();
-    params.append("pks", pks);
-    params.append("values", values);
-
-    let orderLink = document.querySelector("#orderButton");
-    orderLink.href = `/magasin/commande?${params.toString()}`;
-}
-
 var tagSelectButtons = [];
 var itemsCards = [];
 var itemDatabase = [];
 var itemsMatchingSearch = [];
 var itemsMatchingTags = [];
-var orderedItems = {};
 
 document.addEventListener('DOMContentLoaded', function() {
     
@@ -299,15 +341,6 @@ document.addEventListener('DOMContentLoaded', function() {
     var searchBar = document.querySelector("#searchBar");
     searchBar.addEventListener("input", function(event) {
         filterSearchItems(event.target.value);
-    });
-
-    var inputOrders = document.querySelectorAll(".place-order-input");
-    inputOrders.forEach(inputOrder => {
-        inputOrder.addEventListener("change", function(event) {
-            let pk = inputOrder.id.replace("itemOrder", "");
-            orderedItems[pk] = event.target.value;
-            updateOrder();
-        })
     });
 
     colorAvailability();

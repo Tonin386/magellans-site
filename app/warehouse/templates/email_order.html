@@ -6,7 +6,7 @@ Téléphone : {{ user.phone }}
 Projet : {{ project_name }}
 
 Vous pouvez afficher toutes les informations de la commande et de son suivi ici :
-https://magellans.fr{% url 'order-detail' pk=new_order.pk %}
+https://magellans.fr{% url 'order-detail' pk=order.pk %}
 
 Dates de réservation : {{ formatted_startDate|date:"l d F Y H:i"|capfirst }} à {{ formatted_endDate|date:"l d F Y H:i"|capfirst }}
 
@@ -14,7 +14,7 @@ Message lié à la demande :
 {{ message|safe }}
 
 Personne chargée de la récupération : 
-{{ new_order.pickup_first_name }} {{ new_order.pickup_last_name }} {{ new_order.pickup_phone_formatted }} 
+{{ order.pickup_first_name }} {{ order.pickup_last_name }} {{ order.pickup_phone_formatted }} 
 
 Bonne réception,
 L'équipe Magellans.
