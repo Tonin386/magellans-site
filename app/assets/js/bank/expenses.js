@@ -4,6 +4,16 @@ function addLocalExpense() {
     let amount = document.querySelector("#expense_amount").value.trim();
     let proof = document.querySelector("#expense_proof").files[0];
     let comm = document.querySelector("#expense_comm").value.trim();
+
+    let formattedDate = Date.parse(date);
+
+    const dateFormatter = new Intl.DateTimeFormat("fr-FR", {
+        year: "numeric",
+        month: "long",
+        day: "numeric"
+    });
+    
+    formattedDate = dateFormatter.format(formattedDate);
     
     if (name == "" || date == "" || amount == "") {
         
@@ -38,14 +48,14 @@ function addLocalExpense() {
     
     let cardText = document.createElement("p");
     cardText.classList.add("card-text");
-    cardText.innerHTML = `<strong>Date :</strong> ${date}<br><strong>Montant :</strong> ${amount}€<br> ${comm}`;
+    cardText.innerHTML = "";
     
     if (proof) {
-        let image = document.createElement("img");
-        image.classList.add("img-fluid");
-        image.src = URL.createObjectURL(proof);
-        cardBody.appendChild(image);
+        cardText.innerHTML = `<strong>Justificatif : </strong>${proof['name']} <br>`;
     }
+
+
+    cardText.innerHTML += `<strong>Date :</strong> ${formattedDate}<br><strong>Montant :</strong> ${amount}€<br> ${comm}`;
     
     buttonDelete.appendChild(trashIcon);
     

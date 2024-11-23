@@ -2,7 +2,7 @@
 Reçue le {{ instance.date_created|date:"l d F Y H:i"|capfirst}}.
 
 Voici le message lié à la demande : 
-"{{ instance.comm }}"
+"{{ instance.comm|safe }}"
 
 Détails des dépenses :
 ----------------------
@@ -13,6 +13,8 @@ Détails des dépenses :
 {{ expense.comm|safe }}
 ----------------------
 {% endfor %}
+
+Accédez à cette note de frais en ligne : https://magellans.fr{% url 'invoice-detail' pk=instance.pk %}
 
 Vous trouverez en pièces jointes les justificatifs de cette note de frais.
 

@@ -90,3 +90,18 @@ class RoleMap(models.Model):
             models.UniqueConstraint(fields=['member', 'project'], name='unique_user_project_role')
         ]
         verbose_name = "Rôle"
+
+class ResourceFile(models.Model):
+    name = models.CharField("Nom", max_length=255)
+    associated_file = models.FileField("Fichier associé", upload_to="resources/")
+    desc = models.TextField("Description du fichier", null=True, blank=True)
+    category = models.CharField("Catégorie", max_length=255, null=True, blank=True)
+
+    def extension(self):
+        return str(self.associated_file).split(".")[1].upper()
+
+    def __str__(self):
+        return self.name
+    
+    class Meta:
+        verbose_name = "Ressource"

@@ -6,12 +6,6 @@ from warehouse.models import *
 from members.models import *
 from .models import *
 
-@staff_required("Tableau de bord de Magellans", "Page du dashboard pour l'administration de l'association Magellans.")
-def dashboard_home(request):
-    title = request.title
-    og_description = request.og_description
-    return render(request, "dashboard.html", locals())
-
 @staff_required("Tableau de bord utilisateurs", "Page de gestion des membres de l'association Magellans.")
 def dashboard_members(request):
     title = request.title

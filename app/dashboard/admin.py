@@ -11,5 +11,9 @@ class ProjectAdmin(admin.ModelAdmin):
     search_fields = ('name', 'genre', 'short_desc', 'desc', )
     ordering = ('shoot_date', 'name', 'release_date', 'name')
 
+class ResourceFileAdmin(admin.ModelAdmin):
+    list_display = ('name', 'associated_file', 'category', 'desc')
+
 admin.site.register(ProjectFundingRequest, ProjectFundingRequestAdmin)
 admin.site.register(Project, ProjectAdmin)
+admin.site.register(ResourceFile, ResourceFileAdmin)

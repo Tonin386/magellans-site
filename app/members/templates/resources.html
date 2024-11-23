@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}
+{% include "title.html" with title=title|default:"Ressources pour les membres" %}
+{% endblock %}
+
+{% block head_description %}
+Ressources mises à disposition des membres de Magellans.
+{% endblock %}
+
+{% block nav %}
+{% include "nav.html" %}
+{% endblock %}
+
+{% block content %}
+
+<!-- Callbacks function -->
+<script>
+    var callback_addResource = function(){};
+</script>
+
+<div class="container-fluid p-3">
+    <h1 class="display-5 text-center">Ressources membres</h1>
+    <div class="row mt-5 pt-5">
+        <div class="col-lg-12">
+            <table class="table table-striped align-middle display responsive nowrap" id="resources-table">
+                <thead>
+                    <tr>
+                        <th scope="col">Nom</th>
+                        <th scope="col">Type de fichier</th>
+                        <th scope="col">Description</th>
+                        <th scope="col">Catégorie</th>
+                    </tr>
+                </thead>
+                <tbody class="table-group-divider">
+                    {% for resource in resources %}
+                    <tr id="resource{{resource.pk}}">
+                        <td>
+                            <a href="{% static '/media/' %}{{resource.associated_file}}"  class="link" target="_blank">{{ resource.name }}</a>
+                        </td>
+                        <td>{{ resource.extension }}</td>
+                        <td>{{ resource.desc }}</td>
+                        <td>{{ resource.category }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    {% if request.user.is_staff %}
+    <div id="sticky-buttons">
+        <button class="btn btn-success" type="button" data-bs-toggle="modal" data-bs-target="#addResource">
+            <i class="fa-solid fa-plus"></i>
+            Ajouter une ressource
+        </button>
+    </div>
+    {% endif %}
+</div>
+
+<!-- ADD RESOURCE MODAL -->
+<div class="modal fade" id="addResource" data-bs-backdrop="static" data-bs-keyboard="true" tabindex="-1" aria-labelledby="addResourceModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-md">
+        <div class="modal-content">
+            <div class="modal-header bg-primary">
+                <h1 class="modal-title fs-5" id="addResourceModalLabel">Ajouter une ressource pour les membres</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Annuler"></button>
+            </div>
+            <div class="modal-body">
+                <div class="input-group input-group-md mt-3">
+                    <input type="text" class="form-control" id="resource_name" placeholder="Nom">
+                </div>
+                <div class="input-group input-group-md mt-3">
+                    <span class="input-group-text col-xl-2 text-dark" id="span_file">Fichier</span>
+                    <input aria-describedby="span_file" type="file" class="form-control" id="resource_file">
+                </div>
+                <div class="input-group input-group-md mt-3">
+                    <input type="text" class="form-control" id="resource_desc" placeholder="Description">
+                </div>
+                <div class="input-group input-group-md mt-3">
+                    <input type="text" class="form-control" id="resource_category" placeholder="Catégorie">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Annuler</button>
+                    <button type="button" class="btn btn-success" onclick="addResource(callback_addResource)" data-bs-dismiss="modal">Ajouter la ressource</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function() {
+        var table1 = new DataTable('#resources-table', {
+            order: [[0, "asc"]],
+            columnDefs: [
+            {responsivePriority: 1, targets: 0},
+            {responsivePriority: 2, targets: 1},
+            {responsivePriority: 3, targets: 2},
+            {responsivePriority: 4, targets: 3},
+            ]
+        });
+    });
+</script>
+<script src="{% static 'js/api/api.js' %}"></script>
+<script src="{% static 'js/dashboard/resources.js' %}"></script>
+
+{% endblock %}

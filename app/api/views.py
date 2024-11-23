@@ -45,7 +45,7 @@ def verify_token_permissions(request):
     if user.is_staff:
         permissions['fullpower'] += ['read']
         permissions['dashboard'] += ['read', 'write']
-        permissions['members'] += ['read', 'write']
+        permissions['members'] += ['read', 'write', 'write-resource']
         
         if user.site_person.role == "G":
             permissions['warehouse'] += ['write']
@@ -121,7 +121,8 @@ def api_bank(request):
         if not proof in ['undefined', '']:
             try:
                 image_data = proof.split(",")
-                extension = image_data[0].replace("data:image/", "").replace(";base64", "")
+                data_type_regex = r"^data:.*?/(.*?);"
+                extension = re.findall(data_type_regex, image_data[0])[0]
                 proof = ContentFile(base64.b64decode(image_data[1]))
                 path = f"expense{expense.pk}.{extension}"
                 expense.proof.save(path, proof)
@@ -488,6 +489,41 @@ def api_members(request):
 
         createNotification("Reinitialisation membres", "reset-members", app_id, 0, "Les membres ont bien été réinitialisés. Rafraichissez la page pour voir les modifications", user)
         return JsonResponse({"status": "success", "message": "Project successfully edited."})
+    
+    if action == "add-resource":
+        if not 'write-resource' in permissions['members'] + permissions['fullpower']:
+            createNotification("Ajout ressource", "add-resource", app_id, 3, "Vous n'avez pas les permissions suffisantes pour effectuer cette action.", user)
+            return JsonResponse({"status": "error", "message": "Insufficient permissions"})
+        
+        name = body_post.get("name", "undefined")
+        file = body_post.get("file", "undefined")
+        desc = body_post.get("desc", "")
+        category = body_post.get("category", "")
+
+        if file in ['undefined', ''] or name in ['undefined', '']:
+            createNotification("Ajout ressource", "add-resource", app_id, 3, "Veuillez renseigner les champs nécessaires (Nom et Fichier).", user)
+            return JsonResponse({"status": "error", "message": "Missing mandatory fields."})
+
+        resource = ResourceFile.objects.create(
+            name=name,
+            desc=desc,
+            category=category
+        )
+
+        try:
+            resource_data = file.split(",")
+            data_type_regex = r"^data:.*?/(.*?);"
+            extension = re.findall(data_type_regex, resource_data[0])[0]
+            file = ContentFile(base64.b64decode(resource_data[1]))
+            path = f"resource{resource.pk}.{extension}"
+            resource.associated_file.save(path, file)
+        except Exception as e:
+            createNotification("Ajout ressource", "add-resource", app_id, 3, f"Erreur lors de l'import du fichier. Veuillez réessayer.<hr>{str(e)}", user, str(e))
+            return JsonResponse({"status": "error", "error": str(e), "message": "There was a problem when decoding file"})
+    
+        resource.save()
+        createNotification("Ajout ressource", "add-resource", app_id, 0, "La ressource a bien été ajoutée.", user)
+        return JsonResponse({"status": "success", "message": "Expense successfully created.", "id": resource.pk})
     
     return JsonResponse({"status": "error", "message": "Uncaught error."})
 

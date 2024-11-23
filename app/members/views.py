@@ -7,6 +7,7 @@ from django.template.loader import render_to_string
 from django.utils.encoding import force_bytes
 from django.utils.safestring import mark_safe
 from django.views.generic import DetailView
+from dashboard.models import ResourceFile
 from django.core.mail import send_mail
 from django.shortcuts import redirect
 from django.contrib import messages
@@ -19,12 +20,6 @@ from bank.forms import *
 from .forms import *
 import secrets
 import string
-
-@login_required("Tableau de bord membres", "Dashboard pour les membres du site de l'association Magellans.")
-def members(request):
-    title = request.title
-    og_description = request.og_description
-    return render(request, "members.html", locals())
 
 @login_required("Mon profil", "Accéder à son profil personnel sur le site de l'association Magellans.")
 def my_profile(request):
@@ -86,6 +81,13 @@ def create_funding_request(request):
             return render(request, "create_funding_request_success.html", {'title': title, 'og_description': og_description})
 
     return render(request, "create_funding_request.html", locals())
+
+@login_required("Ressources pour les membres", "Ressources mises à disposition des membres de Magellans.")
+def resources(request):
+    title = request.title
+    og_description = request.og_description
+    resources = ResourceFile.objects.all()
+    return render(request, "resources.html", locals())
 
 def register(request):
     title = "Inscription"

@@ -81,10 +81,8 @@ Gestion des membres de l'association Magellans.
                     {% endfor %}
                     
                 </tbody>
-            </tbody>
-        </table>
-    </div>
-    <div class="row mt-5 pt-5"></div>
+            </table>
+        </div>
         <div class="col-lg-12">
             <h2 class="title">Liste des personnes externes</h2>
             <table class="table table-striped align-middle display responsive nowrap" id="externals-table">
@@ -142,20 +140,20 @@ Gestion des membres de l'association Magellans.
                     {% endfor %}
                     
                 </tbody>
-            </tbody>
-        </table>
+            </table>
+        </div>
     </div>
-</div>
-
-<div id="sticky-buttons">
-    <button class="btn btn-success" type="button" data-bs-toggle="modal" data-bs-target="#addExtUserForm">
-        <i class="fa-solid fa-plus"></i>
-        Ajouter un profil externe
-    </button>
-    <button class="btn btn-danger" type="button" data-bs-toggle="modal" data-bs-target="#resetMembersDialog">
-        <i class="fa-solid fa-arrow-rotate-left"></i>
-        Réinitialiser les membres
-    </button>
+    
+    <div id="sticky-buttons">
+        <button class="btn btn-success" type="button" data-bs-toggle="modal" data-bs-target="#addExtUserForm">
+            <i class="fa-solid fa-plus"></i>
+            Ajouter un profil externe
+        </button>
+        <button class="btn btn-danger" type="button" data-bs-toggle="modal" data-bs-target="#resetMembersDialog">
+            <i class="fa-solid fa-arrow-rotate-left"></i>
+            Réinitialiser les membres
+        </button>
+    </div>
 </div>
 
 <!-- ADD EXTERNAL USER MODAL -->
@@ -255,7 +253,7 @@ Gestion des membres de l'association Magellans.
             {responsivePriority: 3, targets: 6, type: "magellansRole"},
             ]
         });
-
+        
         var table2 = new DataTable('#externals-table', {
             order: [[1, "asc"]],
             columnDefs: [

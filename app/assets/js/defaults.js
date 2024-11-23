@@ -143,12 +143,6 @@ function defineStickyButtonsBehavior(stickyButtons, heightBefore) {
 }
 
 $(window).on('load', function(){
-    let footer = document.querySelector("footer");
-    
-    if (document.body.clientHeight < window.innerHeight) {
-        footer.classList.add("footer-fixed");
-    }
-    
     const heightBefore = document.body.scrollHeight;
     
     let stickyButtons = document.querySelector("#sticky-buttons");

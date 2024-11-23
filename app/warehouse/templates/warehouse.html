@@ -19,6 +19,8 @@ Catalogue du magasin de l'association Magellans. Gestion des réservations et co
 
 {% block content %}
 
+<h1 class="display-4 m-3 text-center">Magasin Magellans</h1>
+
 {% if not request.user.is_authenticated or not completeProfile %}
 <div class="container-fluid mt-3">
     <div class="alert alert-warning m-auto text-center col-lg-10 mb-3">
