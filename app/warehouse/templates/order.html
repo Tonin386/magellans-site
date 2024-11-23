@@ -35,100 +35,106 @@ Effectuer une commande ou une réservation auprès du magasin de l'association M
     </div>
 </div>
 {% else %}
-<form method="post" action="{% url 'place-order' %}" class="needs-validation" novalidate>
-    <input type="hidden" id="order_pk" name="order_pk" value="{{ order_pk }}">
-    {% csrf_token %}
-    <div class="card col-lg-10 mx-lg-auto mt-3 mx-2">
-        <div class="card-header bg-primary">
-            <div class="col-lg-12 m-auto text-center">
-                <h4>Récapitulatif de la commande</h4>
-            </div>
-        </div>
-        <div class="container-fluid">
-            <div class="card-body">
-                <div class="row mt-1 justify-content-center">
-                    <h4>Informations générales</h4>
-                    {% for couple in items_values %}
-                    <div class="col-xl-2 col-lg-4 col-md-6 my-1">
-                        <div class="card">
-                            <div class="card-header bg-secondary" style="height: 10vh;">
-                                <p class="fw-bold">{{ couple.0.name }}</p>
-                            </div>
-                            <div class="card-body d-flex align-items-center justify-content-center">
-                                <img src="/static/media/{{couple.0.image}}" class="img-fluid">
-                            </div>
-                            <div class="card-footer py-0 my-0">
-                                <p>{{ couple.1 }}x </p>
-                            </div>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-lg-12">
+            <form method="post" action="{% url 'place-order' %}" class="needs-validation" novalidate>
+                <input type="hidden" id="order_pk" name="order_pk" value="{{ order_pk }}">
+                {% csrf_token %}
+                <div class="card col-lg-10 mx-lg-auto mt-3 mx-2">
+                    <div class="card-header bg-primary">
+                        <div class="col-lg-12 m-auto text-center">
+                            <h4>Récapitulatif de la commande</h4>
                         </div>
                     </div>
-                    {% endfor %}
-                    <div class="col-lg-12 mb-3">
-                        <div class="input-group input-group mt-3">
-                            <span class="input-group-text col-xl-2 bg-secondary text-white" id="periodeSpan">
-                                Début -> fin
-                                <a class="badge text-dark" data-bs-toggle="tooltip" data-bs-title="La première date-heure correspond au moment du retrait du matériel. La deuxième date-heure correspond au retour du matériel.">?</a>
-                            </span>
-                            <input aria-describedby="periodeSpan" type="datetime-local" class="form-control" id="id_start_date" name="start_date" required>
-                            <input aria-describedby="periodeSpan" type="datetime-local" class="form-control" id="id_end_date" name="end_date" required>
-                            <div class="invalid-feedback">Veuillez sélectionner une date de début et une date de fin.</div>
-                            <div class="invalid-feedback" id="dateError">La date de début doit être avant la date de fin.</div>
-                        </div>
-                        <div class="input-group input-group mt-3">
-                            <span class="input-group-text col-xl-2 bg-secondary text-white" id="projectNameSpan">
-                                Projet
-                                <a class="badge text-dark" data-bs-toggle="tooltip" data-bs-title="Le nom du projet pour lequel vous effectuez cette commande.">?</a>
-                            </span>
-                            <input aria-describedby="projectNameSpan" type="text" class="form-control" id="id_project_name" name="project_name" placeholder="Nom du projet" required>
-                            <div class="invalid-feedback">Veuillez entrer le nom du projet.</div>
-                        </div>
-                    </div>
-                    <hr>
-                    <div class="col-lg-12">
-                        <div class="alert alert-info alert-dismissible fade show" role="alert">
-                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                            Si ce n'est pas vous qui allez récupérer cette commande, merci de nous communiquer les informations de la personne chargée de la récupération.
-                        </div>
-                        <h4>Informations de récupération</h4>
-                        <div class="row mb-3">
-                            <div class="col-lg-4 my-1">
-                                <input type="text" id="pickup_first_name" name="pickup_first_name" class="form-control" placeholder="Prénom">
+                    <div class="container-fluid">
+                        <div class="card-body">
+                            <div class="row mt-1 justify-content-center">
+                                <h4>Informations générales</h4>
+                                {% for couple in items_values %}
+                                <div class="col-xl-2 col-lg-4 col-md-6 my-1">
+                                    <div class="card">
+                                        <div class="card-header bg-secondary" style="height: 10vh;">
+                                            <p class="fw-bold">{{ couple.0.name }}</p>
+                                        </div>
+                                        <div class="card-body d-flex align-items-center justify-content-center">
+                                            <img src="/static/media/{{couple.0.image}}" class="img-fluid">
+                                        </div>
+                                        <div class="card-footer py-0 my-0">
+                                            <p>{{ couple.1 }}x </p>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                                <div class="col-lg-12 mb-3">
+                                    <div class="input-group input-group mt-3">
+                                        <span class="input-group-text col-xl-2 bg-secondary text-white" id="periodeSpan">
+                                            Début -> fin
+                                            <a class="badge text-dark" data-bs-toggle="tooltip" data-bs-title="La première date-heure correspond au moment du retrait du matériel. La deuxième date-heure correspond au retour du matériel.">?</a>
+                                        </span>
+                                        <input aria-describedby="periodeSpan" type="datetime-local" class="form-control" id="id_start_date" name="start_date" required>
+                                        <input aria-describedby="periodeSpan" type="datetime-local" class="form-control" id="id_end_date" name="end_date" required>
+                                        <div class="invalid-feedback">Veuillez sélectionner une date de début et une date de fin.</div>
+                                        <div class="invalid-feedback" id="dateError">La date de début doit être avant la date de fin.</div>
+                                    </div>
+                                    <div class="input-group input-group mt-3">
+                                        <span class="input-group-text col-xl-2 bg-secondary text-white" id="projectNameSpan">
+                                            Projet
+                                            <a class="badge text-dark" data-bs-toggle="tooltip" data-bs-title="Le nom du projet pour lequel vous effectuez cette commande.">?</a>
+                                        </span>
+                                        <input aria-describedby="projectNameSpan" type="text" class="form-control" id="id_project_name" name="project_name" placeholder="Nom du projet" required>
+                                        <div class="invalid-feedback">Veuillez entrer le nom du projet.</div>
+                                    </div>
+                                </div>
+                                <hr>
+                                <div class="col-lg-12">
+                                    <div class="alert alert-info alert-dismissible fade show" role="alert">
+                                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                        Si ce n'est pas vous qui allez récupérer cette commande, merci de nous communiquer les informations de la personne chargée de la récupération.
+                                    </div>
+                                    <h4>Informations de récupération</h4>
+                                    <div class="row mb-3">
+                                        <div class="col-lg-4 my-1">
+                                            <input type="text" id="pickup_first_name" name="pickup_first_name" class="form-control" placeholder="Prénom">
+                                        </div>
+                                        <div class="col-lg-4 my-1">
+                                            <input type="text" id="pickup_last_name" name="pickup_last_name" class="form-control" placeholder="Nom">
+                                        </div>
+                                        <div class="col-lg-4 my-1">
+                                            <input type="tel" id="pickup_phone" name="pickup_phone" class="form-control" placeholder="Téléphone">
+                                        </div>
+                                    </div>
+                                </div>
+                                <hr>
+                                <h4>Finaliser la commande</h4>
+                                <div class="col-lg-12 mt-3">
+                                    <textarea class="form-control" placeholder="Message particulier pour Magellans" id="id_message" name="message"></textarea>
+                                </div>
+                                <div class="col-lg-4 text-center m-auto mt-3">
+                                    <div class="form-check">
+                                        <label for="tos">Je déclare avoir lu et consentir aux CGU du magasin de Magellans.</label>
+                                        <input class="form-check-input" type="checkbox" name="tos" id="tos" required>
+                                        <div class="invalid-feedback">
+                                            Vous devez avoir accepté les CGU du magasin pour effectuer une commande.
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-12 row justify-content-center">
+                                    <div class="col-md-3 mt-2">
+                                        <button type="submit" class="btn btn-success w-100 h-100">Confirmer la demande</button>
+                                    </div>
+                                    <div class="col-md-3 mt-2">
+                                        <a class="btn btn-danger w-100 h-100 d-inline-block" href="{% url 'warehouse' %}">Annuler et revenir au magasin</a>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="col-lg-4 my-1">
-                                <input type="text" id="pickup_last_name" name="pickup_last_name" class="form-control" placeholder="Nom">
-                            </div>
-                            <div class="col-lg-4 my-1">
-                                <input type="tel" id="pickup_phone" name="pickup_phone" class="form-control" placeholder="Téléphone">
-                            </div>
-                        </div>
-                    </div>
-                    <hr>
-                    <h4>Finaliser la commande</h4>
-                    <div class="col-lg-12 mt-3">
-                        <textarea class="form-control" placeholder="Message particulier pour Magellans" id="id_message" name="message"></textarea>
-                    </div>
-                    <div class="col-lg-4 text-center m-auto mt-3">
-                        <div class="form-check">
-                            <label for="tos">Je déclare avoir lu et consentir aux CGU du magasin de Magellans.</label>
-                            <input class="form-check-input" type="checkbox" name="tos" id="tos" required>
-                            <div class="invalid-feedback">
-                                Vous devez avoir accepté les CGU du magasin pour effectuer une commande.
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-12 row justify-content-center">
-                        <div class="col-md-3 mt-2">
-                            <button type="submit" class="btn btn-success w-100 h-100">Confirmer la demande</button>
-                        </div>
-                        <div class="col-md-3 mt-2">
-                            <a class="btn btn-danger w-100 h-100 d-inline-block" href="{% url 'warehouse' %}">Annuler et revenir au magasin</a>
                         </div>
                     </div>
                 </div>
-            </div>
+            </form>
         </div>
     </div>
-</form>
+</div>
 
 <script>
     $(document).ready(function() {
