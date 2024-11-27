@@ -67,6 +67,7 @@ class Order(models.Model):
     date_validated = models.DateTimeField("Date commande validée", blank=True, null=True)
     tos = models.BooleanField("CGU acceptées", default=True)
     project_name = models.CharField("Projet", null=True, default="Non-renseigné", blank=True, max_length=255)
+    sent_by_mail = models.BooleanField("Commande reçue par mail", default=False)
     
     def pickup_phone_formatted(self):
         if self.pickup_phone != "Non-renseigné" and self.pickup_phone:

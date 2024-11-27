@@ -125,6 +125,11 @@ def placeOrder(request):
 
             order.save()
 
+            if order.sent_by_mail:
+                success = True
+                return render(request, "place_order.html", locals())
+            
+
             subject = "Demande de réservation de matériel"
             user = request.user
             formatted_startDate = datetime.strptime(startDate, "%Y-%m-%dT%H:%M")
@@ -137,6 +142,8 @@ def placeOrder(request):
 
             send_mail(subject, email_message, settings.DEFAULT_FROM_EMAIL, recipients)
             success = True
+            order.sent_by_mail = True
+            order.save()
             
         except Exception as e:
             print(str(e))

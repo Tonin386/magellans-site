@@ -27,10 +27,15 @@ class ProjectFundingRequest(models.Model):
     previsional_budget_plan = models.FileField("Plan de financement prévisionnel", upload_to=dynamic_upload_path)
     contact_list = models.FileField("Fiche contact", upload_to=dynamic_upload_path)
 
+    sent_by_mail = models.BooleanField("Dossier reçu par mail", default=False)
+
     def __str__(self):
         return f"Demande de financement {self.name} ({self.funding_value})"
     
     def send_by_email(self):
+        if self.sent_by_mail:
+            print("This project was already sent by mail.")
+            return
         subject = f"Nouvelle demande d'aide financière pour {self.name}"
         email_render = mark_safe(render_to_string("funding_request_email.html", {'instance': self}))
 
@@ -50,6 +55,9 @@ class ProjectFundingRequest(models.Model):
                 attached_files.append(file_field.name)
 
         email.send()
+
+        self.sent_by_mail = True;
+        self.save()
     
     class Meta:
         verbose_name = "Demande d'aide financière"
