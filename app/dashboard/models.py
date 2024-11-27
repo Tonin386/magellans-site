@@ -37,7 +37,7 @@ class ProjectFundingRequest(models.Model):
             print("This project was already sent by mail.")
             return
         subject = f"Nouvelle demande d'aide financière pour {self.name}"
-        email_render = mark_safe(render_to_string("funding_request_email.html", {'instance': self}))
+        email_render = render_to_string("funding_request_email.html", {'instance': self})
 
         email = EmailMessage(
             subject=subject,
