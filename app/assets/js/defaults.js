@@ -59,6 +59,9 @@ $.extend($.fn.dataTable.defaults, {
 $.extend($.fn.dataTableExt.oSort, {
     
     "ope-desc": function (a, b) {
+        if(a == "None" || b == "None") {
+            return -1000000000000000000;
+        }
         var numA = parseInt(a.replace('OPE-', ''), 10);
         var numB = parseInt(b.replace('OPE-', ''), 10);
         
@@ -66,6 +69,9 @@ $.extend($.fn.dataTableExt.oSort, {
     },
     
     "ope-asc": function (b, a) {
+        if(a == "None" || b == "None") {
+            return -1000000000000000000;
+        }
         var numA = parseInt(a.replace('OPE-', ''), 10);
         var numB = parseInt(b.replace('OPE-', ''), 10);
         
@@ -73,6 +79,9 @@ $.extend($.fn.dataTableExt.oSort, {
     },
     
     "person-desc": function(a, b) {
+        if(a == "None" || b == "None") {
+            return -1000000000000000000;
+        }
         let numA = parseInt(a.replace("@", "99999"), 10);
         let numB = parseInt(b.replace("@", "99999"), 10);
         
@@ -80,6 +89,9 @@ $.extend($.fn.dataTableExt.oSort, {
     },
     
     "person-asc": function(b, a) {
+        if(a == "None" || b == "None") {
+            return -1000000000000000000;
+        }
         let numA = parseInt(a.replace("@", "99999"), 10);
         let numB = parseInt(b.replace("@", "99999"), 10);
         
@@ -87,6 +99,9 @@ $.extend($.fn.dataTableExt.oSort, {
     },
     
     "amount-desc": function(a, b) {
+        if(a == "None" || b == "None") {
+            return -1000000000000000000;
+        }
         var numA = parseFloat(a.replace('€', ''), 10);
         var numB = parseFloat(b.replace('€', ''), 10);
         
@@ -94,6 +109,9 @@ $.extend($.fn.dataTableExt.oSort, {
     },
     
     "amount-asc": function(b, a) {
+        if(a == "None" || b == "None") {
+            return -1000000000000000000;
+        }
         var numA = parseFloat(a.replace('€', ''), 10);
         var numB = parseFloat(b.replace('€', ''), 10);
         
@@ -101,28 +119,46 @@ $.extend($.fn.dataTableExt.oSort, {
     },
     
     "frdatetime-desc": function(a, b) {
+        if(a == "None" || b == "None") {
+            return -1000000000000000000;
+        }
         return convertFrDatetime(b).getTime() - convertFrDatetime(a).getTime();
     },
     
     "frdatetime-asc": function(b, a) {
+        if(a == "None" || b == "None") {
+            return -1000000000000000000;
+        }
         return convertFrDatetime(b).getTime() - convertFrDatetime(a).getTime();
     },
     
     "frdate-desc": function(a, b) {
+        if(a == "None" || b == "None") {
+            return -1000000000000000000;
+        }
         return convertFrDate(b).getTime() - convertFrDate(a).getTime();
     },
     
     "frdate-asc": function(b, a) {
+        if(a == "None" || b == "None") {
+            return -1000000000000000000;
+        }
         return convertFrDate(b).getTime() - convertFrDate(a).getTime();
     },
 
     "magellansRole-desc": function(a, b) {
+        if(a == "None" || b == "None") {
+            return -1000000000000000000;
+        }
         a = a.replace("&amp;", "&");
         b = b.replace("&amp;", "&");
         return role_map[a] - role_map[b];
     },
 
     "magellansRole-asc": function(b, a) {
+        if(a == "None" || b == "None") {
+            return -1000000000000000000;
+        }
         a = a.replace("&amp;", "&");
         b = b.replace("&amp;", "&");
         return role_map[a] - role_map[b];
