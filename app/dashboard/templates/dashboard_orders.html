@@ -54,8 +54,8 @@ Gestion des commandes et réservations du magasin de matériel de l'association 
                         <td><a href="{% url 'member-detail' pk=order.user.pk %}" class="text-black">{{ order.user }}</a></td>
                         <td>{{ order.project_name }}</td>
                         <td>{{ order.pickup_first_name }} {{ order.pickup_last_name }} ({{ order.pickup_phone_formatted }})</td>
-                        <td>{{ order.date_start }}</td>
-                        <td>{{ order.date_end }}</td>
+                        <td>{% if order.date_start %}{{ order.date_start }}{% endif %}</td>
+                        <td>{% if order.date_start %}{{ order.date_end }}{% endif %}</td>
                         <td class="{% if order.status == 3 %}bg-success{% elif order.status == 1 %} bg-warning {% else %} bg-danger {% endif %}">{{ order.get_status_display }}</td>
                         <td>{{ order.date_created }}</td>
                     </tr>
@@ -73,10 +73,10 @@ Gestion des commandes et réservations du magasin de matériel de l'association 
             columnDefs: [
             {responsivePriority: 1, targets: 0},
             {targets: 1, type: "num"},
-            {responsivePriority: 2, targets: 2},
-            {responsivePriority: 1, targets: 4, type: "frdatetime"},
-            {responsivePriority: 1, targets: 5, type: "frdatetime"},
-            {targets: 7, type: "frdatetime"},
+            {responsivePriority: 1, targets: 2},
+            {responsivePriority: 2, targets: 5, type: "frdatetime"},
+            {responsivePriority: 2, targets: 6, type: "frdatetime"},
+            {targets: 8, type: "frdatetime"},
             ]
         });
         
