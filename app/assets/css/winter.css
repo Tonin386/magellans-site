@@ -1,0 +1,15 @@
+
+.snow {
+    position: absolute;
+    top: 0;
+    font-size: 2rem;
+    animation: fall linear infinite;
+}
+@keyframes fall {
+    from {
+        top: -10%;
+    }
+    to {
+        top: 100%;
+    }
+}
