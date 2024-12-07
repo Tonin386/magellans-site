@@ -95,13 +95,13 @@ Catalogue du magasin de l'association Magellans. Gestion des réservations et co
                     <li class="list-group-item text-center">
                         <div class="row">
                             <div class="col-3 text-end">
-                                <button class="btn btn-danger w-75 removeItemOrderBtn" id="removeItemOrderBtn{{item.pk}}" onclick="removeItemFromTempOrder({{ saved_order_pk }}, {{ item.pk }})" {% if not item.pk in quantities %} disabled {% endif %}>-</button>
+                                <button class="btn btn-danger w-100 removeItemOrderBtn" id="removeItemOrderBtn{{item.pk}}" onclick="removeItemFromTempOrder({{ saved_order_pk }}, {{ item.pk }})" {% if not item.pk in quantities %} disabled {% endif %}>-</button>
                             </div>
                             <div class="col-6">
                                 <div class="btn bg-primary text-white w-50 p-1 cursor-none" style="cursor: default;" id="itemOrderCount{{item.pk}}"> {% if item.pk in quantities %} {{ quantities|get_item:item.pk }} {% else %} 0 {% endif %} </div>
                             </div>
                             <div class="col-3 text-start">
-                                <button class="btn btn-success w-75 addItemOrderBtn" id="addItemOrderBtn{{item.pk}}" onclick="addItemToTempOrder({{ saved_order_pk }}, {{ item.pk }})" {% if quantities|get_item:item.pk >= item.max_stock or item.availability != 1 %} disabled {% endif %} max="{{ item.max_stock }}">+</button>
+                                <button class="btn btn-success w-100 addItemOrderBtn" id="addItemOrderBtn{{item.pk}}" onclick="addItemToTempOrder({{ saved_order_pk }}, {{ item.pk }})" {% if quantities|get_item:item.pk >= item.max_stock or item.availability != 1 %} disabled {% endif %} max="{{ item.max_stock }}">+</button>
                             </div>
                         </div>
                     </li>
@@ -121,12 +121,14 @@ Catalogue du magasin de l'association Magellans. Gestion des réservations et co
     </div>
     
     <div class="m-auto my-2" id="sticky-buttons">
+        {% if request.user.is_authenticated %}
         <a class="btn btn-info position-relative {% if not request.user.is_authenticated or not completeProfile %} disabled {% endif %} mt-2" id="orderButton" href="{% url 'order' pk=saved_order_pk%}">
             <i class="fa-solid fa-basket-shopping"></i>
             Voir ma réservation
             <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="nbOrderedItems">{{ total_items }}</span>
         </a>
-        
+        {% endif %}
+
         {% if request.user.is_staff %}
         <button class="btn btn-success mt-2" type="button" data-bs-toggle="modal" data-bs-target="#addItemForm">
             <i class="fa-solid fa-plus"></i>
