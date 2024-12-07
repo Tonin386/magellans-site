@@ -16,9 +16,31 @@ async function addResource(callback = function(){}) {
         params['fileName'] = fileName;
     }
 
-    let response = await sendApiRequest(params, "members");
+    let response = await sendApiRequest(params, "dashboard");
 
     console.log(params);
+
+    if(response.status == "success") {
+        callback(response);
+    }
+}
+
+async function confirmDeleteResource(pk) {
+    $('#confirmDeleteResourceBtn').attr("value", pk);
+    $('#confirmDeleteResourceModal').modal('show');
+}
+
+async function deleteResource(callback=function(){}) {
+    let pk = $('#confirmDeleteResourceBtn').attr("value");
+
+    let action = "del-resource";
+    let params = {
+        token: api_token,
+        action: action,
+        pk: pk,
+    }
+    
+    let response = await sendApiRequest(params, "dashboard");
 
     if(response.status == "success") {
         callback(response);

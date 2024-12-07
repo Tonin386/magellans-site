@@ -18,6 +18,7 @@ Ressources mises à disposition des membres de Magellans.
 <!-- Callbacks function -->
 <script>
     var callback_addResource = function(){};
+    var callback_delResource = function(){};
 </script>
 
 <div class="container-fluid p-3">
@@ -31,6 +32,9 @@ Ressources mises à disposition des membres de Magellans.
                         <th scope="col">Type de fichier</th>
                         <th scope="col">Description</th>
                         <th scope="col">Catégorie</th>
+                        {% if request.user.is_staff %}
+                        <th scope="col">Action</th>
+                        {% endif %}
                     </tr>
                 </thead>
                 <tbody class="table-group-divider">
@@ -42,6 +46,11 @@ Ressources mises à disposition des membres de Magellans.
                         <td>{{ resource.extension }}</td>
                         <td>{{ resource.desc }}</td>
                         <td>{{ resource.category }}</td>
+                        {% if request.user.is_staff %}
+                        <td class="text-center">
+                            <button class="btn btn-danger" onclick="confirmDeleteResource('{{ resource.pk }}')"><i class="fa-solid fa-trash"></i></button>
+                        </td>
+                        {% endif %}
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -90,6 +99,24 @@ Ressources mises à disposition des membres de Magellans.
     </div>
 </div>
 
+<!-- CONFIRM DELETE RESOURCE -->
+<div class="modal fade" id="confirmDeleteResourceModal" tabindex="-1" role="dialog" aria-labelledby="confirmDeleteResourceModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-primary">
+                <h5 class="modal-title" id="confirmDeleteResourceModalLabel">Confirmer suppression</h5>
+            </div>
+            <div class="modal-body">
+                Êtes-vous sûr.e de vouloir supprimer cette ressource ?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                <button type="button" class="btn btn-danger" id="confirmDeleteResourceBtn" value="0" data-bs-dismiss="modal" onclick="deleteResource(callback_delResource)">Supprimer</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
     $(document).ready(function() {
         var table1 = new DataTable('#resources-table', {
@@ -99,11 +126,18 @@ Ressources mises à disposition des membres de Magellans.
             {responsivePriority: 2, targets: 1},
             {responsivePriority: 3, targets: 2},
             {responsivePriority: 4, targets: 3},
+            {responsivePriority: 5, targets: 4},
             ]
         });
     });
-
+    
     function callback_addResource() {
+        setTimeout(() => {
+            location.reload();
+        }, 1500);
+    }
+    
+    function callback_delResource() {
         setTimeout(() => {
             location.reload();
         }, 1500);

@@ -330,7 +330,62 @@ def api_dashboard(request):
         project.save()
         createNotification("Edition projet", "edit-project", app_id, 0, "Le projet a bien été modifié. Actualisation en cours...", user)
         return JsonResponse({"status": "success", "message": "Project successfully edited."})
+    
+    if action == "add-resource":
+        if not 'write-resource' in permissions['members'] + permissions['fullpower']:
+            createNotification("Ajout ressource", "add-resource", app_id, 3, "Vous n'avez pas les permissions suffisantes pour effectuer cette action.", user)
+            return JsonResponse({"status": "error", "message": "Insufficient permissions"})
+        
+        name = body_post.get("name", "undefined")
+        file = body_post.get("file", "undefined")
+        fileName = body_post.get("fileName", "undefined")
+        desc = body_post.get("desc", "")
+        category = body_post.get("category", "")
 
+        if file in ['undefined', ''] or name in ['undefined', '']:
+            createNotification("Ajout ressource", "add-resource", app_id, 3, "Veuillez renseigner les champs nécessaires (Nom et Fichier).", user)
+            return JsonResponse({"status": "error", "message": "Missing mandatory fields."})
+
+        resource = ResourceFile.objects.create(
+            name=name,
+            desc=desc,
+            category=category
+        )
+
+        try:
+            resource_data = file.split(",")
+            file = ContentFile(base64.b64decode(resource_data[1]))
+            path = f"{resource.pk}_Magellans_{fileName}"
+            print(path)
+            resource.associated_file.save(path, file)
+        except Exception as e:
+            createNotification("Ajout ressource", "add-resource", app_id, 3, f"Erreur lors de l'import du fichier. Veuillez réessayer.<hr>{str(e)}", user, str(e))
+            return JsonResponse({"status": "error", "error": str(e), "message": "There was a problem when decoding file"})
+    
+        resource.save()
+        createNotification("Ajout ressource", "add-resource", app_id, 0, "La ressource a bien été ajoutée.", user)
+        return JsonResponse({"status": "success", "message": "Resource successfully created.", "id": resource.pk})
+
+    if action == "del-resource":
+        if not 'write-resource' in permissions['members'] + permissions['fullpower']:
+            createNotification("Ajout ressource", "del-resource", app_id, 3, "Vous n'avez pas les permissions suffisantes pour effectuer cette action.", user)
+            return JsonResponse({"status": "error", "message": "Insufficient permissions"})
+        
+        pk = body_post.get("pk", "undefined")
+
+        if pk == "undefined":
+            createNotification("Suppression ressource", "del-resource", app_id, 3, "Il y a eu une erreur lors de la suppression de la ressource. Veuillez réessayer", user)
+            return JsonResponse({"status": "error", "message": "Undefined error"})
+        
+        try:
+            resource = ResourceFile.objects.get(pk=pk)
+            resource.delete()
+            createNotification("Suppression ressource", "del-resource", app_id, 0, "La ressource a bien été supprimée.", user)
+            return JsonResponse({"status": "success", "message": "Resource successfully deleted.", "id": resource.pk})
+        except:
+            createNotification("Suppression ressource", "del-resource", app_id, 3, "Il y a eu une erreur lors de la suppression de la ressource. Veuillez réessayer", user)
+            return JsonResponse({"status": "error", "message": "Undefined error"})        
+    
     return JsonResponse({"status": "error", "message": "Uncaught error."})
 
 def api_members(request):
@@ -489,41 +544,6 @@ def api_members(request):
 
         createNotification("Reinitialisation membres", "reset-members", app_id, 0, "Les membres ont bien été réinitialisés. Rafraichissez la page pour voir les modifications", user)
         return JsonResponse({"status": "success", "message": "Project successfully edited."})
-    
-    if action == "add-resource":
-        if not 'write-resource' in permissions['members'] + permissions['fullpower']:
-            createNotification("Ajout ressource", "add-resource", app_id, 3, "Vous n'avez pas les permissions suffisantes pour effectuer cette action.", user)
-            return JsonResponse({"status": "error", "message": "Insufficient permissions"})
-        
-        name = body_post.get("name", "undefined")
-        file = body_post.get("file", "undefined")
-        fileName = body_post.get("fileName", "undefined")
-        desc = body_post.get("desc", "")
-        category = body_post.get("category", "")
-
-        if file in ['undefined', ''] or name in ['undefined', '']:
-            createNotification("Ajout ressource", "add-resource", app_id, 3, "Veuillez renseigner les champs nécessaires (Nom et Fichier).", user)
-            return JsonResponse({"status": "error", "message": "Missing mandatory fields."})
-
-        resource = ResourceFile.objects.create(
-            name=name,
-            desc=desc,
-            category=category
-        )
-
-        try:
-            resource_data = file.split(",")
-            file = ContentFile(base64.b64decode(resource_data[1]))
-            path = f"{resource.pk}_Magellans_{fileName}"
-            print(path)
-            resource.associated_file.save(path, file)
-        except Exception as e:
-            createNotification("Ajout ressource", "add-resource", app_id, 3, f"Erreur lors de l'import du fichier. Veuillez réessayer.<hr>{str(e)}", user, str(e))
-            return JsonResponse({"status": "error", "error": str(e), "message": "There was a problem when decoding file"})
-    
-        resource.save()
-        createNotification("Ajout ressource", "add-resource", app_id, 0, "La ressource a bien été ajoutée.", user)
-        return JsonResponse({"status": "success", "message": "Expense successfully created.", "id": resource.pk})
     
     return JsonResponse({"status": "error", "message": "Uncaught error."})
 
