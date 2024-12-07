@@ -106,7 +106,7 @@ class ResourceFile(models.Model):
     category = models.CharField("Catégorie", max_length=255, null=True, blank=True)
 
     def extension(self):
-        return str(self.associated_file).split(".")[1].upper()
+        return f".{str(self.associated_file).split(".")[1].lower()}"
 
     def __str__(self):
         return self.name

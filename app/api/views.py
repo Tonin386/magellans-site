@@ -497,6 +497,7 @@ def api_members(request):
         
         name = body_post.get("name", "undefined")
         file = body_post.get("file", "undefined")
+        fileName = body_post.get("fileName", "undefined")
         desc = body_post.get("desc", "")
         category = body_post.get("category", "")
 
@@ -512,10 +513,9 @@ def api_members(request):
 
         try:
             resource_data = file.split(",")
-            data_type_regex = r"^data:.*?/(.*?);"
-            extension = re.findall(data_type_regex, resource_data[0])[0]
             file = ContentFile(base64.b64decode(resource_data[1]))
-            path = f"resource{resource.pk}.{extension}"
+            path = f"{resource.pk}_Magellans_{fileName}"
+            print(path)
             resource.associated_file.save(path, file)
         except Exception as e:
             createNotification("Ajout ressource", "add-resource", app_id, 3, f"Erreur lors de l'import du fichier. Veuillez réessayer.<hr>{str(e)}", user, str(e))

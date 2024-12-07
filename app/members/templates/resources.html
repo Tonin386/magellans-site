@@ -102,6 +102,12 @@ Ressources mises à disposition des membres de Magellans.
             ]
         });
     });
+
+    function callback_addResource() {
+        setTimeout(() => {
+            location.reload();
+        }, 1500);
+    }
 </script>
 <script src="{% static 'js/api/api.js' %}"></script>
 <script src="{% static 'js/dashboard/resources.js' %}"></script>

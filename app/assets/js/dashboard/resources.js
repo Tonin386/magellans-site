@@ -10,11 +10,15 @@ async function addResource(callback = function(){}) {
     };
 
     if(params["file"]) {
+        const fileName = params.file.name;
         const base64file = await toBase64(params['file']);
         params['file'] = base64file;
+        params['fileName'] = fileName;
     }
 
     let response = await sendApiRequest(params, "members");
+
+    console.log(params);
 
     if(response.status == "success") {
         callback(response);
