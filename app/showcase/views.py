@@ -20,10 +20,9 @@ def home(request):
             subject = f'Nouveau formulaire reçu de {email}'
 
             message_body = mark_safe(f'{message}\n\n--------------------\n{name}\n{email}\n{phone}')
-            sender_email = email
             recipient_list = [settings.EMAIL_RECEIVER, 'magellans.pro@gmail.com', 'magellans.contact@gmail.com']
             
-            send_mail(subject, message_body, sender_email, recipient_list)
+            send_mail(subject, message_body, email, recipient_list)
     else:
         form = ContactForm()
         

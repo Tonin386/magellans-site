@@ -98,10 +98,10 @@ Catalogue du magasin de l'association Magellans. Gestion des réservations et co
                                 <button class="btn btn-danger w-100 removeItemOrderBtn" id="removeItemOrderBtn{{item.pk}}" onclick="removeItemFromTempOrder({{ saved_order_pk }}, {{ item.pk }})" {% if not item.pk in quantities %} disabled {% endif %}>-</button>
                             </div>
                             <div class="col-6">
-                                <div class="btn bg-primary text-white w-50 p-1 cursor-none" style="cursor: default;" id="itemOrderCount{{item.pk}}"> {% if item.pk in quantities %} {{ quantities|get_item:item.pk }} {% else %} 0 {% endif %} </div>
+                                <div class="btn bg-primary text-white w-50 p-1 cursor-none" style="cursor: default;" id="itemOrderCount{{item.pk}}"> {% if item.pk in quantities %} {{ quantities|get_item_count:item.pk }} {% else %} 0 {% endif %} </div>
                             </div>
                             <div class="col-3 text-start">
-                                <button class="btn btn-success w-100 addItemOrderBtn" id="addItemOrderBtn{{item.pk}}" onclick="addItemToTempOrder({{ saved_order_pk }}, {{ item.pk }})" {% if quantities|get_item:item.pk >= item.max_stock or item.availability != 1 %} disabled {% endif %} max="{{ item.max_stock }}">+</button>
+                                <button class="btn btn-success w-100 addItemOrderBtn" id="addItemOrderBtn{{item.pk}}" onclick="addItemToTempOrder({{ saved_order_pk }}, {{ item.pk }})" {% if quantities|get_item_count:item.pk >= item.max_stock or item.availability != 1 %} disabled {% endif %} max="{{ item.max_stock }}">+</button>
                             </div>
                         </div>
                     </li>

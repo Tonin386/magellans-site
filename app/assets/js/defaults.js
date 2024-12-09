@@ -179,6 +179,10 @@ function defineStickyButtonsBehavior(stickyButtons, heightBefore) {
     }
 }
 
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 $(window).on('load', function(){
     const heightBefore = document.body.scrollHeight;
     

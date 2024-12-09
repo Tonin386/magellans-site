@@ -28,7 +28,7 @@ Récapitulatif des détails d'une commande ou réservation du magasin de l'assoc
 {% if request.user.is_staff or request.user == object.user %}
 <div class="container">
     <h1 class="display-5 text-center"> Commande #{{ object.pk }} </h1>
-    <div class="row mt-3">
+    <div class="row my-3">
         <div class="col-lg-12">
             <h2 class="title">Informations de la commande</h2>
             <table class="table table-striped responsive" id="order-info-table">
@@ -41,7 +41,7 @@ Récapitulatif des détails d'une commande ou réservation du magasin de l'assoc
                         <th>Demandeur</th>
                         <td>
                             {% if request.user.is_staff %}
-                            <a href="{% url 'member-detail' pk=object.user.pk %}" class="text-black">{{ object.user }}</a>
+                            <a href="{% url 'member-detail' pk=object.user.pk %}" class="text-black" id="demandeur">{{ object.user }}</a>
                             {% else %}
                             {{ object.user }}
                             {% endif %}
@@ -49,17 +49,15 @@ Récapitulatif des détails d'une commande ou réservation du magasin de l'assoc
                     </tr>
                     <tr>
                         <th>Projet</th>
-                        <td>
-                            {{ object.project_name }}
-                        </td>
+                        <td id="projet">{% if object.project_name %}{{ object.project_name }}{% endif %}</td>
                     </tr>
                     <tr>
                         <th>Date début</th>
-                        <td>{{ object.date_start }}</td>
+                        <td id="startDate"">{% if object.date_start %}{{ object.date_start }}{% endif %}</td>
                     </tr>
                     <tr>
                         <th>Date fin</th>
-                        <td>{{ object.date_end }}</td>
+                        <td id="endDate">{% if object.date_end %}{{ object.date_end }}{% endif %}</td>
                     </tr>
                     <tr>
                         <th>Statut</th>
@@ -71,6 +69,7 @@ Récapitulatif des détails d'une commande ou réservation du magasin de l'assoc
                                         <optgroup label="Réponse définitive">
                                             <option value="2" {% if order.status == 2 %} selected {% endif %}>Commande refusée</option>
                                             <option value="3" {% if order.status == 3 %} selected {% endif %}>Commande acceptée</option>
+                                            <option value="4" {% if order.status == 4 %} selected {% endif %}>Commande acceptée avec modifications</option>
                                         </optgroup>
                                         <optgroup label="En attente">
                                             <option value="0" {% if order.status == 0 %} selected {% endif %}>Commande non-effectuée (incomplète)</option>
@@ -81,12 +80,12 @@ Récapitulatif des détails d'une commande ou réservation du magasin de l'assoc
                             </div>
                         </td>
                         {% else %}
-                        <td class="{% if object.status == 3 %}bg-success{% elif object.status == 1 %} bg-warning {% else %} bg-danger {% endif %}">{{ object.get_status_display }}</td>
+                        <td class="{% if object.status == 3 or object.status == 4 %}bg-success{% elif object.status == 1 %} bg-warning {% else %} bg-danger {% endif %}">{{ object.get_status_display }}</td>
                         {% endif %}
                     </tr>
                     <tr>
                         <th>Demande effectuée le</th>
-                        <td>{{ object.date_created }}</td>
+                        <td >{% if object.date_created %}{{ object.date_created }}{% endif %}</td>
                     </tr>
                     {% if object.status == 2 or object.status == 3 %}
                     <tr>
@@ -96,11 +95,11 @@ Récapitulatif des détails d'une commande ou réservation du magasin de l'assoc
                     {% endif %}
                     <tr>
                         <th>Récupération</th>
-                        <th>{{ object.pickup_first_name }} {{ object.pickup_last_name }} ({{ object.pickup_phone_formatted }})</th>
+                        <td id="recuperation">{{ object.pickup_first_name }} {{ object.pickup_last_name }} ({{ object.pickup_phone_formatted }})</td>
                     </tr>
                     <tr>
                         <th>Message du demandeur</th>
-                        <td>{{object.message}}</td>
+                        <td>{% if object.message %}{{object.message}}{% endif %}</td>
                     </tr>
                     <tr>
                         <th>Réponses reçues</th>
@@ -113,6 +112,7 @@ Récapitulatif des détails d'une commande ou réservation du magasin de l'assoc
             <table class="table table-striped" id="order-table">
                 <thead>
                     <tr>
+                        <th>Dispo</th>
                         <th>Objet</th>
                         <th>Quantité</th>
                     </tr>
@@ -120,13 +120,58 @@ Récapitulatif des détails d'une commande ou réservation du magasin de l'assoc
                 <tbody>
                     {% for quantity, item in item_set %}
                     <tr>
+                        <td> 
+                            <div class="form-check form-switch order-switch">
+                                <input class="form-check-input input-switch-order" type="checkbox" id="order-switch{{ item.pk }}" {% if quantity.available %}checked{% endif %} {% if not request.user.is_superuser or request.user.site_person.role != 'G' or request.user.site_person.role != 'P' %}{% if order.status != 1 %} disabled {%endif%}{%endif%}>
+                            </div>
+                        </td>
                         <td>{{ item.name }}</td>
-                        <td>{{ quantity }}</td>
+                        <td>{{ quantity.count }}</td>
                     </tr>
                     {% endfor %}
                 </tbody>
             </table>
         </div>
+        {% if request.user.is_superuser or request.user.site_person.role == 'G' or request.user.site_person.role == 'P' %}
+        <div class="mt-5"></div>
+        <hr>
+        <div class="col-lg-12 my-2">
+            <h2>Espace gestion de la commande</h2>
+        </div>
+        {% if order.status == 1 %}
+        <div class="col-lg-8">
+            <textarea class="form-control h-100" placeholder="Notes..." id="notes">{%if order.notes %}{{ order.notes }}{% endif %}</textarea>
+        </div>
+        <div class="col-lg-4 text-center">
+            <button class="btn btn-success w-100 mb-1" id="allAvailable">
+                <i class="bi bi-check">
+                    Marquer tous les objets comme disponibles
+                </i>
+            </button>
+            <button class="btn btn-danger w-100 mb-1" id="allUnavailable">
+                <i class="bi bi-x">
+                    Marquer tous les objets comme indisponibles
+                </i>
+            </button>
+            <button class="btn btn-warning w-100" onclick="exportToPdf({{ object.pk }})">
+                <i class="bi bi-download">
+                    Télécharger en PDF
+                </i>
+            </button>
+        </div>
+        {% else %}
+        <div class="col-lg-8">
+            <textarea class="form-control h-100" placeholder="Notes..." id="notes">{%if order.notes %}{{ order.notes }}{% endif %}</textarea>
+        </div>
+        <div class="col-lg-4 text-center">
+            <button class="btn btn-warning w-100" onclick="exportToPdf({{ object.pk }})">
+                <i class="bi bi-download">
+                    Télécharger en PDF
+                </i>
+            </button>
+        </div>
+        {% endif %}
+        {% endif %}
     </div>
 </div>
 {% else %}
@@ -175,7 +220,7 @@ Récapitulatif des détails d'une commande ou réservation du magasin de l'assoc
     </div>
 </div>
 
-
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.12/pdfmake.min.js" integrity="sha512-axXaF5grZBaYl7qiM6OMHgsgVXdSLxqq0w7F4CQxuFyrcPmn0JfnqsOtYHUun80g6mRRdvJDrTCyL8LQqBOt/Q==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script src="{% static 'js/api/api.js' %}"></script>
 <script src="{% static 'js/dashboard/warehouse.js' %}"></script>
 {% endif %}
@@ -187,10 +232,18 @@ Récapitulatif des détails d'une commande ou réservation du magasin de l'assoc
             ordering: false,
             info: false
         });
-
+        
         let order_table = new DataTable('#order-table', {
             paging: false,
-            info: false
+            info: false,
+            
+            //{% if request.user.is_superuser or request.user.site_person.role == 'G' or request.user.site_person.role == 'P' %}
+            //{% if order.status == 1 %}
+            columnDefs: [
+            { width: '100px', target: 0, orderable: false}
+            ]
+            //{% endif %}
+            //{% endif %}
         });
         
         //{% if request.user.is_staff %}
@@ -205,7 +258,54 @@ Récapitulatif des détails d'une commande ou réservation du magasin de l'assoc
             var pk = $(this).attr("pk");
             
             editOrderStatus(pk, value, callback_editOrderStatus);
+        })        
+        
+        $("#allAvailable").on('click', (event) => {
+            let switches = document.querySelectorAll(".order-switch");
+            let index = 0;
+        
+            function processNextSwitch() {
+                if (index >= switches.length) return;
+        
+                let element = switches[index];
+                element.children[0].checked = true;
+                let pk_item = $(element.children[0]).attr('id').replace(/order-switch/g, "");
+                let pk_order = "{{ object.pk }}";
+        
+                setItemAvailability(pk_order, pk_item, true);
+        
+                index++;
+                setTimeout(processNextSwitch, 100); // Attendre 100 millisecondes avant de passer à l'itération suivante
+            }
+        
+            processNextSwitch();
+        });
+        
+        $("#allUnavailable").on('click', (event) => {
+            let switches = document.querySelectorAll(".order-switch");
+            let index = 0;
+        
+            function processNextSwitch() {
+                if (index >= switches.length) return;
+        
+                let element = switches[index];
+                element.children[0].checked = false;
+                let pk_item = $(element.children[0]).attr('id').replace(/order-switch/g, "");
+                let pk_order = "{{ object.pk }}";
+        
+                setItemAvailability(pk_order, pk_item, false);
+        
+                index++;
+                setTimeout(processNextSwitch, 100); // Attendre 100 millisecondes avant de passer à l'itération suivante
+            }
+        
+            processNextSwitch();
+        });
+
+        $('#notes').on('input', () => {
+            writeNotes('{{ object.pk }}', $('#notes').val());
         })
+
         //{% endif %}
     });
 </script>

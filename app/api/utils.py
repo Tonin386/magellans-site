@@ -5,7 +5,7 @@ from PIL import Image
 import PIL
 import os
 
-def createNotification(title, subtitle, application, status, message, user, extra_field=None):
+def createNotification(title, subtitle, application, status, message, user, extra_field=None, show=True):
     notification = Notification.objects.create(
         title=title,
         subtitle=subtitle,
@@ -15,8 +15,8 @@ def createNotification(title, subtitle, application, status, message, user, extr
         user=user,
         extra_field=extra_field
     )
-    
-    notification.show()
+    if show:
+        notification.show()
     
     return notification
 

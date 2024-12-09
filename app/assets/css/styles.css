@@ -420,3 +420,34 @@ footer {
       width: 75%;
   }
 }
+
+.order-switch .form-check-input {
+  width: 40px;
+  height: 20px;
+  margin-left: -2.25rem;
+  cursor: pointer;
+  --bs-form-switch-bg: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='%23ffffff'/%3e%3c/svg%3e");
+}
+
+.order-switch .form-check-input:checked {
+  background-color: var(--bs-success);
+  border-color: var(--bs-success);
+}
+
+.order-switch .form-check-input:not(:checked) {
+  background-color: var(--bs-danger);
+  border-color: var(--bs-danger);
+}
+
+.order-switch .form-check-input:focus {
+  box-shadow: none;
+  --bs-form-switch-bg: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='%23ffffff'/%3e%3c/svg%3e");
+}
+
+.order-switch .form-check-input:checked + .order-switch .form-check-label::before {
+  background-color: var(--bs-success);
+}
+
+.order-switch .form-check-input:not(:checked) + .order-switch .form-check-label::before {
+  background-color: var(--bs-danger);
+}

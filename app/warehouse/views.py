@@ -15,13 +15,14 @@ from django.urls import reverse_lazy
 from django.http import HttpResponse
 from django.shortcuts import render
 from api.utils import resize_image
+from django.utils import timezone
 from django.conf import settings
 from .models import *
 from .forms import *
 
 @register.filter
-def get_item(dictionary, key):
-    return dictionary.get(key)
+def get_item_count(dictionary, key):
+    return dictionary.get(key)['count']
 
 def warehouse(request):
     title = "Magasin"
@@ -50,10 +51,16 @@ def warehouse(request):
             quantities = saved_order.load_quantities()
             keys = list(quantities.keys())
             for key in keys:
+                if not "count" in quantities[key]:
+                    del quantities[key]
+                    continue
                 quantities[int(key)] = quantities[key]
                 del quantities[key]
 
-        total_items = sum([int(quantities[x]) for x in quantities])
+            saved_order.quantities = json.dumps(quantities)
+            saved_order.save()
+
+        total_items = sum([int(quantities[x]["count"]) for x in quantities])
 
     return render(request, "warehouse.html", locals())
 
@@ -120,6 +127,8 @@ def placeOrder(request):
             order.pickup_first_name = pu_first_name
             order.pickup_last_name = pu_last_name
             order.pickup_phone = pu_phone
+
+            order.date_created = timezone.now()
 
             order.status = 1
 

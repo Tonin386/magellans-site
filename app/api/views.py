@@ -554,6 +554,7 @@ def api_warehouse(request):
     body_post = json.loads(request.body.decode("utf-8"))
             
     action = body_post.get("action", "undefined")
+
     
     if action == "add-item":
         if not 'write' in permissions['warehouse'] + permissions['fullpower']:
@@ -800,21 +801,18 @@ def api_warehouse(request):
                     return JsonResponse({"status": "error", "message": f"403 forbidden!"})
                 item = Item.objects.get(pk=pk_item)
                 quantities = current_order.load_quantities()
-                print(item)
                 item_pk = str(item.pk)
                 if item_pk in quantities:
-                    quantities[item_pk] += 1
+                    quantities[item_pk]["count"] += 1
                 else:
-                    print("not found")
-                    quantities[item_pk] = 1
+                    quantities[item_pk] = {"count": 1}
 
                 current_order.quantities = json.dumps(quantities)
                 current_order.save()
 
-                total_items = sum([int(quantities[x]) for x in quantities])
-                print(current_order.quantities)
+                total_items = sum([int(quantities[x]["count"]) for x in quantities])
                 createNotification("Ajout à la commande", "add-item-tempOrder", app_id, 0, f"Ajout de 1 {item.name}", user)
-                return JsonResponse({"status": "success", "message": "Invoice updated successfully", "total_items": total_items, "new_count": quantities[item_pk]})
+                return JsonResponse({"status": "success", "message": "Invoice updated successfully", "total_items": total_items, "new_count": quantities[item_pk]["count"]})
 
             except Exception as e:
                 createNotification("Ajout à la commande", "add-item-tempOrder", app_id, 3, f"Une erreur est survenue.<hr>Erreur : {str(e)}", user, str(e))
@@ -841,27 +839,73 @@ def api_warehouse(request):
                 item_pk = str(item.pk)
                 new_count = 0
                 if item_pk in quantities:
-                    quantities[item_pk] -= 1
-                    if quantities[item_pk] <= 0:
+                    quantities[item_pk]["count"] -= 1
+                    if quantities[item_pk]["count"] <= 0:
                         del quantities[item_pk]
                         new_count = 0
                     else:
-                        new_count = quantities[item_pk]
+                        new_count = quantities[item_pk]["count"]
 
                 current_order.quantities = json.dumps(quantities)
                 current_order.save()
 
-                total_items = sum([int(quantities[x]) for x in quantities])
-                print(current_order.quantities)
+                total_items = sum([int(quantities[x]["count"]) for x in quantities])
                 createNotification("Retrait de la commande", "remove-item-tempOrder", app_id, 0, f"Retrait de 1 {item.name}", user)
-                return JsonResponse({"status": "success", "message": "Invoice updated successfully", "total_items": total_items, "new_count": new_count})
+                return JsonResponse({"status": "success", "message": "Order updated successfully", "total_items": total_items, "new_count": new_count})
 
             except Exception as e:
                 createNotification("Retrait de la commande", "remove-item-tempOrder", app_id, 3, f"Une erreur est survenue.<hr>Erreur : {str(e)}", user, str(e))
                 return JsonResponse({"status": "error", "message": f"An error occured<hr>{str(e)}"})
             
-        
+    if action == "set-itemAvailability":
+        if not 'write' in permissions['warehouse'] + permissions['fullpower']:
+            createNotification("Modification commande", "set-itemAvailability", app_id, 3, "Vous n'avez pas les permissions suffisantes pour effectuer cette action.", user)
+            return JsonResponse({"status": "error", "message": "Insufficient permissions"})
 
+        pk_order = body_post.get("pk_order", "undefined")
+        pk_item = body_post.get("pk_item", "undefined")
+        available = body_post.get("available", "undefined")
+
+        if not "undefined" in [pk_order, pk_item, available]:
+            print([pk_order, pk_item, available])
+            try:
+                order = Order.objects.get(pk=int(pk_order))
+                quantities = order.load_quantities()
+                if pk_item in quantities:
+                    quantities[pk_item]['available'] = available
+                    order.quantities = json.dumps(quantities)
+                    order.save()
+                    createNotification("Modification de la commande", "set-itemAvailability", app_id, 0, f"Modification effectuée.", user, show=False)
+                    return JsonResponse({"status": "success", "message": "Order updated successfully"})
+                raise KeyError(f"Impossible de trouver l'item {pk_item} dans la commande.")
+            except Exception as e:
+                createNotification("Modification commande", "set-itemAvailability", app_id, 3, f"Une erreur est survenue.<hr>Erreur : {str(e)}", user, str(e))
+                return JsonResponse({"status": "error", "message": f"An error occured<hr>{str(e)}"})
+        createNotification("Modification commande", "set-itemAvailability", app_id, 3, "Il y a eu une erreur lors de la requête. Veuillez réessayer.", user)
+        return JsonResponse({"status": "error", "message": "An error occured"})
+
+    if action == "write-notes":
+        if not 'write' in permissions['warehouse'] + permissions['fullpower']:
+            createNotification("Modification notes", "write-notes", app_id, 3, "Vous n'avez pas les permissions suffisantes pour effectuer cette action.", user)
+            return JsonResponse({"status": "error", "message": "Insufficient permissions"})
+        
+        pk_order = body_post.get("pk_order", "undefined")
+        notes = body_post.get("notes", "")
+
+        print(pk_order, notes)
+
+        if not "undefined" in [pk_order, notes]:
+            try:
+                order = Order.objects.get(pk=int(pk_order))
+                order.notes = notes
+                order.save()
+                createNotification("Modification notes", "write-note", app_id, 0, f"Modification effectuée.", user, show=False)
+                return JsonResponse({"status": "success", "message": "Notes updated successfully"})
+            except Exception as e:
+                createNotification("Modification notes", "write-notes", app_id, 3, f"Une erreur est survenue.<hr>Erreur : {str(e)}", user, str(e))
+                return JsonResponse({"status": "error", "message": f"An error occured<hr>{str(e)}"})
+        createNotification("Modification notes", "write-notes", app_id, 3, "Il y a eu une erreur lors de la requête. Veuillez réessayer.", user)
+        return JsonResponse({"status": "error", "message": "An error occured"})
 
     createNotification("Erreur inconnue", "unknown error", app_id, 3, "Une erreur inconnue est survenue.", user)
     return JsonResponse({"status": "error", "message": "Uncaught error."})
