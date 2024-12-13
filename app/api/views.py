@@ -805,7 +805,7 @@ def api_warehouse(request):
                 if item_pk in quantities:
                     quantities[item_pk]["count"] += 1
                 else:
-                    quantities[item_pk] = {"count": 1}
+                    quantities[item_pk] = {"count": 1, "available": True}
 
                 current_order.quantities = json.dumps(quantities)
                 current_order.save()
