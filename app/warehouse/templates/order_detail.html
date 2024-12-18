@@ -258,10 +258,21 @@ Récapitulatif des détails d'une commande ou réservation du magasin de l'assoc
             var pk = $(this).attr("pk");
             
             editOrderStatus(pk, value, callback_editOrderStatus);
-        })        
+        });
+
+        let switches = document.querySelectorAll(".order-switch");
+        switches.forEach( (element) => {
+            $(element).on("click", (event) => {
+                let pk_item = $(element.children[0]).attr('id').replace(/order-switch/g, "");
+                let pk_order = "{{ object.pk }}";
+                let available = element.children[0].checked;
+        
+                setItemAvailability(pk_order, pk_item, available);
+            });
+        });
+
         
         $("#allAvailable").on('click', (event) => {
-            let switches = document.querySelectorAll(".order-switch");
             let index = 0;
         
             function processNextSwitch() {
@@ -282,7 +293,6 @@ Récapitulatif des détails d'une commande ou réservation du magasin de l'assoc
         });
         
         $("#allUnavailable").on('click', (event) => {
-            let switches = document.querySelectorAll(".order-switch");
             let index = 0;
         
             function processNextSwitch() {
@@ -305,6 +315,8 @@ Récapitulatif des détails d'une commande ou réservation du magasin de l'assoc
         $('#notes').on('input', () => {
             writeNotes('{{ object.pk }}', $('#notes').val());
         })
+
+
 
         //{% endif %}
     });

@@ -867,7 +867,7 @@ def api_warehouse(request):
         available = body_post.get("available", "undefined")
 
         if not "undefined" in [pk_order, pk_item, available]:
-            print([pk_order, pk_item, available])
+            print("AVAILABLE: ", [pk_order, pk_item, available])
             try:
                 order = Order.objects.get(pk=int(pk_order))
                 quantities = order.load_quantities()
