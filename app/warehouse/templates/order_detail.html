@@ -28,8 +28,74 @@ Récapitulatif des détails d'une commande ou réservation du magasin de l'assoc
 {% if request.user.is_staff or request.user == object.user %}
 <div class="container">
     <h1 class="display-5 text-center"> Commande #{{ object.pk }} </h1>
+    {% if order.status == 3 or order.status == 4 %}
+    <h2 class="display-6 text-center muted text-danger fw-bold"> Contrat en attente de signature </h2>
+    {% endif %}
     <div class="row my-3">
+        {% if order.status == 3 or order.status == 4 %}
+        <h3>Contrat de prêt</h3>
         <div class="col-lg-12">
+            <div class="alert alert-warning close">
+                Veillez à l'exactitude des informations que vous saisissez pour générer le contrat de prêt. Si celles-ci sont erronées, Magellans se réserve le droit d'annuler le contrat et de vous demander d'en générer un nouveau.
+            </div>
+        </div>
+        <form id="contract-form" novalidate>
+            <fieldset class="border p-4 mb-4">
+                <legend class="w-auto px-3">Informations du Réalisateur.ice</legend>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="real-contrat">Nom du Réalisateur.ice</label>
+                        <input type="text" class="form-control" id="real-contrat" placeholder="Nom" required>
+                        <div class="invalid-feedback">Veuillez entrer le nom du réalisateur.ice.</div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="telReal-contrat">Téléphone</label>
+                        <input type="tel" class="form-control" id="telReal-contrat" placeholder="Téléphone" required>
+                        <div class="invalid-feedback">Veuillez entrer un numéro de téléphone valide.</div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="emailReal-contrat">Email</label>
+                        <input type="email" class="form-control" id="emailReal-contrat" placeholder="Email" required>
+                        <div class="invalid-feedback">Veuillez entrer une adresse e-mail valide.</div>
+                    </div>
+                </div>
+            </fieldset>
+            <fieldset class="border p-4 mb-4">
+                <legend class="w-auto px-3">Informations de la Production</legend>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="prod-contrat">Nom de la Production</label>
+                        <input type="text" class="form-control" id="prod-contrat" placeholder="Nom de la production" required>
+                        <div class="invalid-feedback">Veuillez entrer le nom de la production.</div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="adresseProd-contrat">Adresse (si personne morale)</label>
+                        <input type="text" class="form-control" id="adresseProd-contrat" placeholder="Adresse">
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="telProd-contrat">Téléphone</label>
+                        <input type="tel" class="form-control" id="telProd-contrat" placeholder="Téléphone de la production" required>
+                        <div class="invalid-feedback">Veuillez entrer un numéro de téléphone valide.</div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="emailProd-contrat">Email</label>
+                        <input type="email" class="form-control" id="emailProd-contrat" placeholder="Email de la production" required>
+                        <div class="invalid-feedback">Veuillez entrer une adresse e-mail valide.</div>
+                    </div>
+                </div>
+            </fieldset>
+            
+            <div class="row justify-content-center">
+                <div class="col-lg-auto mb-4">
+                    <button type="submit" id="generate-contract" class="btn btn-secondary me-2"><i class="fas fa-file-alt"></i> Générer le contrat</button>
+                </div>
+                <div class="col-lg-auto mb-4">
+                    <button type="button" id="sign-contract" class="btn btn-success" disabled><i class="fas fa-signature"></i> Signer le contrat électroniquement</button>
+                </div>
+            </div>
+        </form>
+        {% endif %}
+        <div class="col-lg-12 my-2">
             <h2 class="title">Informations de la commande</h2>
             <table class="table table-striped responsive" id="order-info-table">
                 <thead>
@@ -70,6 +136,7 @@ Récapitulatif des détails d'une commande ou réservation du magasin de l'assoc
                                             <option value="2" {% if order.status == 2 %} selected {% endif %}>Commande refusée</option>
                                             <option value="3" {% if order.status == 3 %} selected {% endif %}>Commande acceptée</option>
                                             <option value="4" {% if order.status == 4 %} selected {% endif %}>Commande acceptée avec modifications</option>
+                                            <option value="5" {% if order.status == 5 %} selected {% endif %}>Commande avec contrat signé</option>
                                         </optgroup>
                                         <optgroup label="En attente">
                                             <option value="0" {% if order.status == 0 %} selected {% endif %}>Commande non-effectuée (incomplète)</option>
@@ -259,66 +326,85 @@ Récapitulatif des détails d'une commande ou réservation du magasin de l'assoc
             
             editOrderStatus(pk, value, callback_editOrderStatus);
         });
-
+        
         let switches = document.querySelectorAll(".order-switch");
         switches.forEach( (element) => {
             $(element).on("click", (event) => {
                 let pk_item = $(element.children[0]).attr('id').replace(/order-switch/g, "");
                 let pk_order = "{{ object.pk }}";
                 let available = element.children[0].checked;
-        
+                
                 setItemAvailability(pk_order, pk_item, available);
             });
         });
-
+        
         
         $("#allAvailable").on('click', (event) => {
             let index = 0;
-        
+            
             function processNextSwitch() {
                 if (index >= switches.length) return;
-        
+                
                 let element = switches[index];
                 element.children[0].checked = true;
                 let pk_item = $(element.children[0]).attr('id').replace(/order-switch/g, "");
                 let pk_order = "{{ object.pk }}";
-        
+                
                 setItemAvailability(pk_order, pk_item, true);
-        
+                
                 index++;
                 setTimeout(processNextSwitch, 100); // Attendre 100 millisecondes avant de passer à l'itération suivante
             }
-        
+            
             processNextSwitch();
         });
         
         $("#allUnavailable").on('click', (event) => {
             let index = 0;
-        
+            
             function processNextSwitch() {
                 if (index >= switches.length) return;
-        
+                
                 let element = switches[index];
                 element.children[0].checked = false;
                 let pk_item = $(element.children[0]).attr('id').replace(/order-switch/g, "");
                 let pk_order = "{{ object.pk }}";
-        
+                
                 setItemAvailability(pk_order, pk_item, false);
-        
+                
                 index++;
                 setTimeout(processNextSwitch, 100); // Attendre 100 millisecondes avant de passer à l'itération suivante
             }
-        
+            
             processNextSwitch();
         });
-
+        
         $('#notes').on('input', () => {
             writeNotes('{{ object.pk }}', $('#notes').val());
         })
-
-
-
         //{% endif %}
+
+        document.getElementById('contract-form').addEventListener('submit', function (event) {
+            event.preventDefault();
+            event.stopPropagation();
+            if (this.checkValidity()) {
+                // Additional form handling logic here
+                document.getElementById('generate-contract').disabled = false;  // Enable generate contract button
+            }
+            this.classList.add('was-validated');
+        });
+        
+        document.getElementById('generate-contract').addEventListener('click', function () {
+            // This logic ensures the sign contract button is enabled only if the form is valid
+            if (document.getElementById('contract-form').checkValidity()) {
+                document.getElementById('sign-contract').disabled = false;
+                generatePdfContract('{{ object.pk }}', false);
+            }
+        });
+
+        document.getElementById('sign-contract').addEventListener('click', function () {
+            generatePdfContract('{{ object.pk }}', true);
+        });
     });
 </script>
 {% endblock %}

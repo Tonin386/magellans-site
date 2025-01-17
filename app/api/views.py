@@ -1,12 +1,12 @@
 from django.contrib.auth.tokens import default_token_generator
 from django.core.exceptions import ObjectDoesNotExist
 from django.views.decorators.csrf import csrf_exempt
+from django.core.mail import send_mail, EmailMessage
 from django.utils.http import urlsafe_base64_encode
 from django.template.loader import render_to_string
 from django.core.files.base import ContentFile
 from django.utils.encoding import force_bytes
 from django.utils.safestring import mark_safe
-from django.core.mail import send_mail
 from django.http import JsonResponse
 from warehouse.models import Order
 from dashboard.models import *
@@ -356,7 +356,6 @@ def api_dashboard(request):
             resource_data = file.split(",")
             file = ContentFile(base64.b64decode(resource_data[1]))
             path = f"{resource.pk}_Magellans_{fileName}"
-            print(path)
             resource.associated_file.save(path, file)
         except Exception as e:
             createNotification("Ajout ressource", "add-resource", app_id, 3, f"Erreur lors de l'import du fichier. Veuillez réessayer.<hr>{str(e)}", user, str(e))
@@ -554,7 +553,6 @@ def api_warehouse(request):
     body_post = json.loads(request.body.decode("utf-8"))
             
     action = body_post.get("action", "undefined")
-
     
     if action == "add-item":
         if not 'write' in permissions['warehouse'] + permissions['fullpower']:
@@ -867,7 +865,6 @@ def api_warehouse(request):
         available = body_post.get("available", "undefined")
 
         if not "undefined" in [pk_order, pk_item, available]:
-            print("AVAILABLE: ", [pk_order, pk_item, available])
             try:
                 order = Order.objects.get(pk=int(pk_order))
                 quantities = order.load_quantities()
@@ -892,8 +889,6 @@ def api_warehouse(request):
         pk_order = body_post.get("pk_order", "undefined")
         notes = body_post.get("notes", "")
 
-        print(pk_order, notes)
-
         if not "undefined" in [pk_order, notes]:
             try:
                 order = Order.objects.get(pk=int(pk_order))
@@ -906,6 +901,45 @@ def api_warehouse(request):
                 return JsonResponse({"status": "error", "message": f"An error occured<hr>{str(e)}"})
         createNotification("Modification notes", "write-notes", app_id, 3, "Il y a eu une erreur lors de la requête. Veuillez réessayer.", user)
         return JsonResponse({"status": "error", "message": "An error occured"})
+    
+    if action == "email-sign_contract":
+        if not 'order' in permissions['warehouse'] + permissions['fullpower']:
+            createNotification("Signature contrat", "email-sign_contract", app_id, 3, "Vous n'avez pas les permissions suffisantes pour effectuer cette action.", user)
+            return JsonResponse({"status": "error", "message": "Insufficient permissions"})
+        
+        pk_order = body_post.get("pk_order", "undefined")
+        pdfFile = body_post.get("pdfFileBase64", "undefined")
+        title = body_post.get("title", "undefined")
+
+        if "undefined" in [pk_order, pdfFile, title]:
+            createNotification("Erreur inconnue", "email-sign_contract", app_id, 3, "Une erreur inconnue est survenue lors de la récupération du contrat.", user)
+            return JsonResponse({"status": "error", "message": "Uncaught error."})
+
+        try:
+            pdf_buffer = base64.b64decode(pdfFile)
+            order = Order.objects.get(pk=pk_order)
+            subject = f"Contrat signé pour la commande #{pk_order}"
+            email_message = render_to_string('email_sign_contract.html', {'order': order})
+            email = EmailMessage(
+                subject,
+                email_message,
+                settings.DEFAULT_FROM_EMAIL,
+                ['antonin.mathubert@magellans.fr'] #TODO mettre le bon mail
+            )
+            createNotification("Signature contrat", "email-sign_contract", app_id, 0, f"Contrat signé, envoi par mail à Magellans... (la page se rafraîchira après cette opération)", user)
+
+            email.attach(title, pdf_buffer, 'application/pdf')
+            email.send()
+
+            order.status = 5
+            order.save()
+
+            return JsonResponse({"status": "success", "message": "Contract sent by mail."})
+
+        except Exception as e:
+            createNotification("Signature contrat", "email-sign_contract", app_id, 3, f"Une erreur est survenue.<hr>Erreur : {str(e)}", user, str(e))
+            return JsonResponse({"status": "error", "message": f"An error occured<hr>{str(e)}"})
+
 
     createNotification("Erreur inconnue", "unknown error", app_id, 3, "Une erreur inconnue est survenue.", user)
     return JsonResponse({"status": "error", "message": "Uncaught error."})

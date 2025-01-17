@@ -23,7 +23,8 @@ ORDER_STATUS_CHOICES = [
     (1, 'Commande effectuée & en attente de réponse'), #Order was validated and sent to the staff
     (2, 'Commande refusée'), #Order was declined by a staff member
     (3, 'Commande acceptée'), #Order was accepted by a staff member
-    (4, 'Commande acceptée avec modifications') #Order was accepted by staff, but under modified conditions
+    (4, 'Commande acceptée avec modifications'), #Order was accepted by staff, but under modified conditions
+    (5, 'Commande avec contrat signé')
 ]
 
 class Tag(models.Model):
