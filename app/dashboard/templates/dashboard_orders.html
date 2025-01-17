@@ -56,7 +56,7 @@ Gestion des commandes et réservations du magasin de matériel de l'association 
                         <td>{{ order.pickup_first_name }} {{ order.pickup_last_name }} ({{ order.pickup_phone_formatted }})</td>
                         <td>{% if order.date_start %}{{ order.date_start }}{% endif %}</td>
                         <td>{% if order.date_start %}{{ order.date_end }}{% endif %}</td>
-                        <td class="{% if order.status == 3 or order.status == 4%}bg-success{% elif order.status == 1 %} bg-warning {% else %} bg-danger {% endif %}">{{ order.get_status_display }}</td>
+                        <td class="{% if order.status == 3 or order.status == 4 or order.status == 5 %}bg-success{% elif order.status == 1 %} bg-warning {% else %} bg-danger {% endif %}">{{ order.get_status_display }}</td>
                         <td>{{ order.date_created }}</td>
                     </tr>
                     {% endfor %}
