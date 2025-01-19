@@ -920,11 +920,15 @@ def api_warehouse(request):
             order = Order.objects.get(pk=pk_order)
             subject = f"Contrat signé pour la commande #{pk_order}"
             email_message = render_to_string('email_sign_contract.html', {'order': order})
+            recipients = ['contact@magellans.fr']
+
+            for warehouse_handler in Member.objects.filter(site_person__role="G"):
+                recipients.append(warehouse_handler.email)
             email = EmailMessage(
                 subject,
                 email_message,
                 settings.DEFAULT_FROM_EMAIL,
-                ['antonin.mathubert@magellans.fr'] #TODO mettre le bon mail
+                recipients
             )
             createNotification("Signature contrat", "email-sign_contract", app_id, 0, f"Contrat signé, envoi par mail à Magellans... (la page se rafraîchira après cette opération)", user)
 
