@@ -82,20 +82,42 @@ class Project(models.Model):
     
     def __str__(self):
         return "Projet " + self.name
+    
     class Meta:
         verbose_name = "Projet"
     
 class RoleMap(models.Model):
-    member = models.ForeignKey(Member, on_delete=models.CASCADE, verbose_name="Membre", related_name="roles")
+    person = models.ForeignKey(Person, on_delete=models.CASCADE, verbose_name="Coéquipier", related_name="roles")
     project = models.ForeignKey(Project, on_delete=models.CASCADE, verbose_name="Projet", related_name="team")
-    role_name = models.CharField("Rôle", max_length=255)
-    
+    ROLE_CHOICES = [
+        (1, 'Réalisateur.ice'),
+        (2, 'Producteur.ice'),
+        (3, 'Scénariste'),
+        (4, 'Directeur.ice de la photographie'),
+        (5, 'Monteur.euse'),
+        (6, 'Designer sonore'),
+        (7, 'Chef.fe décorateur.rice'),
+        (8, 'Costumier.ière'),
+        (9, 'Maquilleur.euse'),
+        (10, 'Acteur.rice'),
+        (11, 'Assistant.e réalisateur.ice'),
+        (12, 'Assistant.e de production'),
+        (13, 'Éclairagiste'),
+        (14, 'Machiniste'),
+        (15, 'Perchman'),
+        (16, 'Compositeur.rice'),
+        (17, 'Superviseur.euse des effets visuels'),
+        (18, 'Coordinateur.rice des cascades'),
+        (19, 'Directeur.ice de casting'),
+    ]
+    role_name = models.IntegerField("Rôle", choices=ROLE_CHOICES)
+
     def __str__(self):
-        return self.member + "|" + self.project + " : " + self.role_name
+        return f"{self.member} | {self.project} : {self.role_name}"
     
     class Meta:
         constraints = [
-            models.UniqueConstraint(fields=['member', 'project'], name='unique_user_project_role')
+            models.UniqueConstraint(fields=['person', 'project', 'role_name'], name='unique_user_project_role')
         ]
         verbose_name = "Rôle"
 
