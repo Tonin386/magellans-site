@@ -1,0 +1,14 @@
+Bonjour {{ order.user.first_name }},
+
+
+Félicitations ! Votre réservation #{{ order.pk }} au magasin Magellans vient d'être acceptée :)
+Vous avez désormais un contrat en attente de signature. 
+Pour plus d'informations, allez consulter votre commande en ligne : https://magellans.fr{% url 'order-detail' pk=order.pk %}
+
+{% if custom_message %}
+Voici le message de notre magasinier.ère pour vous : 
+{{ custom_message|safe }}
+{% endif %}
+
+En vous souhaitant une excellente journée,
+L'équipe Magellans.

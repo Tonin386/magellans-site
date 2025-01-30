@@ -109,7 +109,7 @@ Récapitulatif des détails d'une commande ou réservation du magasin de l'assoc
                             {% if request.user.is_staff %}
                             <a href="{% url 'member-detail' pk=object.user.pk %}" class="text-black" id="demandeur">{{ object.user }}</a>
                             {% else %}
-                            {{ object.user }}
+                            <p class="text-black" id="demandeur">{{ object.user }}</p>
                             {% endif %}
                         </td>
                     </tr>
@@ -147,7 +147,7 @@ Récapitulatif des détails d'une commande ou réservation du magasin de l'assoc
                             </div>
                         </td>
                         {% else %}
-                        <td class="{% if object.status == 3 or object.status == 4 %}bg-success{% elif object.status == 1 %} bg-warning {% else %} bg-danger {% endif %}">{{ object.get_status_display }}</td>
+                        <td class="{% if object.status == 3 or object.status == 4 or object.status == 5%}bg-success{% elif object.status == 1 %} bg-warning {% else %} bg-danger {% endif %}">{{ object.get_status_display }}</td>
                         {% endif %}
                     </tr>
                     <tr>
@@ -288,9 +288,9 @@ Récapitulatif des détails d'une commande ou réservation du magasin de l'assoc
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.12/pdfmake.min.js" integrity="sha512-axXaF5grZBaYl7qiM6OMHgsgVXdSLxqq0w7F4CQxuFyrcPmn0JfnqsOtYHUun80g6mRRdvJDrTCyL8LQqBOt/Q==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-<script src="{% static 'js/api/api.js' %}"></script>
 <script src="{% static 'js/dashboard/warehouse.js' %}"></script>
 {% endif %}
+<script src="{% static 'js/api/api.js' %}"></script>
 <script src="{% static 'js/warehouse/order-detail.js' %}"></script>
 <script>
     $(document).ready(function() {

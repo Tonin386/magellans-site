@@ -772,9 +772,14 @@ def api_warehouse(request):
                     order.answer_message = "Réponse reçue le %s <br><br>" % datetime.now().strftime("%d/%m/%Y à %H:%M") + custom_message.replace("\n", "<br>") + '<hr>' + order.answer_message
                     order.save()
 
-                subject = "Modification du statut de votre commande"
-                email_message = render_to_string('email_order_status_changed.html', {'order': order, 'custom_message': custom_message})
-                send_mail(subject, email_message, settings.DEFAULT_FROM_EMAIL, [order.user.email])
+                if order.status in [3, 4]: 
+                    subject = "Commande acceptée et contrat en attente de signature dans votre espace Magellans."
+                    email_message = render_to_string('email_order_accepted.html', {'order': order, 'custom_message': custom_message})
+                    send_mail(subject, email_message, settings.DEFAULT_FROM_EMAIL, [order.user.email])
+                else:
+                    subject = "Modification du statut de votre commande"
+                    email_message = render_to_string('email_order_status_changed.html', {'order': order, 'custom_message': custom_message})
+                    send_mail(subject, email_message, settings.DEFAULT_FROM_EMAIL, [order.user.email])
 
                 createNotification("Email commande", "email-order_status", app_id, 0, "L'email a bien été envoyé.", user)
                 return JsonResponse({"status": "success", "message": "Invoice updated successfully"})
@@ -919,7 +924,7 @@ def api_warehouse(request):
             pdf_buffer = base64.b64decode(pdfFile)
             order = Order.objects.get(pk=pk_order)
             subject = f"Contrat signé pour la commande #{pk_order}"
-            email_message = render_to_string('email_sign_contract.html', {'order': order})
+            email_message = render_to_string('email_signed_contract.html', {'order': order})
             recipients = ['contact@magellans.fr']
 
             for warehouse_handler in Member.objects.filter(site_person__role="G"):
