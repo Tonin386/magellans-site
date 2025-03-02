@@ -69,6 +69,12 @@ async function writeNotes(pk_order, notes, callback = function(){}) {
 
 function exportToPdf(order_pk) {
     var docDefinition = {
+        info: {
+            title: 'Contrat commande Magellans #' + order_pk,
+            author: 'Magellans',
+            subject: 'Contrat de commande',
+            keywords: 'contrat, commande, Magellans'
+        },
         content: []
     };
 
@@ -154,5 +160,17 @@ function exportToPdf(order_pk) {
     }
     
     // Générer le PDF
-    pdfMake.createPdf(docDefinition).download('Récapitulatif commande Magellans #' + order_pk + '.pdf');
+    const my_pdf = pdfMake.createPdf(docDefinition);
+    my_pdf.getBlob((blob) => {
+        const url = URL.createObjectURL(blob);
+        const newTab = window.open(url, '_blank'); // Ouvre dans un nouvel onglet
+    
+        if (newTab) {
+            setTimeout(() => URL.revokeObjectURL(url), 5000); // Nettoie après 5s
+        } else {
+            alert("Veuillez autoriser les pop-ups pour voir le PDF !");
+        }
+    });
+    
+    
 }

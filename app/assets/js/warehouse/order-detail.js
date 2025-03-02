@@ -13,6 +13,12 @@ function generateSignHash(projet, referent, date) {
 function generatePdfContract(order_pk, signed) {
 
     var docDefinition = {
+        info: {
+            title: 'Contrat commande Magellans #' + order_pk,
+            author: 'Magellans',
+            subject: 'Contrat de commande',
+            keywords: 'contrat, commande, Magellans'
+        },
         content: []
     };
 
@@ -215,13 +221,25 @@ function generatePdfContract(order_pk, signed) {
     // Générer le PDF
     const my_pdf = pdfMake.createPdf(docDefinition);
     const title = 'Contrat commande Magellans #' + order_pk + (signed ? ' signé':'') + '.pdf'
-    my_pdf.download(title);
-
+    docDefinition.info.title = title;
+    
     if(signed) {
         my_pdf.getBuffer((buffer) => {
             sendContractByMail(order_pk, title, buffer);
         });
     }
+    
+    my_pdf.getBlob((blob) => {
+        const url = URL.createObjectURL(blob);
+        const newTab = window.open(url, '_blank'); // Ouvre dans un nouvel onglet
+    
+        if (newTab) {
+            setTimeout(() => URL.revokeObjectURL(url), 5000); // Nettoie après 5s
+        } else {
+            alert("Veuillez autoriser les pop-ups pour voir le PDF !");
+        }
+    });
+    
 }
 
 async function sendContractByMail(pk_order, title, buffer, callback = function(){}) {
