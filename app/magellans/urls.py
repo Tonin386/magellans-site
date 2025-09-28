@@ -15,5 +15,5 @@ urlpatterns = [
     path('deconnexion/', auth_views.LogoutView.as_view(), name='logout'),
     path('connexion/', auth_views.LoginView.as_view(), name='login'),
     path('api/', include("api.urls")),
-    path('<str:filename>', FileView.as_view(), name="file_view")
+    path('<str:filename>', FileView.as_view(), name="file_view"),
 ]

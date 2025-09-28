@@ -67,6 +67,8 @@ INSTALLED_APPS = [
     'dashboard',
     'api',
     'channels',
+    'django_recaptcha',
+    'widget_tweaks',
 ]
 
 MIDDLEWARE = [
@@ -195,3 +197,8 @@ if DEBUG:
     EMAIL_RECEIVER = "antonin.mathubert@magellans.fr"
 
 TREASURER_PK = 1
+
+#Captcha settings
+RECAPTCHA_PUBLIC_KEY = os.getenv("RECAPTCHA_PUBLIC_KEY")
+RECAPTCHA_PRIVATE_KEY = os.getenv("RECAPTCHA_PRIVATE_KEY")
+RECAPTCHA_REQUIRED_SCORE = 0.85
