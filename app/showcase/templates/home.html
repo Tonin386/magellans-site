@@ -354,124 +354,124 @@
     </section>
     <!-- Contact-->
     <section class="page-section" id="contact">
-        < class="container">
-        <div class="text-center">
-            <h2 class="section-heading text-uppercase">Contacte nous</h2>
-            <h3 class="section-subheading text-muted">Nous lisons quotidiennement toutes les demandes, attends-toi à une réponse dans la semaine qui suit.</h3>
-        </div>
-        <form id="contactForm" method="post" action="{% url 'home' %}">
-            {% csrf_token %}
-            <div class="row align-items-stretch mb-5">
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <!-- Name input-->
-                        <input class="form-control" name="{{form.name.name}}" id="{{form.name.id_for_label}}" type="text" placeholder="Votre nom *" required/>
-                        <div class="invalid-feedback" data-sb-feedback="name:required">Champ obligatoire.</div>
-                    </div>
-                    <div class="form-group">
-                        <!-- Email address input-->
-                        <input class="form-control" name="{{form.email.name}}" id="{{form.email.id_for_label}}" type="email" placeholder="Votre email *" required />
-                        <div class="invalid-feedback" data-sb-feedback="email:required">Champ obligatoire.</div>
-                        <div class="invalid-feedback" data-sb-feedback="email:email">L'email n'est pas valide.</div>
-                    </div>
-                    <div class="form-group mb-md-0">
-                        <!-- Phone number input-->
-                        <input class="form-control" name="{{form.phone.name}}" id="{{form.phone.id_for_label}}" type="tel" placeholder="Votre téléphone *" required />
-                        <div class="invalid-feedback" data-sb-feedback="phone:required">Champ obligatoire.</div>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="form-group form-group-textarea mb-md-0">
-                        <!-- Message input-->
-                        <textarea class="form-control" name="{{form.message.name}}" id="{{form.message.id_for_label}}" placeholder="Votre message *" required></textarea>
-                        <div class="invalid-feedback" data-sb-feedback="message:required">Champ obligatoire.</div>
-                    </div>
-                </div>
+        <div class="container">
+            <div class="text-center">
+                <h2 class="section-heading text-uppercase">Contacte nous</h2>
+                <h3 class="section-subheading text-muted">Nous lisons quotidiennement toutes les demandes, attends-toi à une réponse dans la semaine qui suit.</h3>
             </div>
-            <div class="col-md-12 mb-4 text-center align-items-center justify-content-center d-flex">
-                {{ form.captcha }}
-                {% if form.captcha.errors %}
-                <div class="invalid-feedback d-block">
-                    {{ form.captcha.errors }}
+            <form id="contactForm" method="post" action="{% url 'home' %}">
+                {% csrf_token %}
+                <div class="row align-items-stretch mb-5">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <!-- Name input-->
+                            <input class="form-control" name="{{form.name.name}}" id="{{form.name.id_for_label}}" type="text" placeholder="Votre nom *" required/>
+                            <div class="invalid-feedback" data-sb-feedback="name:required">Champ obligatoire.</div>
+                        </div>
+                        <div class="form-group">
+                            <!-- Email address input-->
+                            <input class="form-control" name="{{form.email.name}}" id="{{form.email.id_for_label}}" type="email" placeholder="Votre email *" required />
+                            <div class="invalid-feedback" data-sb-feedback="email:required">Champ obligatoire.</div>
+                            <div class="invalid-feedback" data-sb-feedback="email:email">L'email n'est pas valide.</div>
+                        </div>
+                        <div class="form-group mb-md-0">
+                            <!-- Phone number input-->
+                            <input class="form-control" name="{{form.phone.name}}" id="{{form.phone.id_for_label}}" type="tel" placeholder="Votre téléphone *" required />
+                            <div class="invalid-feedback" data-sb-feedback="phone:required">Champ obligatoire.</div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group form-group-textarea mb-md-0">
+                            <!-- Message input-->
+                            <textarea class="form-control" name="{{form.message.name}}" id="{{form.message.id_for_label}}" placeholder="Votre message *" required></textarea>
+                            <div class="invalid-feedback" data-sb-feedback="message:required">Champ obligatoire.</div>
+                        </div>
+                    </div>
                 </div>
+                <div class="col-md-12 mb-4 text-center align-items-center justify-content-center d-flex">
+                    {{ form.captcha }}
+                    {% if form.captcha.errors %}
+                    <div class="invalid-feedback d-block">
+                        {{ form.captcha.errors }}
+                    </div>
+                    {% endif %}
+                </div>
+                
+                {% for field in form %}
+                {% if field.errors %}
+                {{ field.name }} : {{ field.errors }}
                 {% endif %}
-            </div>
-            
-            {% for field in form %}
-            {% if field.errors %}
-            {{ field.name }} : {{ field.errors }}
-            {% endif %}
-            {% endfor %}
-            <!-- Submit Button-->
-            <div class="text-center"><button class="btn btn-primary btn-xl text-uppercase" id="submitButton" type="submit">Envoyer</button></div>
-        </form>
-    </div>
-</section>
-<!-- Footer-->
-{% include "footer.html" %}
-<!-- Portfolio Modals-->
-{% for projet in projets %}
-<div class="portfolio-modal modal fade" id="{{ projet.slug }}-modal" tabindex="-1" role="dialog" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content p-1">
-            <div class="close-modal" data-bs-dismiss="modal"><img src="{% static 'img/icons/close-icon.svg' %}" alt="Close modal" width="25px"/></div>
-            <div class="container">
-                <div class="row justify-content-center">
-                    <div class="col-lg-8">
-                        <div class="modal-body">
-                            <!-- Project details-->
-                            <h2 class="text-uppercase">{{ projet.name }}</h2>
-                            <p class="item-intro text-muted">{{ projet.short_desc }}</p>
-                            <img class="img-fluid d-block mx-auto" style="max-height: 600px;" src="{{ MEDIA_URL }}{{ projet.poster.url }}" alt="Affiche du projet {{ projet.name }}" />
-                            <p>{{ projet.desc }}</p>
-                            <ul class="list-inline">
-                                <li>
-                                    <strong>Genre :</strong>
-                                    {{ projet.genre }}
-                                </li>
-                            </ul>
+                {% endfor %}
+                <!-- Submit Button-->
+                <div class="text-center"><button class="btn btn-primary btn-xl text-uppercase" id="submitButton" type="submit">Envoyer</button></div>
+            </form>
+        </div>
+    </section>
+    <!-- Footer-->
+    {% include "footer.html" %}
+    <!-- Portfolio Modals-->
+    {% for projet in projets %}
+    <div class="portfolio-modal modal fade" id="{{ projet.slug }}-modal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content p-1">
+                <div class="close-modal" data-bs-dismiss="modal"><img src="{% static 'img/icons/close-icon.svg' %}" alt="Close modal" width="25px"/></div>
+                <div class="container">
+                    <div class="row justify-content-center">
+                        <div class="col-lg-8">
+                            <div class="modal-body">
+                                <!-- Project details-->
+                                <h2 class="text-uppercase">{{ projet.name }}</h2>
+                                <p class="item-intro text-muted">{{ projet.short_desc }}</p>
+                                <img class="img-fluid d-block mx-auto" style="max-height: 600px;" src="{{ MEDIA_URL }}{{ projet.poster.url }}" alt="Affiche du projet {{ projet.name }}" />
+                                <p>{{ projet.desc }}</p>
+                                <ul class="list-inline">
+                                    <li>
+                                        <strong>Genre :</strong>
+                                        {{ projet.genre }}
+                                    </li>
+                                </ul>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
-{% endfor %}
-<!-- Bootstrap core JS-->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
-<!-- Core theme JS-->
-<script src="{% static 'js/scripts_home.js' %}"></script>
-<!-- <script src="{% static 'js/winter.js' %}"></script> -->
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-BDZJKQJ88M"></script>
-<script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    
-    gtag('config', 'G-BDZJKQJ88M');
-    
-    /** document.addEventListener('DOMContentLoaded', function() {
-    Swal.fire(
-    {
-    title: 'Découvrez le dernier film Magellans !',
-    width: 800,
-    padding: '3em',
-    confirmButtonText: 'Oui je veux le voir !',
-    cancelButtonText: 'Désolé, j\'irai le voir plus tard...',
-    showCancelButton: true,
-    customClass: {
-    confirmButton: "btn-primary border-none btn",
-    cancelButton: "btn-secondary border-none btn"
-    },
-    html: '<p>"Pour Mia", tourné dans le cadre du 48HFP2023 est désormais disponible pour le public. Découvrez-le dès maintenant :)</p><br><iframe width="600" height="400" src="https://www.youtube.com/embed/YGdf9i5SpH4?si=XqSbHAtv9NmfvR6y" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen class="d-md-block d-none m-auto"></iframe>',
-    }).then((result) => {
-    if(result.isConfirmed) {
-    window.open("https://www.youtube.com/watch?v=YGdf9i5SpH4", "_blank");
-    }
-    });
-    }); **/
-</script>
+    {% endfor %}
+    <!-- Bootstrap core JS-->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Core theme JS-->
+    <script src="{% static 'js/scripts_home.js' %}"></script>
+    <!-- <script src="{% static 'js/winter.js' %}"></script> -->
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-BDZJKQJ88M"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        
+        gtag('config', 'G-BDZJKQJ88M');
+        
+        /** document.addEventListener('DOMContentLoaded', function() {
+        Swal.fire(
+        {
+        title: 'Découvrez le dernier film Magellans !',
+        width: 800,
+        padding: '3em',
+        confirmButtonText: 'Oui je veux le voir !',
+        cancelButtonText: 'Désolé, j\'irai le voir plus tard...',
+        showCancelButton: true,
+        customClass: {
+        confirmButton: "btn-primary border-none btn",
+        cancelButton: "btn-secondary border-none btn"
+        },
+        html: '<p>"Pour Mia", tourné dans le cadre du 48HFP2023 est désormais disponible pour le public. Découvrez-le dès maintenant :)</p><br><iframe width="600" height="400" src="https://www.youtube.com/embed/YGdf9i5SpH4?si=XqSbHAtv9NmfvR6y" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen class="d-md-block d-none m-auto"></iframe>',
+        }).then((result) => {
+        if(result.isConfirmed) {
+        window.open("https://www.youtube.com/watch?v=YGdf9i5SpH4", "_blank");
+        }
+        });
+        }); **/
+    </script>
 </body>
 </html>
