@@ -25,3 +25,5 @@ daphne
 django_registration
 olefile
 ipython
+django-recaptcha
+django-widget-tweaks
