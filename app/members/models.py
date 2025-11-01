@@ -14,7 +14,8 @@ ROLE_CHOICES = [
     ('Mx', "Membre Magellans & pas site"),
     ('E', "Inscrit site"),
     ('O', 'Organisation'), #Association, partenaire, entreprise...
-    ('X', 'Externe site')
+    ('X', 'Externe site'),
+    ('W', 'Webmaster'),
 ]
 
 GENDER_CHOICES = [
@@ -71,7 +72,7 @@ class Member(AbstractBaseUser, PermissionsMixin):
             self.site_person = site_person
             created = True
 
-        self.is_staff = self.site_person.role in ['P', 'C', 'G', 'T', 'S']
+        self.is_staff = self.site_person.role in ['P', 'C', 'G', 'T', 'S', 'W']
             
         super().save(*args, **kwargs)
         if created:
