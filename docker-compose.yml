@@ -23,7 +23,7 @@ services:
     restart: always
     stop_grace_period: 15s
     container_name: magellans-redis
-    image: redis:5
+    image: redis:latest
     command: ["redis-server"]
     ports:
       - 6379:6379
