@@ -51,7 +51,8 @@ if not SECRET_KEY:
 
 ALLOWED_HOSTS = env_list(
     "ALLOWED_HOSTS",
-    "localhost,127.0.0.1,django" if DEBUG else "magellans.fr,www.magellans.fr,django",
+    # localhost : contrôles de santé internes (nginx rejette déjà tout nom d'hôte inconnu).
+    "localhost,127.0.0.1,django" if DEBUG else "magellans.fr,www.magellans.fr,django,localhost,127.0.0.1",
 )
 CSRF_TRUSTED_ORIGINS = env_list(
     "CSRF_TRUSTED_ORIGINS",

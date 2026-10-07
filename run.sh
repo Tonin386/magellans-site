@@ -59,12 +59,25 @@ die() { red "✖ $*"; exit 1; }
 trap 'red "Erreur (ligne $LINENO). Dernière sauvegarde : ${LAST_BACKUP:-aucune}. Voir DEPLOIEMENT.md."' ERR
 
 [ -f "$ENV_FILE" ] || die "Fichier $ENV_FILE introuvable (voir app/.env.example)."
-set -a
-# shellcheck disable=SC1090
-source "$ENV_FILE"
-set +a
-: "${DB_DJANGO_NAME:?DB_DJANGO_NAME manquant dans $ENV_FILE}"
-: "${DB_USER:?DB_USER manquant dans $ENV_FILE}"
+
+# Lit une variable de app/.env sans interpréter le fichier (les secrets peuvent contenir $, ', &…).
+env_value() {
+  local line
+  line=$(grep -E "^[[:space:]]*$1=" "$ENV_FILE" | tail -n 1 || true)
+  line=${line#*=}
+  line=${line%$'\r'}
+  if [ ${#line} -ge 2 ] && { [[ $line == \"*\" ]] || [[ $line == \'*\' ]]; }; then
+    line=${line:1:${#line}-2}
+  fi
+  printf '%s' "$line"
+}
+DB_DJANGO_NAME=$(env_value DB_DJANGO_NAME)
+DB_USER=$(env_value DB_USER)
+DB_PASSWORD=$(env_value DB_PASSWORD)
+DEBUG=$(env_value DEBUG)
+NGINX_CONF_FILE=$(env_value NGINX_CONF_FILE)
+[ -n "$DB_DJANGO_NAME" ] || die "DB_DJANGO_NAME manquant dans $ENV_FILE"
+[ -n "$DB_USER" ] || die "DB_USER manquant dans $ENV_FILE"
 mkdir -p "$BACKUP_DIR" "$LOG_DIR"
 
 confirm() {
