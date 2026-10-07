@@ -251,18 +251,19 @@ export function registerComponents(Alpine: AlpineInstance): void {
 
   // ------------------------------------------------- Vidéo YouTube à la demande
   // L'iframe (et donc les cookies YouTube) n'est chargée qu'au clic.
-  Alpine.data("videoFacade", (embedUrl = "") =>
+  // L'iframe, vide jusqu'au clic, est présente dès le départ : la version CSP d'Alpine
+  // n'accepte aucune directive sur une iframe (adresse lue dans data-embed).
+  Alpine.data("videoFacade", () =>
     defineComponent({
-    playing: false,
-    play() {
-      if (!embedUrl.startsWith("https://")) return;
-      this.playing = true;
-      this.$nextTick(() => {
-        const frame = this.$refs.frame as HTMLIFrameElement | undefined;
-        if (frame) frame.src = embedUrl;
-      });
-    },
-  }),
+      playing: false,
+      play() {
+        const embedUrl = this.$root.dataset.embed ?? "";
+        const frame = this.$root.querySelector("iframe");
+        if (!frame || !embedUrl.startsWith("https://")) return;
+        frame.src = embedUrl;
+        this.playing = true;
+      },
+    }),
   );
 
   // ------------------------------------------------- Vidéo d'arrière-plan (accueil)
