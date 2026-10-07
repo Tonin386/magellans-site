@@ -1,6 +1,7 @@
 """Client minimal de l'API HelloAsso v5 (https://dev.helloasso.com)."""
 
 import logging
+from urllib.parse import quote, urlparse
 
 import httpx
 from django.conf import settings
@@ -78,6 +79,22 @@ class HelloAssoClient:
                 raise HelloAssoError(f"Erreur de l'API HelloAsso ({response.status_code}).")
             return response.json()
         raise HelloAssoError("Authentification HelloAsso impossible.")
+
+    def download_image(self, url, max_bytes=10 * 1024 * 1024):
+        """Télécharge une image publique du CDN HelloAsso (bannière de campagne)."""
+        parsed = urlparse(url)
+        if parsed.scheme != "https" or parsed.hostname != "cdn.helloasso.com":
+            raise HelloAssoError(f"Adresse d'image inattendue : {url}")
+        try:
+            with self._client() as client:
+                response = client.get(quote(url, safe=":/%"), follow_redirects=False)
+        except httpx.HTTPError as error:
+            raise HelloAssoError(f"Image HelloAsso injoignable : {error}") from error
+        if response.status_code != 200 or not response.headers.get("content-type", "").startswith("image/"):
+            raise HelloAssoError(f"Image HelloAsso indisponible ({response.status_code}).")
+        if len(response.content) > max_bytes:
+            raise HelloAssoError("Image HelloAsso trop lourde.")
+        return response.content
 
     # ------------------------------------------------------------------ Raccourcis
     def order(self, order_id):

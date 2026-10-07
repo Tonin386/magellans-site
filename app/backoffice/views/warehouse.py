@@ -117,7 +117,7 @@ def orders(request):
         queryset,
         search_fields=["project_name", "user__email", "user__site_person__first_name", "user__site_person__last_name", "pickup_last_name", "id"],
         sorts={"numero": "pk", "debut": "date_start", "envoi": "date_created"},
-        default_sort="debut" if key in ("todo", "to-sign", "ongoing") else "-envoi",
+        default_sort="-envoi",  # les demandes les plus récentes en premier, dans toutes les vues
         per_page=40,
     )
     counts = {k: (Order.objects.submitted().filter(status__in=s).count() if s else None) for k, _l, s in ORDER_FILTERS}

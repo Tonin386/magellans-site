@@ -83,6 +83,13 @@ class Season(models.Model):
         blank=True,
         help_text="Texte affiché sur la page d'adhésion pour cette saison.",
     )
+    banner = models.ImageField(
+        "Bannière",
+        upload_to="saisons/",
+        blank=True,
+        help_text="Copie de la bannière de la campagne HelloAsso, mise à jour à chaque synchronisation.",
+    )
+    helloasso_banner_url = models.URLField("Bannière d'origine (HelloAsso)", max_length=500, blank=True, editable=False)
     helloasso_title = models.CharField("Titre sur HelloAsso", max_length=200, blank=True, editable=False)
     helloasso_start = models.DateTimeField("Début de validité (HelloAsso)", null=True, blank=True, editable=False)
     helloasso_end = models.DateTimeField("Fin de validité (HelloAsso)", null=True, blank=True, editable=False)
