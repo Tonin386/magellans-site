@@ -236,6 +236,15 @@ health_check() {
   return 1
 }
 
+# La configuration nginx est montée depuis le dépôt : un « up » ne la relit pas.
+reload_nginx() {
+  if "${COMPOSE[@]}" exec -T nginx nginx -t >/dev/null 2>&1; then
+    "${COMPOSE[@]}" exec -T nginx nginx -s reload >/dev/null 2>&1 || true
+  else
+    alert "Configuration nginx invalide" "La nouvelle configuration nginx est refusée par « nginx -t » : l'ancienne reste en service. Voir ./run.sh logs nginx"
+  fi
+}
+
 needs_upgrade() {
   ! manage baseline_migrations --status >/dev/null 2>&1
 }
@@ -269,6 +278,7 @@ cmd_deploy() {
   fi
   stop_scripts
   "${COMPOSE[@]}" up -d --remove-orphans
+  reload_nginx
   if health_check; then
     docker image prune -f >/dev/null 2>&1 || true
     green "Déploiement terminé : $(git log -1 --format='%h %s')"
@@ -278,6 +288,7 @@ cmd_deploy() {
     red "Le site ne répond pas : retour automatique à la version précédente ($previous)."
     git reset --hard "$previous" >/dev/null
     "${COMPOSE[@]}" build django && "${COMPOSE[@]}" up -d --remove-orphans
+    reload_nginx
     if wait_healthy; then
       alert "Déploiement annulé" "La version $(git rev-parse --short "$current") ne démarrait pas : le site est revenu automatiquement à $(git rev-parse --short "$previous"). Sauvegarde faite avant : $LAST_BACKUP"
       die "Déploiement annulé, version précédente rétablie."

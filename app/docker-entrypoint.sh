@@ -10,10 +10,12 @@ run_as_app() { setpriv --reuid=$APP_UID --regid=$APP_UID --init-groups "$@"; }
 
 for dir in /app/media /app/private /app/backups; do
     mkdir -p "$dir"
-    if [ "$(stat -c %u "$dir")" != "$APP_UID" ]; then
+    # Y compris les fichiers hérités d'anciens conteneurs (root) : l'application doit pouvoir les déplacer.
+    if [ -n "$(find "$dir" ! -user $APP_UID -print -quit)" ]; then
         chown -R $APP_UID:$APP_UID "$dir"
     fi
 done
+export HOME=/home/magellans  # gunicorn et Python écrivent dans $HOME
 
 if [ "${SKIP_MIGRATIONS:-0}" != "1" ] && [ "$1" = "gunicorn" ]; then
     if ! run_as_app python manage.py baseline_migrations --status; then

@@ -46,8 +46,7 @@ server {
     ssl_session_cache shared:SSL:10m;
     ssl_session_timeout 1d;
     ssl_session_tickets off;
-
-    add_header Strict-Transport-Security "max-age=31536000" always;
+    # HSTS : ajouté par Django pour les pages, et ci-dessous pour les fichiers servis par nginx.
 
     # Médias publics (affiches, photos du matériel, équipe…)
     location /media/ {
