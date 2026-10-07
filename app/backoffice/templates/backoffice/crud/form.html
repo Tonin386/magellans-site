@@ -3,7 +3,7 @@
 {% block title %}{% if object %}Modifier{% else %}Ajouter{% endif %} — {{ crud.title }}{% endblock %}
 
 {% block content %}
-<c-page-header eyebrow="{{ crud.title }}" title="{% if object %}{{ object }}{% else %}Ajouter {{ crud.singular }}{% endif %}" back="{{ crud.list_url }}" back_label="{{ crud.title }}" />
+<c-page-header eyebrow="{{ crud.title }}" title="{% if object %}{{ object }}{% else %}Ajouter {{ crud.singular }}{% endif %}" back="{{ next|default:crud.list_url }}" back_label="{% if next %}Retour au site{% else %}{{ crud.title }}{% endif %}" />
 <form method="post" enctype="multipart/form-data" class="max-w-3xl space-y-6" novalidate>
   {% csrf_token %}
   <c-form-errors :form="form" />
@@ -24,7 +24,7 @@
   <div class="flex flex-wrap items-center justify-between gap-3">
     {% if object and crud.name == "pages" %}<a href="{{ object.get_absolute_url }}" target="_blank" class="link text-sm">Voir la page sur le site</a>{% else %}<span></span>{% endif %}
     <div class="flex gap-2">
-      <c-button href="{{ crud.list_url }}" variant="secondary">Annuler</c-button>
+      <c-button href="{{ next|default:crud.list_url }}" variant="secondary">Annuler</c-button>
       <button type="submit" class="btn btn-primary">{% icon "check" %} Enregistrer</button>
     </div>
   </div>

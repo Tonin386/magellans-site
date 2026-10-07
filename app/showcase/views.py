@@ -56,6 +56,8 @@ def home(request):
             "timeline": TimelineEntry.objects.filter(is_visible=True),
             "team": team,
             "team_season": team_season,
+            # L'accueil montre l'équipe d'une saison passée : rappel pour le CA.
+            "team_outdated": bool(Season.current()) and team_season != Season.current(),
             "stats": stats,
             "form": ContactForm(),
         },

@@ -12,7 +12,7 @@
 {% endfor %}
 {% if pages_to_review %}
 <c-alert tone="info" title="Textes à relire" class="mb-4">
-  {% for page in pages_to_review %}<a href="{% url 'backoffice:pages-edit' page.pk %}">{{ page.title }}</a>{% if not forloop.last %}, {% endif %}{% endfor %} : ces pages ont été rédigées par défaut et doivent être validées par le CA.
+  {% for page in pages_to_review %}<a href="{% url 'backoffice:pages-edit' page.pk %}">{{ page.title }}</a>{% if not forloop.last %}, {% endif %}{% endfor %} : ces pages sont marquées « à relire ».
 </c-alert>
 {% endif %}
 {% if webhook_errors %}

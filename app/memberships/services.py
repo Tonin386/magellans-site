@@ -1,5 +1,6 @@
 """Enregistrement des adhésions HelloAsso (webhook et synchronisation)."""
 
+import difflib
 import logging
 import unicodedata
 from dataclasses import dataclass, field
@@ -103,11 +104,30 @@ def extract_contact(item, payer):
     return {"first_name": first_name[:30], "last_name": last_name[:30], "email": email, "phone": phone[:15]}
 
 
+def _similar_last_names(known, given):
+    """Même nom à une faute de frappe près, ou nom composé abrégé (« Ferreira » / « Ferreira Da Silva »)."""
+    known_words, given_words = set(known.split()), set(given.split())
+    if known_words and given_words and (known_words <= given_words or given_words <= known_words):
+        return True
+    return difflib.SequenceMatcher(None, known, given).ratio() >= 0.85
+
+
 def _names_match(person, first_name, last_name):
+    """La fiche (trouvée par son adresse e-mail) correspond-elle au nom saisi sur HelloAsso ?
+
+    Le prénom doit correspondre ; le nom peut comporter une faute de frappe ou être abrégé,
+    et prénom et nom peuvent avoir été inversés. Une adresse partagée par deux personnes
+    (prénoms différents) ne rattache donc pas l'adhésion à la mauvaise fiche.
+    """
     known_first, known_last = _norm(person.clean_first_name), _norm(person.clean_last_name)
+    first, last = _norm(first_name), _norm(last_name)
     if not known_first and not known_last:
         return True
-    return known_last == _norm(last_name) and (not known_first or known_first == _norm(first_name))
+    if known_last == last and (not known_first or known_first == first):
+        return True
+    if known_first and (known_first, known_last) == (last, first):
+        return True
+    return bool(known_first) and known_first == first and _similar_last_names(known_last, last)
 
 
 def find_person(contact):
@@ -186,7 +206,7 @@ def process_order(order, *, send_emails=True, request=None, verified=True):
     report = ProcessReport()
     form_slug = order.get("formSlug") or ""
     organization = order.get("organizationSlug") or ""
-    season = Season.objects.filter(helloasso_form_slug=form_slug).first() if form_slug else None
+    season = Season.for_helloasso_form(form_slug)
     if season is None:
         report.ignored.append(f"Campagne « {form_slug or '?'} » non rattachée à une saison.")
         return report
@@ -196,6 +216,9 @@ def process_order(order, *, send_emails=True, request=None, verified=True):
     if order.get("formType") not in (None, "Membership"):
         report.ignored.append(f"Formulaire de type {order.get('formType')} ignoré.")
         return report
+    # Saison terminée (reprise de l'historique) : l'adhésion est enregistrée, sans compte ni e-mail.
+    ended = season.end_date < timezone.localdate()
+    send_emails = send_emails and not ended
 
     payer = order.get("payer") or {}
     items = order.get("items") or []
@@ -264,7 +287,7 @@ def process_order(order, *, send_emails=True, request=None, verified=True):
             membership.save()
             (report.updated if upgraded else report.created).append(membership)
 
-        account = ensure_account(person, membership, send_emails=send_emails)
+        account = None if ended else ensure_account(person, membership, send_emails=send_emails)
         if account:
             report.accounts.append(account)
         if not upgraded:
@@ -310,7 +333,8 @@ def refresh_season_from_helloasso(season, client=None):
     client = client or HelloAssoClient()
     form = client.form_public(season.helloasso_org_slug, season.helloasso_form_type or "Membership", season.helloasso_form_slug)
     tiers = [tier for tier in form.get("tiers") or [] if tier.get("tierType") == "Membership"]
-    if tiers and tiers[0].get("price") is not None:
+    # Une saison terminée garde son tarif : HelloAsso n'y montre plus que le dernier palier (souvent proratisé).
+    if tiers and tiers[0].get("price") is not None and season.end_date >= timezone.localdate():
         season.price = _cents(tiers[0]["price"])
     season.helloasso_title = (form.get("title") or "")[:200]
     season.helloasso_start = parse_datetime(form.get("startDate") or "") if form.get("startDate") else None
@@ -325,10 +349,11 @@ def sync_season(season, *, send_emails=False, client=None, request=None):
         raise HelloAssoError("Cette saison n'est liée à aucune campagne HelloAsso.")
     client = client or HelloAssoClient()
     refresh_season_from_helloasso(season, client)
-    items = list(client.form_items(season.helloasso_org_slug, season.helloasso_form_type or "Membership", season.helloasso_form_slug))
     report = ProcessReport()
-    for order in _orders_from_items(items):
-        report.merge(process_order(order, send_emails=send_emails, request=request))
+    for organization, form_type, form_slug in season.helloasso_forms:
+        items = list(client.form_items(organization, form_type, form_slug))
+        for order in _orders_from_items(items):
+            report.merge(process_order(order, send_emails=send_emails, request=request))
     season.last_synced_at = timezone.now()
     season.save()
     log_activity(request, "helloasso-sync", f"Synchronisation HelloAsso de la saison {season.label} : {report.summary()}.", target=season, category="memberships")

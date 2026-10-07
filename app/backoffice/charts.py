@@ -49,18 +49,27 @@ def line_chart(series, width=640, height=180, padding=24):
     return {"width": width, "height": height, "paths": paths, "max": max_count, "baseline": _n(padding + inner_h)}
 
 
+def _first_join_dates(season):
+    """Date de première adhésion de chaque personne sur la saison (un double paiement compte une fois)."""
+    firsts = {}
+    for person_id, joined_at in season.memberships.active().values_list("person_id", "joined_at"):
+        day = timezone.localtime(joined_at).date()
+        firsts[person_id] = min(day, firsts.get(person_id, day))
+    return list(firsts.values())
+
+
 def season_progress(current, previous):
     """Courbes cumulées des adhésions : saison en cours vs précédente (même calendrier)."""
     today = timezone.localdate()
     series = []
     if current:
         end = min(today, current.end_date)
-        dates = [m.joined_at.date() for m in current.memberships.active().only("joined_at")]
+        dates = _first_join_dates(current)
         series.append({"label": current.label, "points": cumulative_series(dates, current.start_date, end), "tone": "amber"})
     if previous:
         offset = (today - current.start_date) if current else datetime.timedelta(days=365)
         end = min(previous.end_date, previous.start_date + offset)
-        dates = [m.joined_at.date() for m in previous.memberships.active().only("joined_at")]
+        dates = _first_join_dates(previous)
         series.append({"label": previous.label, "points": cumulative_series(dates, previous.start_date, end), "tone": "ink"})
     return line_chart(series) if series else None
 

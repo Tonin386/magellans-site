@@ -448,9 +448,9 @@ class Page(models.Model):
     show_in_footer = models.BooleanField("Lien dans le pied de page", default=True)
     is_published = models.BooleanField("Publiée", default=True)
     needs_review = models.BooleanField(
-        "À relire par le CA",
+        "À relire",
         default=False,
-        help_text="Indique un texte proposé par défaut qui doit être validé par le CA.",
+        help_text="Tant que la case est cochée, un rappel s'affiche sur le tableau de bord du CA.",
     )
     updated_at = models.DateTimeField("Dernière modification", auto_now=True)
     updated_by = models.ForeignKey(

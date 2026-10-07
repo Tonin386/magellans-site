@@ -7,8 +7,20 @@
   {% if crud.name == "team" %}
   <form method="post" action="{% url 'backoffice:team-copy' %}">{% csrf_token %}<button type="submit" class="btn btn-secondary" title="Copier l'équipe de la saison précédente vers la saison en cours">{% icon "copy" %} Reprendre l'équipe précédente</button></form>
   {% endif %}
-  <c-button href="{{ crud.create_url }}" icon="plus">Ajouter</c-button>
+  <c-button href="{{ crud.create_url }}{% if selected_season %}?saison={{ selected_season }}{% endif %}" icon="plus">Ajouter</c-button>
 </c-page-header>
+
+{% if crud.name == "team" %}
+{% if current_season and home_season != current_season %}
+<c-alert tone="warning" title="L'accueil affiche encore l'équipe {{ home_season.label|default:'sans saison' }}" class="mb-4">
+  Aucune personne n'est saisie pour la saison en cours ({{ current_season.label }}). Clique sur « Reprendre l'équipe précédente », puis mets à jour les fonctions et retire les sortant·es.
+</c-alert>
+{% elif home_season %}
+<c-alert tone="info" class="mb-4">
+  L'accueil affiche l'équipe {{ home_season.label }} ({{ home_team_count }} personne{{ home_team_count|pluralize }} visible{{ home_team_count|pluralize }}). <a href="{% url 'home' %}#equipe" target="_blank">Voir sur l'accueil</a>
+</c-alert>
+{% endif %}
+{% endif %}
 
 {% if seasons %}
 <div class="mb-4 flex flex-wrap gap-2">

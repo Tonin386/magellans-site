@@ -217,20 +217,28 @@ def settings_form_class(section):
 class SeasonForm(StyledFormMixin, forms.ModelForm):
     class Meta:
         model = Season
-        fields = ["label", "start_date", "end_date", "helloasso_url", "price", "registrations_open", "is_current", "pitch"]
+        fields = ["label", "start_date", "end_date", "helloasso_url", "price", "registrations_open", "is_current", "pitch", "helloasso_other_urls"]
         widgets = {
             "start_date": forms.DateInput(attrs={"type": "date"}, format="%Y-%m-%d"),
             "end_date": forms.DateInput(attrs={"type": "date"}, format="%Y-%m-%d"),
             "pitch": forms.Textarea(attrs={"rows": 7}),
+            "helloasso_other_urls": forms.Textarea(attrs={"rows": 2}),
         }
+
+    URL_ERROR = "Lien HelloAsso non reconnu. Exemple attendu : https://www.helloasso.com/associations/magellans/adhesions/adhesions-2026-2027"
 
     def clean_helloasso_url(self):
         url = self.cleaned_data.get("helloasso_url")
         if url and not parse_helloasso_url(url):
-            raise forms.ValidationError(
-                "Lien HelloAsso non reconnu. Exemple attendu : https://www.helloasso.com/associations/magellans/adhesions/adhesions-2026-2027"
-            )
+            raise forms.ValidationError(self.URL_ERROR)
         return url
+
+    def clean_helloasso_other_urls(self):
+        lines = [line.strip() for line in self.cleaned_data.get("helloasso_other_urls", "").splitlines() if line.strip()]
+        for line in lines:
+            if not parse_helloasso_url(line):
+                raise forms.ValidationError(f"{self.URL_ERROR} (ligne « {line} »)")
+        return "\n".join(lines)
 
     def clean(self):
         cleaned = super().clean()

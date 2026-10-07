@@ -69,6 +69,12 @@ class Season(models.Model):
     helloasso_form_slug = models.CharField(
         "Identifiant de la campagne", max_length=200, blank=True, db_index=True, editable=False
     )
+    helloasso_other_urls = models.TextField(
+        "Autres campagnes HelloAsso de la saison",
+        blank=True,
+        help_text="Rarement utile : si une campagne a été recréée en cours de saison, coller ici le lien "
+        "de l'ancienne (un lien par ligne) pour que ses adhésions comptent aussi dans cette saison.",
+    )
     price = models.DecimalField(
         "Montant de la cotisation (€)", max_digits=8, decimal_places=2, null=True, blank=True
     )
@@ -112,6 +118,19 @@ class Season(models.Model):
         return cls.objects.filter(start_date__lte=day, end_date__gte=day).order_by("-start_date").first()
 
     @classmethod
+    def for_helloasso_form(cls, form_slug):
+        """Saison rattachée à une campagne HelloAsso (campagne principale ou campagne secondaire)."""
+        if not form_slug:
+            return None
+        season = cls.objects.filter(helloasso_form_slug=form_slug).first()
+        if season is None:
+            season = next(
+                (s for s in cls.objects.exclude(helloasso_other_urls="") if any(f[2] == form_slug for f in s.helloasso_forms)),
+                None,
+            )
+        return season
+
+    @classmethod
     def guess_dates(cls, label):
         """« 2026-2027 » → (1er septembre 2026, 31 août 2027)."""
         try:
@@ -143,6 +162,18 @@ class Season(models.Model):
         return bool(self.helloasso_form_slug and self.helloasso_org_slug)
 
     @property
+    def helloasso_forms(self):
+        """(organisation, type, identifiant) de chaque campagne de la saison, la principale en premier."""
+        forms = []
+        if self.has_helloasso:
+            forms.append((self.helloasso_org_slug, self.helloasso_form_type or "Membership", self.helloasso_form_slug))
+        for line in self.helloasso_other_urls.splitlines():
+            parsed = parse_helloasso_url(line)
+            if parsed and parsed not in forms:
+                forms.append(parsed)
+        return forms
+
+    @property
     def helloasso_public_url(self):
         if not self.has_helloasso:
             return ""
@@ -167,13 +198,16 @@ class Season(models.Model):
         return self.start_date <= timezone.localdate() <= self.end_date
 
     def stats(self):
+        # Une personne qui a payé deux fois la même saison ne compte qu'une fois.
         return self.memberships.active().aggregate(
-            count=Count("id"), total=Sum("amount"), donations=Sum("donation")
+            count=Count("person", distinct=True), total=Sum("amount"), donations=Sum("donation")
         )
 
     def helloasso_warnings(self):
         """Incohérences détectées entre la saison et la campagne HelloAsso."""
         warnings = []
+        if self.end_date < timezone.localdate():
+            return warnings  # saison terminée : la campagne n'a plus à être cohérente
         if self.helloasso_start and self.helloasso_end:
             start, end = timezone.localtime(self.helloasso_start).date(), timezone.localtime(self.helloasso_end).date()
             if abs((start - self.start_date).days) > 45 or abs((end - self.end_date).days) > 45:
