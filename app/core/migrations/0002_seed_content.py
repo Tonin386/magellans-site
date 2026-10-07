@@ -92,13 +92,8 @@ FAQ = [
      "retour du matériel aux dates prévues."),
 ]
 
-PAGE_REVIEW_NOTE = (
-    "> **Texte proposé par défaut — à relire et valider par le CA** avant de retirer cette mention "
-    "(espace CA › Contenus › Pages).\n\n"
-)
-
 PAGES = [
-    ("mentions-legales", "Mentions légales", PAGE_REVIEW_NOTE + """
+    ("mentions-legales", "Mentions légales", """
 ## Éditeur du site
 
 Le site **magellans.fr** est édité par l'association **Magellans**, association loi 1901 enregistrée sous le numéro RNA **W931023484**, dont le siège est situé rue du Colonel Delorme, 93100 Montreuil.
@@ -119,7 +114,7 @@ Les contenus du site (textes, logos, affiches, photos, vidéos) appartiennent à
 
 Les adhésions et les dons sont encaissés par la plateforme **HelloAsso**. Aucune donnée bancaire n'est traitée ni conservée par le site magellans.fr.
 """),
-    ("confidentialite", "Politique de confidentialité", PAGE_REVIEW_NOTE + """
+    ("confidentialite", "Politique de confidentialité", """
 L'association Magellans attache une grande importance à la protection de tes données personnelles. Cette page explique quelles données nous collectons, pourquoi et combien de temps nous les conservons.
 
 ## Responsable du traitement
@@ -157,7 +152,7 @@ Tu disposes d'un droit d'accès, de rectification, d'effacement, de limitation, 
 
 Le site utilise un cookie de session (connexion) et un cookie de sécurité (protection des formulaires), indispensables à son fonctionnement. Les cookies de mesure d'audience ne sont déposés qu'avec ton accord, que tu peux retirer à tout moment depuis le lien « Gérer les cookies » en bas de page.
 """),
-    ("cgu-magasin", "Conditions d'utilisation du magasin", PAGE_REVIEW_NOTE + """
+    ("cgu-magasin", "Conditions d'utilisation du magasin", """
 Le magasin de Magellans prête gratuitement du matériel audiovisuel aux membres de l'association.
 
 ## Qui peut réserver ?
@@ -244,7 +239,7 @@ def forwards(apps, schema_editor):
     for slug, title, body in PAGES:
         Page.objects.get_or_create(
             slug=slug,
-            defaults={"title": title, "body": body.strip(), "needs_review": True, "show_in_footer": True},
+            defaults={"title": title, "body": body.strip(), "show_in_footer": True},
         )
 
     if not FAQEntry.objects.exists():

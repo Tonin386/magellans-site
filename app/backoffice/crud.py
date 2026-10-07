@@ -9,7 +9,7 @@ from django.urls import path, reverse
 from django.views.decorators.http import require_POST
 
 from core.audit import log_activity
-from core.http import smart_redirect
+from core.http import safe_next, smart_redirect
 from core.permissions import capability_required, has_capability
 
 
@@ -71,11 +71,11 @@ class Crud:
                 data={"champs": sorted(form.changed_data)},
             )
             messages.success(request, "Modifications enregistrées." if instance else f"{self.singular.capitalize()} ajouté·e.")
-            return redirect(f"backoffice:{self.name}")
+            return redirect(safe_next(request) or f"backoffice:{self.name}")
         return render(
             request,
             "backoffice/crud/form.html",
-            {"crud": self, "form": form, "object": instance, **self.extra_context(request)},
+            {"crud": self, "form": form, "object": instance, "next": safe_next(request), **self.extra_context(request)},
         )
 
     def delete_view(self, request, pk):

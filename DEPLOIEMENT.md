@@ -95,6 +95,10 @@ Penser ensuite à remettre la branche `production` du dépôt au même commit, s
 ## Configuration HelloAsso
 
 - Saisons et campagnes : espace CA → Adhésions → Saisons (coller l'adresse de la campagne).
+  Si une campagne est recréée en cours de saison, coller l'ancienne dans « Autres campagnes
+  HelloAsso de la saison » (cas de 2023-2024).
+- Historique : les saisons 2021-2022 à 2024-2025 sont liées à leurs campagnes ; leurs
+  adhésions se récupèrent avec `./run.sh sync --all` (saison terminée : ni compte créé, ni e-mail).
 - Webhook : dans le back-office HelloAsso (Mon compte → Intégrations et API → Notifications),
   renseigner `https://magellans.fr/api/helloasso/<HELLOASSO_WEBHOOK_SECRET>/`
   (valeur dans `app/.env`). Chaque notification est de toute façon revérifiée auprès de l'API.

@@ -225,17 +225,34 @@
 {% endif %}
 
 {# =================================================================== ÉQUIPE #}
-{% if team %}
-<section id="equipe" class="mx-auto max-w-7xl px-4 py-24 sm:px-6 sm:py-32">
+{% if team or "content" in caps %}
+<section id="equipe" class="mx-auto max-w-7xl scroll-mt-20 px-4 py-24 sm:px-6 sm:py-32">
   <div class="reveal max-w-2xl">
     <p class="eyebrow">L'équipe</p>
     <h2 class="mt-3 text-4xl font-extrabold text-white sm:text-5xl">Le conseil d'administration{% if team_season %} <span class="accent-serif text-amber-400">{{ team_season.label }}</span>{% endif %}</h2>
     <p class="mt-3 text-lg text-ink-300">Les bénévoles qui orchestrent Magellans au quotidien.</p>
   </div>
+  {% if "content" in caps %}
+  <div class="mt-8 flex flex-col gap-3 rounded-2xl border border-amber-500/30 bg-amber-500/10 p-4 text-sm text-amber-100 sm:flex-row sm:items-center sm:justify-between">
+    <p class="flex items-start gap-2">{% icon "pencil" css="mt-0.5 shrink-0 text-amber-400" %}
+      <span>{% if team_outdated %}Aucune équipe n'est encore saisie pour la saison {{ current_season.label }}{% if team %} : l'accueil affiche {% if team_season %}celle de {{ team_season.label }}{% else %}l'équipe sans saison{% endif %}{% endif %}.{% else %}Visible par le CA uniquement : modifie les personnes, fonctions et photos de cette section.{% endif %}</span>
+    </p>
+    <div class="flex shrink-0 flex-wrap gap-2">
+      {% if team_outdated and team %}
+      <form method="post" action="{% url 'backoffice:team-copy' %}">{% csrf_token %}<input type="hidden" name="next" value="{% url 'home' %}#equipe">
+        <button type="submit" class="btn btn-primary btn-sm">{% icon "copy" %} Reprendre cette équipe pour {{ current_season.label }}</button>
+      </form>
+      {% endif %}
+      <a href="{% url 'backoffice:team-create' %}?saison={{ current_season.label|urlencode }}&amp;next={{ '/#equipe'|urlencode }}" class="btn btn-glass btn-sm">{% icon "plus" %} Ajouter</a>
+      <a href="{% url 'backoffice:team' %}{% if team_season %}?saison={{ team_season.label|urlencode }}{% endif %}" class="btn btn-glass btn-sm">{% icon "users" %} Gérer l'équipe</a>
+    </div>
+  </div>
+  {% endif %}
   <ul class="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
     {% for member in team %}
     <li class="reveal group overflow-hidden rounded-3xl border border-white/8 bg-ink-900">
       <div class="relative aspect-square overflow-hidden bg-ink-800">
+        {% if "content" in caps %}<a href="{% url 'backoffice:team-edit' member.pk %}?next={{ '/#equipe'|urlencode }}" class="btn btn-glass btn-icon btn-sm absolute top-3 right-3 z-10" aria-label="Modifier {{ member.name }}" title="Modifier">{% icon "pencil" %}</a>{% endif %}
         {% if member.photo %}
         <img src="{{ member.photo.url }}" alt="Portrait de {{ member.name }}" loading="lazy" class="size-full object-cover grayscale transition duration-700 group-hover:scale-105 group-hover:grayscale-0">
         {% else %}

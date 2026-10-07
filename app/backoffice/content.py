@@ -29,8 +29,21 @@ class TeamCrud(Crud):
             queryset = queryset.filter(season__label=season)
         return queryset.order_by("-season__start_date", "order", "pk")
 
+    def form_kwargs(self, request, instance=None):
+        season = Season.objects.filter(label=request.GET.get("saison")).first() if instance is None else None
+        return {"initial": {"season": season}} if season else {}
+
     def extra_context(self, request):
-        return {"seasons": Season.objects.all(), "selected_season": request.GET.get("saison", "")}
+        from showcase.views import team_for_display
+
+        home_season, home_team = team_for_display()
+        return {
+            "seasons": Season.objects.all(),
+            "selected_season": request.GET.get("saison", ""),
+            "home_season": home_season,
+            "home_team_count": len(home_team),
+            "current_season": Season.current(),
+        }
 
 
 class TimelineCrud(Crud):
