@@ -22,8 +22,12 @@
 
 <div class="grid gap-6 lg:grid-cols-3">
   {# --- Adhésion --------------------------------------------------------- #}
-  <section class="relative overflow-hidden rounded-3xl p-6 text-white lg:col-span-1 {% if membership %}bg-gradient-to-br from-ink-900 via-rust-900 to-rust-700{% else %}bg-gradient-to-br from-ink-800 to-ink-950{% endif %}">
-    <div class="pointer-events-none absolute -top-10 -right-10 size-40 rounded-full bg-amber-500/30 blur-2xl" aria-hidden="true"></div>
+  <section class="relative isolate overflow-hidden rounded-3xl p-6 text-white lg:col-span-1 {% if membership %}bg-gradient-to-br from-ink-900 via-rust-900 to-rust-700{% else %}bg-gradient-to-br from-ink-800 to-ink-950{% endif %}">
+    {% if season.banner %}
+    <img src="{{ season.banner.url }}" alt="" class="pointer-events-none absolute inset-0 -z-10 size-full object-cover opacity-45">
+    <div class="pointer-events-none absolute inset-0 -z-10 bg-gradient-to-t {% if membership %}from-rust-950 via-rust-950/85 to-rust-950/40{% else %}from-ink-950 via-ink-950/85 to-ink-950/40{% endif %}" aria-hidden="true"></div>
+    {% endif %}
+    <div class="pointer-events-none absolute -top-10 -right-10 -z-10 size-40 rounded-full bg-amber-500/30 blur-2xl" aria-hidden="true"></div>
     <p class="text-xs font-bold tracking-[0.18em] text-amber-300 uppercase">Adhésion {{ season.label|default:"" }}</p>
     {% if membership %}
     <p class="mt-3 flex items-center gap-2 font-display text-2xl font-extrabold">{% icon "circle-check" css="text-emerald-400" %} Tu es à jour</p>

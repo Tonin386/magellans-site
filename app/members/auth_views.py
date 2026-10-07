@@ -14,6 +14,7 @@ from django.views.decorators.http import require_http_methods
 from core.antispam import rate_limited
 from core.audit import log_activity
 from core.emails import send_templated_email
+from core.models import SiteSettings
 
 from .forms import LoginForm, RegisterForm, StyledPasswordResetForm, StyledSetPasswordForm
 from .models import Member, Person
@@ -43,7 +44,18 @@ def send_invitation_email(user, membership=None):
     )
 
 
-class LoginView(auth_views.LoginView):
+class SiteSettingsContextMixin:
+    """Les vues de Django placent leur propre « site » (django.contrib.sites) dans le contexte,
+    ce qui masquait les paramètres du site (nom, accroche) dans les gabarits."""
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["site"] = SiteSettings.load()
+        context.pop("site_name", None)
+        return context
+
+
+class LoginView(SiteSettingsContextMixin, auth_views.LoginView):
     form_class = LoginForm
     template_name = "auth/login.html"
     redirect_authenticated_user = True
@@ -156,7 +168,7 @@ def resend_activation(request):
     return redirect("login")
 
 
-class PasswordResetView(auth_views.PasswordResetView):
+class PasswordResetView(SiteSettingsContextMixin, auth_views.PasswordResetView):
     form_class = StyledPasswordResetForm
     template_name = "auth/password_reset.html"
     success_url = reverse_lazy("password_reset_done")
@@ -168,11 +180,11 @@ class PasswordResetView(auth_views.PasswordResetView):
         return super().post(request, *args, **kwargs)
 
 
-class PasswordResetDoneView(auth_views.PasswordResetDoneView):
+class PasswordResetDoneView(SiteSettingsContextMixin, auth_views.PasswordResetDoneView):
     template_name = "auth/password_reset_done.html"
 
 
-class PasswordResetConfirmView(auth_views.PasswordResetConfirmView):
+class PasswordResetConfirmView(SiteSettingsContextMixin, auth_views.PasswordResetConfirmView):
     form_class = StyledSetPasswordForm
     template_name = "auth/password_reset_confirm.html"
     success_url = reverse_lazy("login")

@@ -115,12 +115,21 @@ def join(request):
     membership = None
     if request.user.is_authenticated and getattr(request.user, "person", None):
         membership = request.user.person.membership_for(season)
+    # Saisons passées et leur équipage (bannières des campagnes HelloAsso).
+    history = list(
+        Season.objects.filter(end_date__lt=timezone.localdate())
+        .annotate(members=Count("memberships__person", filter=Q(memberships__status="active"), distinct=True))
+        .filter(members__gt=0)
+        .order_by("-start_date")
+    )
     return render(
         request,
         "showcase/join.html",
         {
             "season": season,
             "membership": membership,
+            "history": history,
+            "history_total": Person.objects.filter(memberships__status="active").distinct().count() if history else 0,
             "faq": FAQEntry.objects.filter(is_visible=True, topic="membership"),
         },
     )

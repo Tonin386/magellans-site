@@ -7,6 +7,7 @@ from dataclasses import dataclass, field
 from decimal import Decimal
 
 from django.core.exceptions import ValidationError
+from django.core.files.base import ContentFile
 from django.core.validators import validate_email
 from django.db import transaction
 from django.utils import timezone
@@ -15,7 +16,7 @@ from django.utils.dateparse import parse_datetime
 from core.audit import log_activity
 from core.emails import send_templated_email
 from core.models import SiteSettings
-from core.utils import normalize_phone
+from core.utils import normalize_phone, optimize_image
 from members.models import Member, Person
 
 from .helloasso import HelloAssoClient, HelloAssoError
@@ -329,6 +330,30 @@ def _orders_from_items(items):
     return list(orders.values())
 
 
+def refresh_banner(season, form, client):
+    """Copie locale de la bannière de la campagne (affichée sur le site), si elle a changé."""
+    url = ((form.get("banner") or {}).get("publicUrl") or "").strip()
+    if not url or (url == season.helloasso_banner_url and season.banner):
+        return
+    try:
+        data = client.download_image(url)
+    except HelloAssoError as error:
+        logger.warning("Bannière de la saison %s non récupérée : %s", season.label, error)
+        return
+    try:  # une bannière ne doit jamais faire échouer la synchronisation des adhésions
+        image = optimize_image(ContentFile(data, name=f"saison-{season.label}"), max_size=1920)
+        if image is None:
+            logger.warning("Bannière de la saison %s illisible : %s", season.label, url)
+            return
+        previous = season.banner.name if season.banner else ""
+        season.banner.save(image.name, image, save=False)
+        season.helloasso_banner_url = url
+        if previous and previous != season.banner.name:
+            season.banner.storage.delete(previous)
+    except Exception:
+        logger.exception("Bannière de la saison %s non enregistrée", season.label)
+
+
 def refresh_season_from_helloasso(season, client=None):
     client = client or HelloAssoClient()
     form = client.form_public(season.helloasso_org_slug, season.helloasso_form_type or "Membership", season.helloasso_form_slug)
@@ -340,6 +365,7 @@ def refresh_season_from_helloasso(season, client=None):
     season.helloasso_start = parse_datetime(form.get("startDate") or "") if form.get("startDate") else None
     season.helloasso_end = parse_datetime(form.get("endDate") or "") if form.get("endDate") else None
     season.helloasso_state = (form.get("state") or "")[:30]
+    refresh_banner(season, form, client)
     return form
 
 

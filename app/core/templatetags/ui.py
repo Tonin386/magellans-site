@@ -2,6 +2,7 @@
 
 from django import template
 from django.templatetags.static import static
+from django.utils import timezone
 from django.utils.html import format_html
 from django.utils.safestring import mark_safe
 
@@ -40,6 +41,14 @@ def phone(value):
 @register.filter(name="markdown")
 def markdown_filter(value):
     return render_markdown(value)
+
+
+@register.simple_tag
+def past_season_banners(limit=4):
+    """Saisons passées ayant une bannière HelloAsso, de la plus récente à la plus ancienne."""
+    from memberships.models import Season
+
+    return list(Season.objects.exclude(banner="").filter(end_date__lt=timezone.localdate()).order_by("-start_date")[:limit])
 
 
 @register.filter

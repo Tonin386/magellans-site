@@ -6,7 +6,8 @@
 </c-page-header>
 <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
   {% for season in seasons %}
-  <article class="card flex flex-col gap-4 p-5 {% if season.is_current %}ring-2 ring-amber-500{% endif %}">
+  <article class="card flex flex-col gap-4 overflow-hidden p-5 {% if season.is_current %}ring-2 ring-amber-500{% endif %}">
+    {% if season.banner %}<img src="{{ season.banner.url }}" alt="" loading="lazy" class="-mx-5 -mt-5 aspect-[5/1] w-[calc(100%+2.5rem)] max-w-none object-cover">{% endif %}
     <div class="flex items-start justify-between gap-3">
       <div>
         <h2 class="font-display text-2xl font-extrabold">{{ season.label }}</h2>

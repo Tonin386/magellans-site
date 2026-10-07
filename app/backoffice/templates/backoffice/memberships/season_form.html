@@ -40,6 +40,7 @@
     </c-card>
     {% if season %}
     <c-card title="Lu sur HelloAsso">
+      {% if season.banner %}<img src="{{ season.banner.url }}" alt="Bannière de la campagne {{ season.label }}" class="mb-4 aspect-[5/1] w-full rounded-xl object-cover">{% endif %}
       <dl class="space-y-2 text-sm">
         <div><dt class="text-xs text-muted">Titre</dt><dd>{{ season.helloasso_title|default:"—" }}</dd></div>
         <div><dt class="text-xs text-muted">État</dt><dd>{{ season.helloasso_state|default:"—" }}</dd></div>

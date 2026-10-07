@@ -20,6 +20,15 @@
     <div class="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgb(255_171_14/0.35),transparent_45%),radial-gradient(circle_at_80%_90%,rgb(127_63_23/0.6),transparent_50%)]"></div>
     <div class="grain absolute!"></div>
     <img src="{% static 'img/logo.svg' %}" alt="" class="absolute -right-32 -bottom-32 size-[36rem] opacity-20 motion-safe:animate-[spin_90s_linear_infinite]">
+    {% past_season_banners 4 as banners %}
+    {% if banners %}
+    {# Bandes de pellicule : les visuels des campagnes d'adhésion passées. #}
+    <div class="absolute inset-x-0 top-14 space-y-5 px-12 xl:px-16">
+      {% for past in banners %}
+      <img src="{{ past.banner.url }}" alt="" loading="lazy" class="aspect-[6/1] w-full rounded-xl border border-white/10 object-cover shadow-2xl shadow-black/50 {% cycle '-translate-x-4 -rotate-2 opacity-90' 'translate-x-6 rotate-1 opacity-75' '-translate-x-2 -rotate-1 opacity-60' 'translate-x-8 rotate-2 opacity-45' %}">
+      {% endfor %}
+    </div>
+    {% endif %}
     <div class="relative flex h-full flex-col justify-end p-14 text-white">
       <p class="font-serif text-5xl leading-tight italic">« Faire des films,<br>ensemble. »</p>
       <p class="mt-6 max-w-sm text-ink-300">{{ site.tagline }} — matériel, tournages, entraide et rencontres.</p>

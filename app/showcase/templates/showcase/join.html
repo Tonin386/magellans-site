@@ -15,6 +15,11 @@
       Une adhésion{% if season.price %} de <strong class="text-white">{{ season.price|money }}</strong>{% endif %} pour toute la saison{% if season %}, du {{ season.start_date|date:"j F Y" }} au {{ season.end_date|date:"j F Y" }}{% endif %}. Elle est enregistrée automatiquement sur le site dès ton paiement sur HelloAsso.
     </p>
   </div>
+  {% if season.banner %}
+  <div class="mx-auto max-w-7xl px-4 pb-12 sm:px-6">
+    <img src="{{ season.banner.url }}" alt="Visuel de la campagne d'adhésion {{ season.label }} : des membres de Magellans en tournage" class="aspect-[5/2] w-full rounded-3xl border border-white/10 object-cover shadow-2xl shadow-black/40 sm:aspect-[5/1] lg:aspect-[7/1]">
+  </div>
+  {% endif %}
 </section>
 
 <section class="mx-auto grid max-w-7xl gap-10 px-4 pb-24 sm:px-6 lg:grid-cols-12">
@@ -87,6 +92,28 @@
     {% endif %}
   </div>
 </section>
+
+{% if history %}
+<section id="saisons" class="mx-auto max-w-5xl scroll-mt-20 px-4 pb-24 sm:px-6">
+  <div class="text-center">
+    <p class="eyebrow">Saison après saison</p>
+    <h2 class="mt-3 text-4xl font-extrabold text-white sm:text-5xl">{{ history_total }} membres <span class="accent-serif text-amber-400">ont déjà embarqué</span></h2>
+    <p class="mx-auto mt-3 max-w-xl text-ink-300">Chaque rentrée, un nouvel équipage se forme autour des tournages, du magasin et des projets.</p>
+  </div>
+  <ol class="mt-10 space-y-3">
+    {% for past in history %}
+    <li class="reveal relative isolate overflow-hidden rounded-2xl border border-white/10 bg-ink-900">
+      {% if past.banner %}<img src="{{ past.banner.url }}" alt="" loading="lazy" class="absolute inset-0 -z-10 size-full object-cover">{% endif %}
+      <div class="absolute inset-0 -z-10 bg-gradient-to-r from-ink-950/90 via-ink-950/55 to-ink-950/0" aria-hidden="true"></div>
+      <div class="flex aspect-[3/1] flex-col justify-end p-5 sm:aspect-[6/1] sm:justify-center sm:p-7">
+        <p class="font-display text-2xl font-extrabold text-white sm:text-3xl">{{ past.label }}</p>
+        <p class="text-sm font-semibold text-amber-300">{{ past.members }} adhérent·e{{ past.members|pluralize }}</p>
+      </div>
+    </li>
+    {% endfor %}
+  </ol>
+</section>
+{% endif %}
 
 {% if faq %}
 <section id="faq" class="border-t border-white/8 bg-ink-900/40">

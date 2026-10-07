@@ -31,7 +31,7 @@ def dashboard(request):
         "season_stats": season.stats() if season else None,
         "previous_stats": previous.stats() if previous else None,
         "chart": season_progress(season, previous),
-        "pending_orders": Order.objects.filter(status=OrderStatus.PENDING).select_related("user", "user__site_person").order_by("date_start")[:6],
+        "pending_orders": Order.objects.filter(status=OrderStatus.PENDING).select_related("user", "user__site_person").order_by("-date_created")[:6],
         "pending_orders_count": Order.objects.filter(status=OrderStatus.PENDING).count(),
         "to_sign_count": Order.objects.filter(status__in=[OrderStatus.ACCEPTED, OrderStatus.ACCEPTED_MODIFIED], date_end__gte=now).count(),
         "pickups": Order.objects.filter(status__in=BLOCKING_STATUSES, date_start__range=(now, week_end)).select_related("user", "user__site_person").order_by("date_start")[:8],
