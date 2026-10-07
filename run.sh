@@ -36,6 +36,7 @@ SITE_DOMAIN="${SITE_DOMAIN:-magellans.fr}"
 KEEP_DB_DAYS=30       # bases : 30 jours…
 KEEP_DB_MIN=10        # …et toujours au moins les 10 dernières
 KEEP_MEDIA=4          # archives de fichiers conservées
+DEPLOYED_FILE="$LOG_DIR/version-en-ligne"  # commit réellement en service
 LAST_BACKUP=""
 ASSUME_YES=0
 COMPOSE=(docker compose --env-file "$ENV_FILE")
@@ -268,10 +269,20 @@ cmd_deploy() {
     info "Récupération du code (branche $(git rev-parse --abbrev-ref HEAD))…"
     git pull --ff-only
   fi
-  local current
+  local current failures_file="$LOG_DIR/deploy.failures" failures
   current=$(git rev-parse HEAD)
   info "Construction de l'image ($(git log -1 --format='%h %s'))…"
-  "${COMPOSE[@]}" build django
+  if ! "${COMPOSE[@]}" build django; then
+    # Souvent un incident réseau passager : on revient au code en service et on réessaiera.
+    git reset --hard "$previous" >/dev/null
+    failures=$(( $(cat "$failures_file" 2>/dev/null || echo 0) + 1 ))
+    echo "$failures" > "$failures_file"
+    if [ "$failures" -eq 3 ]; then
+      alert "Déploiement impossible" "La construction de la version $(git rev-parse --short "$current") échoue depuis 3 essais (voir logs/deploy.log). Le site reste sur la version $(git rev-parse --short "$previous")."
+    fi
+    die "Construction impossible (essai n°$failures) : la version en service est conservée, nouvel essai au prochain passage."
+  fi
+  rm -f "$failures_file"
   if needs_upgrade; then
     git reset --hard "$previous" >/dev/null
     die "La base doit d'abord être mise à niveau : lancez ./run.sh upgrade (une seule fois)."
@@ -280,6 +291,7 @@ cmd_deploy() {
   "${COMPOSE[@]}" up -d --remove-orphans
   reload_nginx
   if health_check; then
+    git rev-parse HEAD > "$DEPLOYED_FILE"
     docker image prune -f >/dev/null 2>&1 || true
     green "Déploiement terminé : $(git log -1 --format='%h %s')"
     return 0
@@ -290,6 +302,7 @@ cmd_deploy() {
     "${COMPOSE[@]}" build django && "${COMPOSE[@]}" up -d --remove-orphans
     reload_nginx
     if wait_healthy; then
+      git rev-parse HEAD > "$DEPLOYED_FILE"
       alert "Déploiement annulé" "La version $(git rev-parse --short "$current") ne démarrait pas : le site est revenu automatiquement à $(git rev-parse --short "$previous"). Sauvegarde faite avant : $LAST_BACKUP"
       die "Déploiement annulé, version précédente rétablie."
     fi
@@ -300,7 +313,10 @@ cmd_deploy() {
 
 cmd_autodeploy() {
   git fetch --quiet origin "$DEPLOY_BRANCH"
-  [ "$(git rev-parse HEAD)" = "$(git rev-parse "origin/$DEPLOY_BRANCH")" ] && return 0
+  # On compare à la version réellement en service (pas seulement au code récupéré).
+  local deployed
+  deployed=$(cat "$DEPLOYED_FILE" 2>/dev/null || git rev-parse HEAD)
+  [ "$deployed" = "$(git rev-parse "origin/$DEPLOY_BRANCH")" ] && return 0
   info "Nouvelle version sur origin/$DEPLOY_BRANCH : déploiement."
   cmd_deploy
 }
@@ -427,6 +443,7 @@ cmd_upgrade() {
   manage secure_private_media --apply
   "${COMPOSE[@]}" up -d --remove-orphans
   health_check || die "Le site ne répond pas : voir les journaux ci-dessus et DEPLOIEMENT.md."
+  git rev-parse HEAD > "$DEPLOYED_FILE"
   info "Synchronisation des adhésions HelloAsso (sans e-mails)…"
   in_django helloasso_sync --all || red "Synchronisation impossible : à relancer avec ./run.sh sync"
   green "Mise à niveau terminée. Sauvegarde de sécurité : $LAST_BACKUP"
@@ -446,7 +463,10 @@ case "${1:-help}" in
   up|log) "${COMPOSE[@]}" up -d --remove-orphans; [ "$1" = "log" ] && "${COMPOSE[@]}" logs -f; true ;;
   down) stop_scripts; "${COMPOSE[@]}" down ;;
   restart) "${COMPOSE[@]}" restart django nginx ;;
-  status) "${COMPOSE[@]}" ps; git log -1 --format='Version : %h %s (%cr)' ;;
+  status)
+    "${COMPOSE[@]}" ps
+    git log -1 --format='Code : %h %s (%cr)'
+    echo "En service : $(git log -1 --format='%h %s' "$(cat "$DEPLOYED_FILE" 2>/dev/null || echo HEAD)")" ;;
   logs) "${COMPOSE[@]}" logs -f --tail 200 "${2:-django}" ;;
   shell|in) "${COMPOSE[@]}" exec django sh ;;
   python) "${COMPOSE[@]}" exec django python manage.py shell ;;
