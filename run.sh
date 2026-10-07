@@ -96,9 +96,9 @@ lock() {
 # Conteneur ponctuel (fonctionne même site arrêté) / conteneur en marche.
 manage() { "${COMPOSE[@]}" run --rm -T -e SKIP_MIGRATIONS=1 django python manage.py "$@"; }
 in_django() {
-  local flags=()
-  { [ -t 0 ] && [ -t 1 ]; } || flags=(-T)  # pas de terminal (cron) : pas de TTY
-  "${COMPOSE[@]}" exec "${flags[@]+"${flags[@]}"}" django python manage.py "$@"
+  local flags=(-u magellans)  # comme le site : les fichiers créés (bannières…) lui appartiennent
+  { [ -t 0 ] && [ -t 1 ]; } || flags+=(-T)  # pas de terminal (cron) : pas de TTY
+  "${COMPOSE[@]}" exec "${flags[@]}" django python manage.py "$@"
 }
 
 # Prévient le webmaster par e-mail (sans jamais faire échouer l'appelant).
