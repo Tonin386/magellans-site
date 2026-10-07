@@ -55,9 +55,15 @@ Rien à faire sur le serveur : pousser sur `production` (depuis un poste de dev,
 2. `git pull --ff-only`, construction de l'image ;
 3. redémarrage (les migrations s'appliquent au démarrage du conteneur) ;
 4. contrôle du site (application + nginx) ;
-5. en cas d'échec : retour automatique au commit précédent, reconstruction, e-mail d'alerte.
+5. en cas d'échec au démarrage : retour automatique au commit précédent, reconstruction,
+   e-mail d'alerte ;
+6. si la construction de l'image échoue (souvent un incident réseau passager), le code
+   revient à la version en service et un nouvel essai a lieu au passage suivant ; e-mail
+   d'alerte au 3e échec consécutif.
 
-Pour déployer tout de suite : `./run.sh deploy`. Journal : `logs/deploy.log`.
+La version réellement en service est notée dans `logs/version-en-ligne` (`./run.sh status`
+affiche la version du code). Pour déployer tout de suite : `./run.sh deploy`.
+Journal : `logs/deploy.log`.
 
 ## Sauvegardes et restauration
 

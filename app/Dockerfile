@@ -1,4 +1,3 @@
-# syntax=docker/dockerfile:1.7
 # Image du site magellans.fr — construite en deux étapes :
 # 1. Node : compilation des fichiers frontend (Vite, Tailwind CSS, icônes) ;
 # 2. Python : application Django, sans Node ni outils de compilation.
