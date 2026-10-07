@@ -90,7 +90,11 @@ confirm() {
 # Un seul traitement lourd à la fois (déploiement, sauvegarde, surveillance…).
 lock() {
   exec 9>"$LOG_DIR/.run.lock"
-  if [ "${1:-wait}" = "try" ]; then flock -n 9; else flock -w 1800 9 || die "Une autre opération est en cours."; fi
+  case "${1:-wait}" in
+    try) flock -n 9 ;;
+    brief) flock -w 180 9 ;;  # laisse finir une opération courte (watchdog, synchro…)
+    *) flock -w 1800 9 || die "Une autre opération est en cours." ;;
+  esac
 }
 
 # Conteneur ponctuel (fonctionne même site arrêté) / conteneur en marche.
@@ -292,6 +296,7 @@ cmd_deploy() {
   reload_nginx
   if health_check; then
     git rev-parse HEAD > "$DEPLOYED_FILE"
+    cmd_cron >/dev/null 2>&1 || true  # les tâches automatiques suivent elles aussi le dépôt
     docker image prune -f >/dev/null 2>&1 || true
     green "Déploiement terminé : $(git log -1 --format='%h %s')"
     return 0
@@ -375,7 +380,7 @@ cmd_cron() {
 # >>> magellans-site — géré par « ./run.sh cron » (heures UTC) >>>
 MAILTO=""
 PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
-*/5 * * * *  cd $ROOT && ./run.sh watchdog >> $LOG_DIR/watchdog.log 2>&1
+2-59/5 * * * * cd $ROOT && ./run.sh watchdog >> $LOG_DIR/watchdog.log 2>&1
 */10 * * * * cd $ROOT && ./run.sh autodeploy >> $LOG_DIR/deploy.log 2>&1
 15 1 * * *   cd $ROOT && ./run.sh backup >> $LOG_DIR/backup.log 2>&1
 45 1 * * 0   cd $ROOT && ./run.sh backup --media >> $LOG_DIR/backup.log 2>&1
@@ -451,7 +456,10 @@ cmd_upgrade() {
 
 case "${1:-help}" in
   deploy|update) cmd_deploy "${2:-}" ;;
-  autodeploy) lock try || exit 0; exec 9>&-; cmd_autodeploy ;;
+  autodeploy)
+    # Décalé du watchdog dans le cron ; s'ils se croisent quand même, on attend au lieu de sauter le passage.
+    lock brief || { info "Une autre opération est en cours : déploiement reporté au prochain passage."; exit 0; }
+    exec 9>&-; cmd_autodeploy ;;
   upgrade) cmd_upgrade ;;
   backup) lock; backup_db; [ "${2:-}" = "--media" ] && backup_media; true ;;
   check-backup) lock; cmd_check_backup "${2:-}" ;;

@@ -21,12 +21,12 @@ Internet ──► nginx (443, certificats Let's Encrypt)
 
 ## Tâches automatiques (cron de l'utilisateur `ubuntu`)
 
-Installées ou mises à jour par `./run.sh cron` (`crontab -l` pour les voir). Heures UTC.
+Installées par `./run.sh cron`, et réinstallées automatiquement après chaque déploiement réussi (`crontab -l` pour les voir). Heures UTC.
 
 | Quand | Commande | Rôle |
 | --- | --- | --- |
-| toutes les 5 min | `watchdog` | Si le site ne répond plus deux fois de suite : redémarrage automatique + e-mail au webmaster |
-| toutes les 10 min | `autodeploy` | Si `origin/production` a avancé : déploiement complet |
+| toutes les 5 min (minutes 2, 7, 12…) | `watchdog` | Si le site ne répond plus deux fois de suite : redémarrage automatique + e-mail au webmaster |
+| toutes les 10 min | `autodeploy` | Si `origin/production` a avancé : déploiement complet (attend jusqu'à 3 min si une autre opération est en cours) |
 | chaque nuit 01:15 | `backup` | Sauvegarde vérifiée de la base (30 jours, au moins les 10 dernières) |
 | dimanche 01:45 | `backup --media` | Archive des fichiers (les 4 dernières) |
 | le 1er du mois 02:30 | `check-backup` | Restaure la dernière sauvegarde dans une base jetable pour prouver qu'elle est exploitable |
