@@ -1,221 +1,198 @@
-from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
-from django.contrib.auth.tokens import default_token_generator
-from members.decorators import staff_required, login_required
-from dashboard.forms import ProjectFundingRequestForm
-from django.utils.decorators import method_decorator
-from django.template.loader import render_to_string
-from django.utils.encoding import force_bytes
-from django.utils.safestring import mark_safe
-from django.views.generic import DetailView
-from dashboard.models import ResourceFile
-from django.core.mail import send_mail
-from django.shortcuts import redirect
+"""Espace membre : tableau de bord, profil, annuaire, données personnelles."""
+
+import json
+
 from django.contrib import messages
-from django.shortcuts import render
-from warehouse.models import Order
-from django.conf import settings
-from .forms import RegisterForm
-from .models import Member
-from bank.forms import *
-from .forms import *
-import secrets
-import string
+from django.contrib.auth import update_session_auth_hash
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.views import PasswordChangeView
+from django.core.exceptions import PermissionDenied
+from django.db.models import Q
+from django.http import HttpResponse
+from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse_lazy
+from django.utils import timezone
+from django.views.decorators.http import require_http_methods
 
-@login_required("Mon profil", "Accéder à son profil personnel sur le site de l'association Magellans.")
-def my_profile(request):
-    title = request.title
-    og_description = request.og_description
-    form = EditProfileForm(request.user.site_person)
-    orders = Order.objects.filter(user=request.user).order_by('-date_created')
-    invoices = Invoice.objects.filter(author=request.user).order_by('-date_created')
-    if request.method == "POST":
-        form = EditProfileForm(request.user.site_person, request.POST)
-        if form.is_valid():
-            request.user.site_person.first_name = form.cleaned_data['first_name']
-            request.user.site_person.last_name = form.cleaned_data['last_name']
-            request.user.site_person.phone = form.cleaned_data['phone'].replace(" ", "")
-            request.user.site_person.gender = form.cleaned_data['gender']
-            request.user.site_person.save()
-            
-    return render(request, 'my_profile.html', {'object': request.user, 'form': form, 'orders': orders, 'invoices': invoices, 'title': title, 'og_description': og_description})
+from bank.models import Invoice
+from core.audit import log_activity
+from core.emails import send_templated_email
+from core.models import SiteSettings
+from core.permissions import has_capability
+from dashboard.models import ProjectFundingRequest
+from memberships.models import Membership, Season
+from warehouse.models import OPEN_STATUSES, Order, OrderStatus
 
-@login_required("Créer une note de frais", "Page de création d'une note de frais pour les membres du site de l'association Magellans.")
-def create_invoice(request):
-    title = request.title
-    og_description = request.og_description
-    invoice_form = CreateInvoiceForm()
-    if request.method == "POST":
-        invoice_form = CreateInvoiceForm(request.POST)
-        if invoice_form.is_valid():
-            new_invoice = invoice_form.save()
-            new_invoice.author = request.user
-            new_invoice.save()
-            linked_expenses = request.POST.get("expenses_ids")
-            ids = linked_expenses[1:-1].split(",")
+from .forms import AccountDeletionForm, ProfileForm, StyledPasswordChangeForm
+from .models import Member, Person
 
-            for id in ids:
-                expense = Expense.objects.get(pk=id)
-                expense.linked_invoice = new_invoice
-                expense.save()
-            
-            new_invoice.save()
-            new_invoice.send_by_email()
-            messages.success(request, 'La note de frais a bien été créée et envoyée au trésorier.')
 
-    return render(request, "create_invoice.html", locals())
+def ensure_person(user):
+    person = user.person
+    if person is None:
+        person = Person.objects.create(site_profile=user, email=user.email, role="E")
+    return person
 
-@login_required("Demande d'aide financière", "Formulaire de demande d'aide financière pour faire financer son projet par l'association Magellans.")
-def create_funding_request(request):
-    form = ProjectFundingRequestForm()
-    title = request.title
-    og_description = request.og_description
-    if request.method == "POST":
-        form = ProjectFundingRequestForm(request.POST, request.FILES)
-        if form.is_valid():
-            new_funding_request = form.save()
 
-            new_funding_request.asker = request.user
-            new_funding_request.save()
+@login_required
+def home(request):
+    person = ensure_person(request.user)
+    season = Season.current()
+    orders = list(
+        Order.objects.filter(user=request.user, status__in=OPEN_STATUSES)
+        .select_related("contract")
+        .prefetch_related("lines__item")
+        .order_by("date_start")
+    )
+    context = {
+        "person": person,
+        "season": season,
+        "membership": person.membership_for(season),
+        "memberships": person.memberships.select_related("season").order_by("-season__start_date")[:6],
+        "orders": orders,
+        "orders_to_sign": [order for order in orders if order.needs_contract],
+        "draft": Order.objects.filter(user=request.user, status=OrderStatus.DRAFT).prefetch_related("lines").first(),
+        "invoices": Invoice.objects.filter(author=request.user).prefetch_related("expense_set")[:5],
+        "funding_requests": ProjectFundingRequest.objects.filter(asker=request.user)[:3],
+    }
+    if has_capability(request.user, "backoffice"):
+        context["board_todo"] = {
+            "orders": Order.objects.filter(status=OrderStatus.PENDING).count(),
+            "invoices": Invoice.objects.filter(status__in=["V", "F"]).count(),
+            "funding": ProjectFundingRequest.objects.filter(status__in=["submitted", "reviewing"]).count(),
+        }
+    return render(request, "members/home.html", context)
 
-            new_funding_request.send_by_email()
-            return render(request, "create_funding_request_success.html", {'title': title, 'og_description': og_description})
 
-    return render(request, "create_funding_request.html", locals())
+@login_required
+@require_http_methods(["GET", "POST"])
+def profile(request):
+    person = ensure_person(request.user)
+    form = ProfileForm(request.POST or None, request.FILES or None, instance=person)
+    if request.method == "POST" and form.is_valid():
+        form.save()
+        messages.success(request, "Ton profil est à jour.")
+        return redirect("members:profile")
+    return render(request, "members/profile.html", {"form": form, "person": person})
 
-@login_required("Ressources pour les membres", "Ressources mises à disposition des membres de Magellans.")
-def resources(request):
-    title = request.title
-    og_description = request.og_description
-    resources = ResourceFile.objects.all()
-    return render(request, "resources.html", locals())
 
-def register(request):
-    title = "Inscription"
-    og_description = "Inscription au site de l'association Magellans."
-    form = RegisterForm(request.POST or None)
-    if request.method == "POST":
-        if form.is_valid():
-            new_user = form.save()
-            new_user.is_active = False
+class MemberPasswordChangeView(PasswordChangeView):
+    form_class = StyledPasswordChangeForm
+    template_name = "members/password_change.html"
+    success_url = reverse_lazy("members:profile")
 
-            first_name=form.cleaned_data.get('first_name')
-            last_name=form.cleaned_data.get('last_name')
-            email=form.cleaned_data.get('email')
-            gender=form.cleaned_data.get('gender', "O")
-            phone=form.cleaned_data.get('phone', "")
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        update_session_auth_hash(self.request, form.user)
+        messages.success(self.request, "Ton mot de passe a bien été modifié.")
+        return response
 
-            new_user.site_person.first_name = first_name
-            new_user.site_person.last_name = last_name
-            new_user.site_person.email = email
-            new_user.site_person.gender = gender
-            new_user.site_person.phone = phone.replace(" ", "")
 
-            new_user.site_person.save()
-            
-            token = ''.join(secrets.choice(string.ascii_letters + string.digits) for _ in range(128))
-            new_user.api_token = token
-            
-            new_user.save()
-            
-            token = default_token_generator.make_token(new_user)
-            uidb64 = urlsafe_base64_encode(force_bytes(new_user.pk))
-            activation_url = "https://magellans.fr/membres/activate/{}/{}".format(uidb64, token)
-            
-            subject = "Activation de votre compte magellans.fr"
-            message = mark_safe(render_to_string('registration/activation_email.html', {'user': new_user, 'activation_url': activation_url}))
-            send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [new_user.email])
+member_password_change = login_required(MemberPasswordChangeView.as_view())
 
-            messages.success(request, 'Vous avez reçu un email pour activer votre compte.')
-        else:
-            messages.error(request, form.errors)
-            
-    return render(request, "registration/register.html", locals())
 
-def join_magellans(request):
-    title = "Devenir membre"
-    og_description = "Devenir un membre de l'association Magellans."
+@login_required
+def directory(request):
+    """Annuaire des membres (réservé aux adhérent·es à jour et au CA)."""
+    person = ensure_person(request.user)
+    allowed = person.is_current_member or has_capability(request.user, "backoffice")
+    people = Person.objects.none()
+    query = (request.GET.get("q") or "").strip()
+    skill = (request.GET.get("competence") or "").strip()
+    if allowed:
+        people = Person.objects.current_members().filter(show_in_directory=True).order_by("first_name", "last_name")
+        if query:
+            people = people.filter(
+                Q(first_name__icontains=query) | Q(last_name__icontains=query) | Q(bio__icontains=query)
+            )
+        if skill:
+            people = [p for p in people if skill in (p.skills or [])]
+    all_skills = sorted(
+        {s for skills in Person.objects.filter(show_in_directory=True).values_list("skills", flat=True) for s in (skills or [])}
+    )
+    template = "members/partials/directory_results.html" if request.htmx else "members/directory.html"
+    return render(
+        request,
+        template,
+        {"people": people, "allowed": allowed, "query": query, "skill": skill, "all_skills": all_skills, "me": person},
+    )
 
-    return render(request, "registration/join_magellans.html", locals())
 
-def activate(request, uidb64, token):
-    try:
-        uid = urlsafe_base64_decode(uidb64).decode()
-        user = Member.objects.get(pk=uid)
-    except (TypeError, ValueError, OverflowError, Member.DoesNotExist):
-        user = None
+@login_required
+def export_data(request):
+    """Export des données personnelles (droit à la portabilité, RGPD)."""
+    person = ensure_person(request.user)
+    data = {
+        "export": timezone.now().isoformat(),
+        "compte": {"email": request.user.email, "inscription": request.user.date_joined.isoformat()},
+        "profil": {
+            "prenom": person.first_name,
+            "nom": person.last_name,
+            "telephone": person.phone,
+            "genre": person.get_gender_display() if person.gender else None,
+            "presentation": person.bio,
+            "competences": person.skills,
+            "portfolio": person.portfolio_url,
+            "instagram": person.instagram_url,
+            "annuaire": person.show_in_directory,
+        },
+        "adhesions": [
+            {"saison": m.season.label, "statut": m.get_status_display(), "date": m.joined_at.isoformat(), "montant": str(m.amount)}
+            for m in person.memberships.select_related("season")
+        ],
+        "reservations": [
+            {
+                "numero": order.pk,
+                "statut": order.get_status_display(),
+                "debut": order.date_start.isoformat() if order.date_start else None,
+                "fin": order.date_end.isoformat() if order.date_end else None,
+                "projet": order.project_name,
+                "materiel": [f"{line.quantity} × {line.item.name}" for line in order.lines.all()],
+            }
+            for order in Order.objects.filter(user=request.user).prefetch_related("lines__item")
+        ],
+        "notes_de_frais": [
+            {"intitule": inv.title, "statut": inv.get_status_display(), "date": inv.date_created.isoformat(), "total": str(inv.total_amount)}
+            for inv in Invoice.objects.filter(author=request.user)
+        ],
+        "demandes_aide": [
+            {"projet": fr.name, "montant": fr.funding_value, "statut": fr.get_status_display(), "date": fr.deposit_date.isoformat()}
+            for fr in ProjectFundingRequest.objects.filter(asker=request.user)
+        ],
+    }
+    response = HttpResponse(json.dumps(data, ensure_ascii=False, indent=2), content_type="application/json; charset=utf-8")
+    response["Content-Disposition"] = 'attachment; filename="mes-donnees-magellans.json"'
+    return response
 
-    if user is not None and default_token_generator.check_token(user, token):
 
-        if user.is_active:
-            return redirect("activation_already")
+@login_required
+@require_http_methods(["GET", "POST"])
+def delete_account(request):
+    """Demande de suppression du compte : traitée par le CA (obligations comptables)."""
+    form = AccountDeletionForm(request.POST or None)
+    if request.method == "POST" and form.is_valid():
+        site = SiteSettings.load()
+        send_templated_email(
+            "account_deletion_request",
+            {"member": request.user, "reason": form.cleaned_data["reason"]},
+            site.recipients("contact"),
+            reply_to=[request.user.email],
+        )
+        log_activity(request, "deletion-request", f"Demande de suppression de compte : {request.user}.", target=request.user.person, category="account")
+        messages.success(request, "Ta demande a été transmise au CA, qui reviendra vers toi par e-mail.")
+        return redirect("members:profile")
+    return render(request, "members/delete_account.html", {"form": form})
 
-        # Activate user account
-        user.is_active = True
-        user.save()
-    
-        subject = "Nouvelle inscription"
-        message = mark_safe(f"Un nouvel utilisateur vient d'activer son compte sur le site internet !\nPrénom : {user.first_name()}\nNom : {user.last_name()}\nEmail : {user.email}\nDate d'inscription : {user.date_joined.strftime('%A %d %B %Y %H:%M')}")
-        send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [settings.DEFAULT_FROM_EMAIL])
 
-        # Redirect to success page or login page
-        return redirect('activation_done')
-    
-    return redirect('activation_failed')
+# --- Anciennes adresses ---------------------------------------------------------
+def legacy_member_detail(request, pk):
+    member = get_object_or_404(Member, pk=pk)
+    if not has_capability(request.user, "people"):
+        raise PermissionDenied
+    return redirect("backoffice:person-detail", pk=ensure_person(member).pk)
 
-def activation_done(request):
-    title = "Activation de compte réussie"
-    og_description = "Activation réussie d'un compte utilisateur sur le site de l'association Magellans."
-    return render(request, 'registration/activation_done.html', locals())
 
-def activation_failed(request):
-    title = "Activation de compte échouée"
-    og_description = "Activation échouée d'un compte utilisateur sur le site de l'association Magellans."
-    return render(request, 'registration/activation_failed.html', locals())
-
-def activation_already(request):
-    title = "Activation de compte déjà effectuée"
-    og_description = "Activation d'un compte utilisateur déjà effectuée sur le site de l'association Magellans."
-    return render(request, 'registration/activation_already.html', locals())
-
-@method_decorator(staff_required("Profil utilisateur", "Page du profil utilisateur d'un membre du site de l'association Magellans."), name="dispatch")
-class MemberDetailView(DetailView):
-    model = Member
-    template_name="member_detail.html"
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-
-        context['title'] = "Profil utilisateur"
-        context['og_description'] = "Page du profil utilisateur d'un membre du site de l'association Magellans."
-
-        return context
-
-@method_decorator(staff_required("Profil externe ou interne", "Page du profil d'une personne externe ou interne à l'association Magellans."), name="dispatch")
-class PersonDetailView(DetailView):
-    model = Person
-    template_name = "person_detail.html"
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-
-        members = Member.objects.all()
-        context['members'] = members
-
-        context['title'] = "Profil externe ou interne"
-        context['og_description'] = "Page du profil d'une personne externe ou interne à l'association Magellans."
-
-        if self.request.POST:
-            context['form'] = EditPersonForm(self.request.POST, instance=self.object)
-        else:
-            context['form'] = EditPersonForm(instance=self.object)
-
-        return context
-    
-    def post(self, request, *args, **kwargs):
-        self.object = self.get_object()
-        form = EditPersonForm(request.POST, instance=self.object)
-        if form.is_valid():
-            form.save()
-            return redirect('person-detail', pk=self.object.pk)
-        else:
-            return self.render_to_response(self.get_context_data(form=form))
+def legacy_person_detail(request, pk):
+    if not has_capability(request.user, "people"):
+        raise PermissionDenied
+    return redirect("backoffice:person-detail", pk=pk)

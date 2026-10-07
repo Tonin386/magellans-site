@@ -1,0 +1,25 @@
+{% extends "layouts/app.html" %}
+
+{% block title %}Supprimer mon compte{% endblock %}
+
+{% block content %}
+<c-page-header title="Supprimer mon compte" back="{% url 'members:profile' %}" back_label="Mon profil" />
+<div class="max-w-2xl space-y-6">
+  <c-alert tone="warning" title="Comment ça se passe ?">
+    Ta demande est transmise au CA, qui supprime ton compte et anonymise tes données. Certaines informations (adhésions, notes de frais, opérations comptables) doivent légalement être conservées pendant 10 ans : elles sont alors détachées de ton identité dans la mesure du possible.
+  </c-alert>
+  <form method="post" class="space-y-5" novalidate>
+    {% csrf_token %}
+    <c-card>
+      <div class="space-y-5">
+        <c-field :field="form.reason" />
+        <c-field :field="form.confirm" />
+      </div>
+    </c-card>
+    <div class="flex justify-end gap-2">
+      <c-button href="{% url 'members:profile' %}" variant="secondary">Annuler</c-button>
+      <button type="submit" class="btn btn-danger">Envoyer ma demande</button>
+    </div>
+  </form>
+</div>
+{% endblock %}

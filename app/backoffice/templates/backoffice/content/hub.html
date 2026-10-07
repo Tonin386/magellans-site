@@ -1,0 +1,15 @@
+{% extends "layouts/app.html" %}
+{% block title %}Contenus du site{% endblock %}
+{% block content %}
+<c-page-header eyebrow="Espace CA" title="Contenus du site" subtitle="Tout ce qui s'affiche sur le site est modifiable ici, sans toucher au code : textes, équipe, historique, pages, saison d'adhésion…">
+  <c-button href="{% url 'home' %}" variant="secondary" icon="external-link" target="_blank">Voir le site</c-button>
+</c-page-header>
+<div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+  {% for card in cards %}
+  <a href="{% url card.url %}" class="card group flex items-start gap-4 p-5 transition hover:-translate-y-0.5 hover:border-amber-500/50">
+    <span class="grid size-12 shrink-0 place-items-center rounded-2xl bg-accent-soft text-xl text-accent transition group-hover:bg-amber-500 group-hover:text-ink-950">{% icon card.icon %}</span>
+    <span><span class="block font-display text-lg font-bold">{{ card.title }}</span><span class="mt-1 block text-sm text-muted">{{ card.text }}</span></span>
+  </a>
+  {% endfor %}
+</div>
+{% endblock %}

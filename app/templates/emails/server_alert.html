@@ -1,0 +1,8 @@
+{% partialdef subject %}Serveur — {{ title }}{% endpartialdef %}
+{% partialdef body %}{% autoescape off %}
+**{{ title }}**
+
+{{ message }}
+
+Message automatique envoyé par le serveur ({{ now|date:"j F Y à H:i" }}). Les commandes utiles sont décrites dans DEPLOIEMENT.md (`./run.sh status`, `./run.sh logs`).
+{% endautoescape %}{% endpartialdef %}

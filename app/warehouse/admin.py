@@ -1,22 +1,36 @@
 from django.contrib import admin
-from .models import *
 
+from .models import Contract, Item, Order, OrderLine, Tag
+
+
+@admin.register(Item)
 class ItemAdmin(admin.ModelAdmin):
-    list_display = ('name', 'now_available', 'max_stock', 'availability', 'owner')
-    list_filter = ('availability', )
-    search_fields = ('name', 'now_available', 'max_stock', 'availability', 'owner')
-    ordering = ('name', 'now_available', 'max_stock', 'availability', 'tags')
+    list_display = ("name", "max_stock", "state", "availability", "is_archived", "owner")
+    list_filter = ("availability", "state", "is_archived", "tags")
+    search_fields = ("name", "owner")
+
+
+@admin.register(Tag)
 class TagAdmin(admin.ModelAdmin):
-    list_display = ('name', 'color')
-    search_fields = ('name', 'color')
-    ordering = ('name', 'color')
+    list_display = ("name", "color")
 
+
+class OrderLineInline(admin.TabularInline):
+    model = OrderLine
+    extra = 0
+    autocomplete_fields = ("item",)
+
+
+@admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
-    list_display = ('pk', 'status', 'date_start', 'date_end', 'user')
-    list_filter = ('status', 'user')
-    search_fields = ('pk', 'date_created', 'date_end', 'date_start', 'date_validated', 'message', 'pickup_last_name', 'pickup_first_name', 'pickup_phone', 'user__site_person__first_name', 'user__site_person__last_name', 'user__site_person__email', 'user__site_person__phone')
-    ordering = ('date_start', 'status')
+    list_display = ("pk", "user", "project_name", "status", "date_start", "date_end", "date_created")
+    list_filter = ("status",)
+    search_fields = ("pk", "project_name", "user__email", "user__site_person__last_name")
+    inlines = [OrderLineInline]
+    readonly_fields = ("quantities", "answer_message")
 
-admin.site.register(Item, ItemAdmin)
-admin.site.register(Tag, TagAdmin)
-admin.site.register(Order, OrderAdmin)
+
+@admin.register(Contract)
+class ContractAdmin(admin.ModelAdmin):
+    list_display = ("order", "director_name", "production_name", "signed_at", "sha256")
+    readonly_fields = ("terms", "signed_at", "signer_ip", "signer_user_agent", "sha256")

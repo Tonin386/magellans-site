@@ -1,0 +1,38 @@
+{% extends "layouts/app.html" %}
+{% block title %}Trésorerie{% endblock %}
+{% block content %}
+<c-page-header eyebrow="Espace CA" title="Trésorerie" subtitle="Le journal des opérations du compte de l'association.">
+  <c-button href="{% url 'backoffice:invoices' %}" variant="secondary" icon="receipt">Notes de frais{% if invoices_todo %} ({{ invoices_todo }}){% endif %}</c-button>
+  {% if can_edit %}<c-button href="{% url 'backoffice:operation-create' %}" icon="plus">Nouvelle opération</c-button>{% endif %}
+</c-page-header>
+
+<div class="grid gap-4 md:grid-cols-3">
+  <c-stat label="Solde" value="{{ balance|money }}" icon="landmark" tone="{% if balance < 0 %}danger{% else %}success{% endif %}" />
+  <c-stat label="Entrées {{ current_season.label }}" value="{{ season_credit|money }}" icon="trending-up" />
+  <c-stat label="Sorties {{ current_season.label }}" value="{{ season_debit|money }}" icon="trending-down" />
+</div>
+
+<c-card title="Entrées et sorties sur 12 mois" class="mt-6">
+  <svg viewBox="0 0 {{ chart.width }} {{ chart.height }}" class="h-48 w-full" role="img" aria-label="Graphique des entrées et sorties mensuelles">
+    <line x1="24" x2="{{ chart.width|add:-24 }}" y1="{{ chart.baseline }}" y2="{{ chart.baseline }}" class="stroke-line" />
+    {% for bar in chart.bars %}
+    <g>
+      <title>{{ bar.label }} : +{{ bar.credit|money }} / −{{ bar.debit|money }}</title>
+      <rect x="{{ bar.cx }}" y="{{ bar.cy }}" width="{{ bar.w }}" height="{{ bar.ch }}" rx="3" class="fill-emerald-500" />
+      <rect x="{{ bar.dx }}" y="{{ bar.dy }}" width="{{ bar.w }}" height="{{ bar.dh }}" rx="3" class="fill-rust-400" />
+      <text x="{{ bar.tx }}" y="{{ chart.height|add:-6 }}" text-anchor="middle" class="fill-subtle text-[10px]">{{ bar.label }}</text>
+    </g>
+    {% endfor %}
+  </svg>
+  <p class="mt-2 flex gap-4 text-xs text-muted"><span class="flex items-center gap-1.5"><span class="size-2.5 rounded-sm bg-emerald-500"></span> Entrées</span><span class="flex items-center gap-1.5"><span class="size-2.5 rounded-sm bg-rust-400"></span> Sorties</span></p>
+</c-card>
+
+<form class="mt-6 mb-4 flex flex-col gap-3 lg:flex-row lg:items-center" hx-get="{{ request.path }}" hx-target="#table" hx-trigger="change" hx-push-url="true">
+  {% include "backoffice/partials/search.html" with placeholder="N°, libellé, tiers…" %}
+  <select name="type" class="select lg:w-44" aria-label="Type"><option value="">Tous les types</option>{% for value, label in types %}<option value="{{ value }}" {% if value == kind %}selected{% endif %}>{{ label }}</option>{% endfor %}</select>
+  <select name="categorie" class="select lg:w-56" aria-label="Catégorie"><option value="">Toutes catégories</option>{% for value, label in categories %}<option value="{{ value }}" {% if value == category %}selected{% endif %}>{{ label }}</option>{% endfor %}</select>
+  <select name="saison" class="select lg:w-44" aria-label="Saison"><option value="">Toutes saisons</option>{% for item in seasons %}<option value="{{ item.label }}" {% if item == season %}selected{% endif %}>{{ item.label }}</option>{% endfor %}</select>
+  <a href="{% url 'backoffice:finance-export' %}?{{ request.GET.urlencode }}" class="btn btn-ghost lg:ml-auto">{% icon "download" %} CSV</a>
+</form>
+<div id="table" class="card overflow-hidden">{% include "backoffice/finance/partials/operations_table.html" %}</div>
+{% endblock %}

@@ -1,0 +1,45 @@
+{% extends "layouts/app.html" %}
+{% block title %}{% if item %}{{ item.name }}{% else %}Nouvel objet{% endif %}{% endblock %}
+{% block content %}
+<c-page-header eyebrow="Magasin" title="{% if item %}{{ item.name }}{% else %}Nouvel objet{% endif %}" back="{% url 'backoffice:items' %}" back_label="Inventaire">
+  {% if item %}
+  <button type="button" class="btn btn-secondary" hx-post="{% url 'backoffice:item-archive' item.pk %}">{% if item.is_archived %}{% icon "archive-restore" %} Réactiver{% else %}{% icon "archive" %} Archiver{% endif %}</button>
+  <button type="button" class="btn btn-soft-danger" hx-post="{% url 'backoffice:item-delete' item.pk %}" hx-confirm="Supprimer définitivement « {{ item.name }} » ?" data-confirm-danger data-confirm-label="Supprimer">{% icon "trash-2" %}</button>
+  {% endif %}
+</c-page-header>
+<div class="grid max-w-6xl gap-6 lg:grid-cols-[1fr_20rem]">
+  <form method="post" enctype="multipart/form-data" class="space-y-6" novalidate>
+    {% csrf_token %}
+    <c-form-errors :form="form" />
+    <c-card>
+      <div class="grid gap-5 sm:grid-cols-2">
+        <c-field :field="form.name" class="sm:col-span-2" />
+        <c-field :field="form.tags" class="sm:col-span-2" />
+        <c-field :field="form.max_stock" />
+        <c-field :field="form.state" />
+        <c-field :field="form.availability" />
+        <c-field :field="form.buy_price" />
+        <c-field :field="form.owner" class="sm:col-span-2" />
+        <c-field :field="form.description" class="sm:col-span-2" />
+      </div>
+    </c-card>
+    <c-card title="Photo">
+      <div class="flex items-center gap-5">
+        <span class="size-24 shrink-0 overflow-hidden rounded-2xl {% if item.has_photo %}bg-white{% else %}bg-surface-2{% endif %}">{% if item.has_photo %}<img src="{{ item.image.url }}" alt="" class="size-full object-contain">{% else %}<span class="grid size-full place-items-center text-3xl text-subtle">{% icon "camera" %}</span>{% endif %}</span>
+        <div class="flex-1 space-y-3"><c-field :field="form.photo" />{% if item.has_photo %}<c-field :field="form.remove_photo" />{% endif %}</div>
+      </div>
+    </c-card>
+    <div class="flex justify-end gap-2">
+      {% if not item %}<button type="submit" name="again" value="1" class="btn btn-secondary">Enregistrer et ajouter un autre</button>{% endif %}
+      <button type="submit" class="btn btn-primary">{% icon "check" %} Enregistrer</button>
+    </div>
+  </form>
+  {% if item %}
+  <c-card title="Prochaines sorties">
+    <ul class="space-y-2 text-sm">
+      {% for line in upcoming %}<li><a href="{% url 'backoffice:order-detail' line.order.pk %}" class="flex justify-between gap-2 hover:text-accent"><span>#{{ line.order.pk }} · × {{ line.quantity }}</span><span class="text-muted">{{ line.order.date_start|date:"j M" }} → {{ line.order.date_end|date:"j M" }}</span></a></li>{% empty %}<li class="text-muted">Aucune réservation à venir.</li>{% endfor %}
+    </ul>
+  </c-card>
+  {% endif %}
+</div>
+{% endblock %}

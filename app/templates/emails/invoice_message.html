@@ -1,0 +1,12 @@
+{% partialdef subject %}{% if from_board %}Message de la trésorerie — {{ invoice.title }}{% else %}Message de {{ invoice.author.display_name }} — note de frais « {{ invoice.title }} »{% endif %}{% endpartialdef %}
+{% partialdef body %}{% autoescape off %}
+{% if from_board %}Bonjour {{ invoice.author.first_name }},
+
+La trésorerie t'a écrit à propos de ta note de frais **« {{ invoice.title }} »** :{% else %}**{{ invoice.author.display_name }}** a écrit à propos de la note de frais **« {{ invoice.title }} »** :{% endif %}
+
+{{ body|blockquote }}
+
+[[Voir la note de frais|{{ site_url }}{% if from_board %}{{ invoice.get_absolute_url }}{% else %}{% url 'backoffice:invoice-detail' invoice.pk %}{% endif %}]]
+
+L'équipe {{ site.site_name }}
+{% endautoescape %}{% endpartialdef %}

@@ -1,0 +1,46 @@
+{% extends "layouts/app.html" %}
+{% block title %}Demande d'aide — {{ funding.name }}{% endblock %}
+{% block content %}
+<c-page-header eyebrow="Demandes d'aide" title="{{ funding.name }}" subtitle="{{ funding.funding_value }} € demandés par {{ funding.asker.display_name|default:'—' }} le {{ funding.deposit_date|date:'j F Y' }}" back="{% url 'backoffice:funding' %}" back_label="Demandes d'aide">
+  <c-badge tone="{{ funding.status_tone }}" class="text-sm">{{ funding.get_status_display }}</c-badge>
+</c-page-header>
+<div class="grid gap-6 xl:grid-cols-[1fr_22rem] xl:items-start">
+  <div class="min-w-0 space-y-6">
+    <c-card title="Le projet">
+      <dl class="grid gap-4 text-sm sm:grid-cols-2">
+        <div><dt class="text-xs font-semibold text-muted uppercase">Réalisation</dt><dd>{{ funding.directors }}</dd></div>
+        <div><dt class="text-xs font-semibold text-muted uppercase">Production</dt><dd>{{ funding.production }}</dd></div>
+        <div><dt class="text-xs font-semibold text-muted uppercase">Genre · durée</dt><dd>{{ funding.genre }} · {{ funding.duration }} min</dd></div>
+        <div><dt class="text-xs font-semibold text-muted uppercase">Tournage</dt><dd>du {{ funding.previsional_shoot_start_date|date:"j M Y" }} au {{ funding.previsional_shoot_end_date|date:"j M Y" }}</dd></div>
+        <div class="sm:col-span-2"><dt class="text-xs font-semibold text-muted uppercase">Poste du / de la demandeur·se</dt><dd>{{ funding.role }}</dd></div>
+      </dl>
+      <div class="mt-5 rounded-2xl bg-surface-2 p-4 text-sm whitespace-pre-line">{{ funding.explanation }}</div>
+      <ul class="mt-5 grid gap-2 sm:grid-cols-2">
+        {% for field, file, label in funding.files %}<li><a href="{{ funding|private_url:field }}" target="_blank" class="flex items-center gap-3 rounded-xl border border-line p-3 text-sm font-medium transition hover:bg-surface-2">{% icon "file-text" css="text-accent" %} {{ label }}</a></li>{% endfor %}
+      </ul>
+    </c-card>
+    <c-card title="Échanges">
+      <div id="funding-thread">{% include "dashboard/partials/funding_thread.html" %}</div>
+    </c-card>
+  </div>
+  <aside>
+    {% if can_decide %}
+    <form method="post" class="card">
+      {% csrf_token %}
+      <div class="card-header"><h2 class="card-title">Décision du CA</h2></div>
+      <div class="card-body space-y-4">
+        <c-form-errors :form="form" />
+        <c-field :field="form.status" />
+        <c-field :field="form.granted_amount" />
+        <c-field :field="form.decision_note" />
+        <c-field :field="form.notify" />
+        <button type="submit" class="btn btn-primary w-full">{% icon "check" %} Enregistrer</button>
+        {% if funding.decided_at %}<p class="help">Dernière décision le {{ funding.decided_at|date:"j F Y" }}{% if funding.decided_by %} par {{ funding.decided_by.display_name }}{% endif %}.</p>{% endif %}
+      </div>
+    </form>
+    {% else %}
+    <c-alert tone="info">La décision est saisie par la présidence ou la trésorerie.</c-alert>
+    {% endif %}
+  </aside>
+</div>
+{% endblock %}

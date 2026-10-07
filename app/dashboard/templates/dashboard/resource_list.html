@@ -1,0 +1,42 @@
+{% extends "layouts/app.html" %}
+
+{% block title %}Ressources pour les membres{% endblock %}
+
+{% block content %}
+<c-page-header title="Ressources" subtitle="Modèles de documents, guides, fiches pratiques… mis à disposition par l'association.">
+  {% if "resources" in caps %}<c-button href="{% url 'backoffice:resources' %}" variant="secondary" icon="settings">Gérer</c-button>{% endif %}
+</c-page-header>
+{% if count %}
+<div x-data="filterList">
+  <label class="relative mb-6 block max-w-md">
+    <span class="sr-only">Rechercher une ressource</span>
+    <span class="pointer-events-none absolute top-1/2 left-3.5 -translate-y-1/2 text-subtle">{% icon "search" %}</span>
+    <input type="search" x-model="query" @input="apply()" placeholder="Rechercher…" class="input pl-10">
+  </label>
+  <div class="space-y-8">
+    {% for category, items in categories.items %}
+    <section>
+      <h2 class="mb-3 font-display text-lg font-bold">{{ category }}</h2>
+      <ul class="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+        {% for resource in items %}
+        <li data-search="{{ resource.name }} {{ resource.desc|default:'' }} {{ category }}">
+          <a href="{% if resource.associated_file %}{{ resource|private_url:'associated_file' }}{% else %}{{ resource.external_url }}{% endif %}" target="_blank" rel="noopener"
+             class="card flex h-full items-start gap-4 p-4 transition hover:-translate-y-0.5 hover:border-line-strong">
+            <span class="grid size-11 shrink-0 place-items-center rounded-xl bg-accent-soft text-lg text-accent">{% if resource.external_url and not resource.associated_file %}{% icon "link-2" %}{% else %}{% icon "file-text" %}{% endif %}</span>
+            <span class="min-w-0">
+              <span class="block font-semibold">{{ resource.name }}</span>
+              {% if resource.desc %}<span class="mt-0.5 line-clamp-2 block text-sm text-muted">{{ resource.desc }}</span>{% endif %}
+              <span class="mt-2 inline-block rounded-md bg-surface-2 px-1.5 py-0.5 text-[0.7rem] font-semibold text-muted uppercase">{{ resource.extension|default:"fichier" }}</span>
+            </span>
+          </a>
+        </li>
+        {% endfor %}
+      </ul>
+    </section>
+    {% endfor %}
+  </div>
+</div>
+{% else %}
+<c-empty icon="folder-open" title="Aucune ressource pour l'instant">Le CA ajoutera bientôt des documents utiles ici.</c-empty>
+{% endif %}
+{% endblock %}

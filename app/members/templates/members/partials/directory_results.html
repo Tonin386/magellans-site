@@ -1,0 +1,24 @@
+{% if people %}
+<ul class="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+  {% for person in people %}
+  <li class="card flex flex-col gap-4 p-5">
+    <div class="flex items-center gap-3">
+      <c-avatar name="{{ person.full_name }}" src="{% if person.avatar %}{{ person.avatar.url }}{% endif %}" size="size-12" />
+      <div class="min-w-0">
+        <p class="truncate font-display font-bold">{{ person.full_name }}</p>
+        {% if person.is_board %}<p class="text-xs text-accent">{{ person.board_role_labels|join:", " }}</p>{% endif %}
+      </div>
+    </div>
+    {% if person.bio %}<p class="line-clamp-3 text-sm text-muted">{{ person.bio }}</p>{% endif %}
+    {% if person.skills %}<ul class="flex flex-wrap gap-1.5">{% for item in person.skills %}<li class="rounded-full bg-surface-2 px-2.5 py-0.5 text-xs font-medium">{{ item }}</li>{% endfor %}</ul>{% endif %}
+    <div class="mt-auto flex flex-wrap gap-2 border-t border-line pt-4 text-sm">
+      {% if person.email %}<a href="mailto:{{ person.email }}" class="btn btn-secondary btn-sm">{% icon "mail" %} Écrire</a>{% endif %}
+      {% if person.portfolio_url %}<a href="{{ person.portfolio_url }}" target="_blank" rel="noopener" class="btn btn-ghost btn-sm">{% icon "globe" %} Portfolio</a>{% endif %}
+      {% if person.instagram_url %}<a href="{{ person.instagram_url }}" target="_blank" rel="noopener" class="btn btn-ghost btn-sm btn-icon" aria-label="Instagram">{% icon "brand-instagram" %}</a>{% endif %}
+    </div>
+  </li>
+  {% endfor %}
+</ul>
+{% else %}
+<c-empty icon="users" title="Personne pour l'instant">Aucun membre ne correspond, ou personne n'a encore activé sa fiche. Sois le ou la premier·e !</c-empty>
+{% endif %}

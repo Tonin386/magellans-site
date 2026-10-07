@@ -1,16 +1,9 @@
-from channels.routing import ProtocolTypeRouter, URLRouter
-from django.core.asgi import get_asgi_application
-from channels.auth import AuthMiddlewareStack
-from . import consumers_routing
+"""Point d'entrée ASGI (conservé pour compatibilité ; la production utilise WSGI)."""
+
 import os
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'magellans.settings')
+from django.core.asgi import get_asgi_application
 
-application = ProtocolTypeRouter({
-    "http": get_asgi_application(),
-    "websocket": AuthMiddlewareStack(
-        URLRouter(
-            consumers_routing.websocket_urlpatterns
-        ),
-    )
-})
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "magellans.settings")
+
+application = get_asgi_application()

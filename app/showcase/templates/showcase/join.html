@@ -1,0 +1,109 @@
+{% extends "layouts/public.html" %}
+{% load static %}
+
+{% block title %}Adhérer{% if season %} — saison {{ season.label }}{% endif %}{% endblock %}
+{% block description %}Adhère à l'association Magellans{% if season %} pour la saison {{ season.label }}{% endif %} : magasin de matériel, tournages, réseau et aides à projet.{% endblock %}
+
+{% block content %}
+<section class="relative isolate overflow-hidden">
+  <div class="absolute inset-0 -z-10 bg-dots opacity-40 mask-fade-b" aria-hidden="true"></div>
+  <div class="absolute -top-40 left-1/2 -z-10 h-96 w-[50rem] -translate-x-1/2 rounded-full bg-amber-500/20 blur-3xl" aria-hidden="true"></div>
+  <div class="mx-auto max-w-4xl px-4 pt-16 pb-12 text-center sm:px-6 sm:pt-24">
+    {% if season %}<p class="eyebrow">Saison {{ season.label }}</p>{% endif %}
+    <h1 class="mt-4 text-5xl leading-[0.95] font-extrabold text-white sm:text-7xl">Rejoins <span class="accent-serif text-gradient">l'équipage</span></h1>
+    <p class="mx-auto mt-6 max-w-2xl text-lg text-ink-300">
+      Une adhésion{% if season.price %} de <strong class="text-white">{{ season.price|money }}</strong>{% endif %} pour toute la saison{% if season %}, du {{ season.start_date|date:"j F Y" }} au {{ season.end_date|date:"j F Y" }}{% endif %}. Elle est enregistrée automatiquement sur le site dès ton paiement sur HelloAsso.
+    </p>
+  </div>
+</section>
+
+<section class="mx-auto grid max-w-7xl gap-10 px-4 pb-24 sm:px-6 lg:grid-cols-12">
+  <aside class="space-y-6 lg:col-span-5">
+    {% if membership %}
+    <div class="rounded-3xl border border-emerald-500/30 bg-emerald-500/10 p-6">
+      <p class="flex items-center gap-2 font-display text-xl font-bold text-emerald-300">{% icon "circle-check" %} Tu es à jour, merci !</p>
+      <p class="mt-2 text-ink-200">Ton adhésion {{ season.label }} est bien enregistrée{% if membership.joined_at %} depuis le {{ membership.joined_at|date:"j F Y" }}{% endif %}.</p>
+      <div class="mt-4 flex flex-wrap gap-2">
+        <c-button href="{% url 'members:home' %}" size="sm" icon="user-round">Mon espace membre</c-button>
+        {% if membership.membership_card_url %}<c-button href="{{ membership.membership_card_url }}" variant="glass" size="sm" icon="id-card" target="_blank" rel="noopener">Ma carte d'adhérent·e</c-button>{% endif %}
+      </div>
+    </div>
+    {% endif %}
+
+    <div class="rounded-3xl border border-white/10 bg-ink-900/70 p-7">
+      <h2 class="text-2xl font-bold text-white">Pourquoi adhérer ?</h2>
+      <div class="prose-mag mt-4 text-ink-200 [&_strong]:text-white">
+        {% if season.pitch %}{{ season.pitch|markdown }}{% else %}<p>Accède au magasin, participe aux tournages et rencontre d'autres passionné·es.</p>{% endif %}
+      </div>
+    </div>
+
+    <ol class="space-y-4">
+      <li class="flex gap-4 rounded-2xl border border-white/8 bg-white/[0.03] p-5">
+        <span class="grid size-9 shrink-0 place-items-center rounded-full bg-amber-500 font-display font-bold text-ink-950">1</span>
+        <div><p class="font-semibold text-white">Remplis le formulaire HelloAsso</p><p class="mt-1 text-sm text-ink-300">Pense à indiquer l'adresse e-mail que tu utiliseras sur le site.</p></div>
+      </li>
+      <li class="flex gap-4 rounded-2xl border border-white/8 bg-white/[0.03] p-5">
+        <span class="grid size-9 shrink-0 place-items-center rounded-full bg-amber-500 font-display font-bold text-ink-950">2</span>
+        <div><p class="font-semibold text-white">Ton adhésion est enregistrée automatiquement</p><p class="mt-1 text-sm text-ink-300">HelloAsso prévient notre site dès que le paiement est validé.</p></div>
+      </li>
+      <li class="flex gap-4 rounded-2xl border border-white/8 bg-white/[0.03] p-5">
+        <span class="grid size-9 shrink-0 place-items-center rounded-full bg-amber-500 font-display font-bold text-ink-950">3</span>
+        <div><p class="font-semibold text-white">Bienvenue à bord !</p><p class="mt-1 text-sm text-ink-300">Tu reçois un e-mail pour accéder à ton espace membre : magasin, ressources, aides à projet…</p></div>
+      </li>
+    </ol>
+
+    {% if site.donation_url %}
+    <p class="text-sm text-ink-400">Tu veux simplement nous soutenir ? <a href="{{ site.donation_url }}" target="_blank" rel="noopener" class="link">Fais un don sur HelloAsso</a>.</p>
+    {% endif %}
+  </aside>
+
+  <div class="lg:col-span-7">
+    {% if season and season.is_open %}
+    <div x-data="helloassoWidget" class="overflow-hidden rounded-3xl border border-white/10 bg-white shadow-2xl shadow-black/50">
+      <div x-show="!loaded" class="space-y-4 p-8" aria-hidden="true">
+        <div class="h-8 w-2/3 animate-pulse rounded-lg bg-ink-100"></div>
+        <div class="h-4 w-full rounded bg-ink-100"></div>
+        <div class="h-4 w-5/6 rounded bg-ink-100"></div>
+        <div class="mt-8 h-12 w-full rounded-xl bg-ink-100"></div>
+        <div class="h-12 w-full rounded-xl bg-ink-100"></div>
+        <p class="pt-4 text-center text-sm text-ink-500">Chargement du formulaire sécurisé HelloAsso…</p>
+      </div>
+      {% if season.widget_url %}
+      <iframe x-ref="frame" @load="onLoad()" id="haWidget" title="Formulaire d'adhésion HelloAsso {{ season.label }}" src="{{ season.widget_url }}" loading="lazy"
+              class="block w-full border-0" style="height: 1100px" allow="payment" referrerpolicy="strict-origin-when-cross-origin"></iframe>
+      {% endif %}
+    </div>
+    <p class="mt-4 flex flex-wrap items-center justify-between gap-3 text-sm text-ink-400">
+      <span class="inline-flex items-center gap-2">{% icon "shield-check" css="text-emerald-400" %} Paiement sécurisé par HelloAsso. Aucune donnée bancaire ne transite par notre site.</span>
+      <a href="{{ season.join_url }}" target="_blank" rel="noopener" class="inline-flex items-center gap-1.5 font-semibold text-amber-400 hover:underline">Ouvrir sur HelloAsso {% icon "external-link" %}</a>
+    </p>
+    {% else %}
+    <div class="rounded-3xl border border-white/10 bg-ink-900/70 p-10 text-center">
+      <span class="mx-auto grid size-14 place-items-center rounded-2xl bg-amber-500/15 text-2xl text-amber-400">{% icon "calendar-clock" %}</span>
+      <h2 class="mt-5 text-2xl font-bold text-white">Les adhésions sont fermées pour le moment</h2>
+      <p class="mt-2 text-ink-300">Elles rouvrent à chaque rentrée. Écris-nous si tu veux être prévenu·e ou nous rejoindre en cours d'année.</p>
+      <div class="mt-6"><c-button href="{% url 'home' %}#contact" icon="mail">Nous écrire</c-button></div>
+    </div>
+    {% endif %}
+  </div>
+</section>
+
+{% if faq %}
+<section id="faq" class="border-t border-white/8 bg-ink-900/40">
+  <div class="mx-auto max-w-3xl px-4 py-20 sm:px-6">
+    <h2 class="text-center text-4xl font-extrabold text-white">Questions fréquentes</h2>
+    <div class="mt-10 divide-y divide-white/8 rounded-3xl border border-white/10 bg-ink-950/60">
+      {% for entry in faq %}
+      <details class="group px-6 py-5 [&_summary::-webkit-details-marker]:hidden">
+        <summary class="flex cursor-pointer list-none items-center justify-between gap-4 font-semibold text-white">
+          {{ entry.question }}
+          <span class="text-amber-400 transition duration-300 group-open:rotate-45">{% icon "plus" %}</span>
+        </summary>
+        <div class="prose-mag mt-3 text-ink-300">{{ entry.answer|markdown }}</div>
+      </details>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,28 @@
+{% extends "layouts/app.html" %}
+{% block title %}Réservations{% endblock %}
+{% block content %}
+<c-page-header eyebrow="Magasin" title="Réservations" back="{% url 'backoffice:items' %}" back_label="Inventaire">
+  <c-button href="{% url 'backoffice:calendar' %}" variant="secondary" icon="calendar">Calendrier</c-button>
+</c-page-header>
+{% if stale_finished or stale_expired %}
+<c-alert tone="info" class="mb-4">
+  <p><strong>Réservations à clôturer.</strong>
+    {% if stale_finished %}{{ stale_finished }} réservation{{ stale_finished|pluralize }} terminée{{ stale_finished|pluralize }} depuis plus de 30 jours n'{{ stale_finished|pluralize:"a,ont" }} jamais été marquée{{ stale_finished|pluralize }} comme rendue{{ stale_finished|pluralize }}{% if stale_expired %} et {% else %}.{% endif %}{% endif %}
+    {% if stale_expired %}{{ stale_expired }} demande{{ stale_expired|pluralize }} jamais traitée{{ stale_expired|pluralize }} {{ stale_expired|pluralize:"est,sont" }} dépassée{{ stale_expired|pluralize }}.{% endif %}
+    C'est le cas de toutes les réservations de l'ancien site, qui ne connaissait pas ces statuts.</p>
+  <button type="button" class="btn btn-secondary btn-sm mt-3" hx-post="{% url 'backoffice:orders-close-stale' %}"
+          hx-confirm="Marquer {{ stale_finished }} réservation{{ stale_finished|pluralize }} comme rendue{{ stale_finished|pluralize }} et annuler {{ stale_expired }} demande{{ stale_expired|pluralize }} périmée{{ stale_expired|pluralize }} ? Aucun e-mail ne sera envoyé." data-confirm-label="Clôturer">{% icon "archive" %} Tout clôturer</button>
+</c-alert>
+{% endif %}
+<form class="mb-4 flex flex-col gap-3 lg:flex-row lg:items-center" hx-get="{{ request.path }}" hx-target="#table" hx-trigger="change" hx-push-url="true">
+  {% include "backoffice/partials/search.html" with placeholder="N°, demandeur, projet…" %}
+  <div class="scrollbar-none flex gap-2 overflow-x-auto">
+    {% for key, label, count in filters %}
+    <label class="flex shrink-0 cursor-pointer items-center gap-1.5 rounded-full border border-line px-3 py-1.5 text-sm font-semibold transition has-checked:border-fg has-checked:bg-fg has-checked:text-canvas">
+      <input type="radio" name="vue" value="{{ key }}" class="sr-only" {% if key == view %}checked{% endif %}>{{ label }}{% if count %}<span class="rounded-full bg-amber-500 px-1.5 text-[0.7rem] text-ink-950">{{ count }}</span>{% endif %}
+    </label>
+    {% endfor %}
+  </div>
+</form>
+<div id="table" class="card overflow-hidden">{% include "backoffice/warehouse/partials/orders_table.html" %}</div>
+{% endblock %}

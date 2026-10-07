@@ -1,0 +1,11 @@
+{% load bo %}
+{% if page.paginator.num_pages > 1 %}
+<nav class="flex items-center justify-between gap-3 border-t border-line px-4 py-3 text-sm" aria-label="Pagination">
+  <p class="text-muted">{{ page.start_index }}–{{ page.end_index }} sur {{ page.paginator.count }}</p>
+  <div class="flex gap-1">
+    {% if page.has_previous %}<a class="btn btn-secondary btn-sm" href="{% page_url page.previous_page_number %}" hx-get="{% page_url page.previous_page_number %}" hx-target="#table" hx-push-url="true">{% icon "chevron-left" %}<span class="sr-only">Précédent</span></a>{% endif %}
+    <span class="px-3 py-1.5 font-semibold">{{ page.number }} / {{ page.paginator.num_pages }}</span>
+    {% if page.has_next %}<a class="btn btn-secondary btn-sm" href="{% page_url page.next_page_number %}" hx-get="{% page_url page.next_page_number %}" hx-target="#table" hx-push-url="true">{% icon "chevron-right" %}<span class="sr-only">Suivant</span></a>{% endif %}
+  </div>
+</nav>
+{% endif %}

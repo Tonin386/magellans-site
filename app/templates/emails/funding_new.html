@@ -1,0 +1,18 @@
+{% partialdef subject %}Nouvelle demande d'aide : {{ funding.name }} ({{ funding.funding_value }} €){% endpartialdef %}
+{% partialdef body %}{% autoescape off %}
+**{{ funding.asker.display_name }}** demande une aide de **{{ funding.funding_value }} €** pour le projet « {{ funding.name }} ».
+
+- **Poste sur le projet :** {{ funding.role }}
+- **Réalisation :** {{ funding.directors }}
+- **Production :** {{ funding.production }}
+- **Genre :** {{ funding.genre }} · {{ funding.duration }} min
+- **Tournage prévu :** du {{ funding.previsional_shoot_start_date|date:"j F Y" }} au {{ funding.previsional_shoot_end_date|date:"j F Y" }}
+
+**Pourquoi cette demande :**
+
+{{ funding.explanation|blockquote }}
+
+Le dossier (scénario, note d'intention, budget, fiche contact) est joint à cet e-mail dans la limite de 15 Mo, et consultable en ligne.
+
+[[Étudier la demande|{{ site_url }}{% url 'backoffice:funding-detail' funding.pk %}]]
+{% endautoescape %}{% endpartialdef %}

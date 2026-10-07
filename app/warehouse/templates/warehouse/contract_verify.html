@@ -1,0 +1,24 @@
+{% extends base_template %}
+
+{% block title %}Vérifier un contrat de prêt{% endblock %}
+
+{% block content %}
+<div class="{% if not user.is_authenticated %}mx-auto max-w-2xl px-4 py-16 sm:px-6{% else %}max-w-2xl{% endif %}">
+  <c-page-header title="Vérifier un contrat" subtitle="Saisis le code de vérification imprimé en bas du contrat pour confirmer qu'il a bien été signé sur le site de Magellans." />
+  <form method="get" class="card card-body flex flex-col gap-3 sm:flex-row">
+    <label class="sr-only" for="code">Code de vérification</label>
+    <input id="code" name="code" value="{{ code }}" placeholder="XXXX-XXXX-XXXX-XXXX" class="input font-mono uppercase" autocomplete="off" required>
+    <button type="submit" class="btn btn-primary">Vérifier</button>
+  </form>
+  {% if searched %}
+  {% if found %}
+  <c-alert tone="success" title="Contrat authentique" class="mt-6">
+    Contrat {{ found.reference }} signé le {{ found.signed_at|date:"j F Y à H:i" }} par {{ found.signer_name }}, pour la période du {{ found.order.date_start|date:"j F Y" }} au {{ found.order.date_end|date:"j F Y" }}.
+    <span class="mt-2 block font-mono text-xs break-all opacity-80">SHA-256 : {{ found.sha256 }}</span>
+  </c-alert>
+  {% else %}
+  <c-alert tone="danger" title="Code inconnu" class="mt-6">Aucun contrat signé ne correspond à ce code. Vérifie la saisie ou contacte {{ site.contact_email }}.</c-alert>
+  {% endif %}
+  {% endif %}
+</div>
+{% endblock %}

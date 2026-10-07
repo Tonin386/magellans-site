@@ -1,0 +1,39 @@
+{% comment %}
+  Fil de discussion générique.
+  Variables : thread, message_form, post_url, target (id du conteneur), board_label, board_icon,
+  intro_author / intro_date / intro_body (message initial facultatif).
+{% endcomment %}
+<ol class="space-y-4">
+  {% if intro_body %}
+  <li class="flex gap-3">
+    <c-avatar name="{{ intro_author }}" size="size-9" class="text-xs" />
+    <div class="min-w-0 flex-1 rounded-2xl rounded-tl-sm bg-surface-2 p-3.5 text-sm">
+      <p class="mb-1 text-xs text-muted"><strong class="text-fg">{{ intro_author }}</strong>{% if intro_date %} · {{ intro_date|date:"j M Y H:i" }}{% endif %}</p>
+      <p class="whitespace-pre-line">{{ intro_body }}</p>
+    </div>
+  </li>
+  {% endif %}
+  {% for message in thread %}
+  <li class="flex gap-3 {% if message.is_from_board %}flex-row-reverse{% endif %}">
+    {% if message.is_from_board %}
+    <span class="grid size-9 shrink-0 place-items-center rounded-full bg-amber-500 text-ink-950">{% icon board_icon|default:"shield-check" %}</span>
+    {% else %}
+    <c-avatar name="{{ message.author.display_name|default:'Membre' }}" size="size-9" class="text-xs" />
+    {% endif %}
+    <div class="min-w-0 flex-1 rounded-2xl p-3.5 text-sm {% if message.is_internal %}border border-dashed border-amber-500/60 bg-accent-soft{% elif message.is_from_board %}rounded-tr-sm bg-amber-500/12{% else %}rounded-tl-sm bg-surface-2{% endif %}">
+      <p class="mb-1 text-xs text-muted">
+        <strong class="text-fg">{% if message.is_from_board %}{% if message.author %}{{ message.author.display_name }} · {% endif %}{{ board_label|default:"Le CA" }}{% else %}{{ message.author.display_name|default:"Membre" }}{% endif %}</strong>
+        · {{ message.created_at|date:"j M Y H:i" }}{% if message.is_internal %} · <span class="font-semibold text-accent">note interne</span>{% endif %}
+      </p>
+      <p class="whitespace-pre-line">{{ message.body }}</p>
+    </div>
+  </li>
+  {% endfor %}
+  {% if not intro_body and not thread %}<li class="text-sm text-muted">Aucun message pour le moment.</li>{% endif %}
+</ol>
+<form class="mt-5 space-y-3 border-t border-line pt-5" hx-post="{{ post_url }}" hx-target="#{{ target }}" hx-swap="innerHTML">
+  {% csrf_token %}
+  <c-field :field="message_form.body" hide_label="1" />
+  {% if message_form.is_internal %}<c-field :field="message_form.is_internal" />{% endif %}
+  <div class="flex justify-end"><button type="submit" class="btn btn-primary btn-sm"><span class="htmx-indicator spinner -ml-1"></span>{% icon "send" %} Envoyer</button></div>
+</form>

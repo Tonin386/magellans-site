@@ -1,88 +1,81 @@
-# Magellans - le site internet
-### Où suis-je ?
-Ce répertoire contient les espaces de développement et de production du site [magellans.fr](https://magellans.fr).   
-### Qui est Magellans ?
-Magellans, c'est une association audiovisuelle composée de membres aux profils différents : des étudiants et des professionnels du secteur de l'audiovisuel, des comédiens… ou bien simplement des passionnés du cinéma et de l'audiovisuel !
-Tous désireux d'apprendre de nouvelles choses, de rencontrer de nouvelles personnes… nous avons tous un but commun : réaliser sans cesse de nouveaux projets : des courts-métrages, des prestations tels que des captations d'évènements, des vidéos promotionnelles, des clips, et autres !
-Ce qui fait notre force, c'est la diversité des profils de nos membres, leur volonté de se rapprocher au mieux d'un niveau professionnel et de relever constamment de nouveaux défis. Alors si l'aventure te tente, rejoins-nous !
-## Contribuer
-Ce fichier a pour but de vous expliquer comment installer localement ce projet afin que vous puissiez y contribuer.
-### Dépendances & recommendations
-Afin d'installer ce projet chez vous et de le faire fonctionner, vous aurez besoin d'installer [**Docker**](https://docs.docker.com/get-docker/) et son plugin [**Docker-compose**](https://docs.docker.com/compose/install/).
+# Magellans — le site internet
 
-Nous vous conseillons fortement d'effectuer le développement sur une plateforme Unix (Ubuntu 23.10 ou Debian). 
-Le projet utilise de nombreux langages de programmation différents, tels que : 
- - Python
- - JavaScript
- - HTML
- - CSS
- - Bash
+Code du site [magellans.fr](https://magellans.fr) de l'association audiovisuelle Magellans :
+vitrine publique (films, équipe, adhésion HelloAsso), espace membres (magasin de matériel,
+notes de frais, aides à projet, ressources) et espace CA (adhésions, personnes, réservations,
+trésorerie, contenus du site, paramètres).
 
-Pour cette raison, nous vous conseillons d'utiliser l'IDE Visual Studio Code qui permet une grande flexibilité, nécessaire dans ce projet.
-### Installation locale
-Une fois toutes les dépendances installées, nous allons pouvoir installer et lancer le projet. 
+- **Exploitation du serveur, déploiement, sauvegardes** : voir [DEPLOIEMENT.md](DEPLOIEMENT.md).
 
-Commencez par cloner ce répertoire, ou une fork que vous avez faite : 
+## Technologies
 
-    git clone git@github.com:Tonin386/magellans-site.git
-Dans le nouveau dossier créé, vous devez créer deux fichiers supplémentaires :
+| Côté | Outils |
+| --- | --- |
+| Serveur | Django 6.1 (Python 3.14), PostgreSQL 16, gunicorn, WhiteNoise, WeasyPrint (contrats PDF) |
+| Interface | Gabarits Django + [django-cotton](https://django-cotton.com) (composants), HTMX 2, Alpine.js (version CSP), Tailwind CSS 4, TypeScript, Vite 8 |
+| Paiements | API HelloAsso v5 (adhésions synchronisées + webhook vérifié) |
+| Production | Docker Compose (postgres, django, nginx), Let's Encrypt, tâches cron pilotées par `run.sh` |
 
- - /app/.env
- - mailserver.env
- 
-Voici le contenu initial du fichier `.env`,  qui doit se trouver dans le dossier `/app/` de votre projet. Vous pouvez le modifier pour satisfaire vos besoins :
+## Organisation du code (`app/`)
 
-    #Django configuration
-    EMAIL_HOST='mail.server.com'
-    EMAIL_PORT=587
-    EMAIL_HOST_USER='admin@server.com'
-    EMAIL_HOST_PASSWORD='123456789'
-    EMAIL_RECEIVER='admin@server.com'
-    
-    DB_DJANGO_NAME='magellans-dj'
-    DB_MAIL_NAME='magellans-mx'
-    DB_USER='admin'
-    DB_PASSWORD='123456789'
-    DB_HOST='postgres-django'
-    DB_PORT='5432'
-    
-    DEBUG='1' #Are you running the application in a dev or production environment?
-    SECRET_KEY='your_secret_token'
-    COMMAND='python manage.py runserver 0.0.0.0:8000' #in a dev environment
-    #in a prod environment 'gunicorn magellans.asgi:application -b 0.0.0.0:8000 -w 4 -t 30 --reload -k uvicorn.workers.UvicornWorker -c gunicorn_config.py'
-    
-    NGINX_CONF_FILE='conf.d'  #conf_ssl.d #conf.d for dev, conf_ssl.d for prod
-    STATICFILES_DIR='./app/assets/'
-    
-    #Email server configuration (not so usefull for dev environment)
-    IMAP_HOST='ssl://mail.server.com'
-    IMAP_PORT='993'
-    SMTP_HOST='ssl://mail.server.com'
-    SMTP_PORT='587'
-    DNS_CHALLENGE_VALUE=''
-    SSL_LETSENCRYPT='/etc/letsencrypt/'
-    # SSL_CERTS_LIVE_DIR='/etc/letsencrypt/live/server.com' #only in production
-Voici le contenu initial mais **facultatif** du fichier `mailserver.env` : [Lien vers Pastebin](https://pastebin.com/t2Tnwne9)
-Tout a bien été configuré ! 
+| Application | Rôle |
+| --- | --- |
+| `core` | Paramètres du site, permissions du CA, pages, e-mails, fichiers privés, journal d'activité, composants d'interface |
+| `members` | Comptes, profils, fiches personnes, annuaire, connexion / inscription |
+| `memberships` | Saisons, adhésions, synchronisation HelloAsso |
+| `showcase` | Pages publiques (accueil, films, adhésion, contact) |
+| `warehouse` | Magasin : catalogue, réservations, disponibilités, contrats signés en ligne |
+| `bank` | Trésorerie et notes de frais |
+| `dashboard` | Projets, aides à projet, ressources membres |
+| `backoffice` | Espace CA (`/espace-ca/`) |
+| `api` | Webhook HelloAsso, notifications de l'ancien site |
+| `frontend/` | Sources TypeScript / CSS compilées par Vite (`frontend/dist`, non versionné) |
 
-### Première exécution
-La première fois que vous lancez le projet voici les commandes à exécuter **à la racine** du projet :
+Les rôles du CA (présidence, trésorerie, magasin, webmaster…) donnent des droits précis,
+définis dans `core/permissions.py`.
 
-    ./run.sh db && ./run.sh in
-Cette commande permet de créer les migrations initiales de la base de données, puis de vous placez dans la console du conteneur de Django où vous devrez créer un `superutilisateur` afin d'avoir accès à la plateforme d'administration.
-Une fois dans cette console, exécutez la commande : 
+## Développer en local
 
-    python manage.py createsuperuser
-Et suivez les instructions qui s'affichent.
-Ensuite, vous devrez modifier ce profil utilisateur pour lui attribuer le rôle de "Trésorier" sur le site. Il faut toujours au moins un trésorier sur le site. 
-Retournez à la racine du projet. 
+Prérequis : Python 3.14, Node 22, Docker (pour PostgreSQL).
 
-    ./run.sh python #placez vous dans la console python de Django
-    from members.models import Member
-    m = Member.objects.all()[0]
-    m.role = 'T'
-    m.save()
-    exit()
-    # exit
-Voilà ! Le site devrait être fonctionnel. Vous pouvez y accéder à l'adresse `localhost` dans votre navigateur.
-Happy coding!
+```bash
+# Base de données de développement
+docker run -d --name magellans-pg-dev -p 127.0.0.1:5432:5432 \
+  -e POSTGRES_DB=magellans -e POSTGRES_USER=magellans -e POSTGRES_PASSWORD=magellans postgres:16-bullseye
+
+# Python
+python3.14 -m venv .venv && .venv/bin/pip install -r app/requirements.txt
+cp app/.env.example app/.env    # puis : DEBUG=1, DB_HOST=127.0.0.1, DB_PASSWORD=magellans…
+
+# Interface (Vite) — dans un second terminal : npm run dev (et VITE_DEV_MODE=1 dans app/.env)
+cd app/frontend && npm ci && npm run build && cd ..
+
+.venv/bin/python manage.py migrate
+.venv/bin/python manage.py seed_demo     # données fictives (refusé si DEBUG=0)
+.venv/bin/python manage.py runserver
+```
+
+Comptes de démonstration créés par `seed_demo` : `admin@magellans.test` (CA) et
+`membre@magellans.test`, mot de passe `magellans-demo`. Sans `DB_HOST`, une base SQLite est
+utilisée. Sans `EMAIL_HOST`, les e-mails s'affichent dans la console.
+
+Commandes utiles :
+
+```bash
+python manage.py helloasso_sync [--all] [--invite]   # adhésions HelloAsso
+python manage.py makemigrations --check               # aucune migration oubliée
+cd frontend && npm run typecheck                      # TypeScript
+```
+
+Les icônes (sprite `app/static/icons.svg`) sont générées par `npm run icons` à partir des
+`{% icon "nom" %}` trouvés dans les gabarits : relancer la commande après en avoir ajouté.
+
+## Publier une modification
+
+1. Travailler sur la branche `dev`, pousser.
+2. `./run.sh gitupdate` publie `dev` → `production` → `main`.
+3. Le serveur déploie tout seul la branche `production` dans les 10 minutes
+   (sauvegarde, construction, contrôle, retour arrière automatique en cas d'échec).
+
+Les migrations doivent rester **additives** (nouvelles tables ou colonnes) : la base de
+production contient l'historique de l'association depuis 2023.

@@ -1,0 +1,8 @@
+{% extends base_template %}
+{% block title %}{{ item.name }}{% endblock %}
+{% block content %}
+<div class="{% if not user.is_authenticated %}mx-auto max-w-4xl px-4 py-12 sm:px-6{% endif %}">
+  <c-page-header title="{{ item.name }}" back="{% url 'warehouse:catalogue' %}" back_label="Le magasin" />
+  <div class="card card-body">{% include "warehouse/partials/item_modal.html" %}</div>
+</div>
+{% endblock %}

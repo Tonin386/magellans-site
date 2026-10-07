@@ -1,0 +1,19 @@
+{% partialdef subject %}Ta note de frais « {{ invoice.title }} » : {{ invoice.get_status_display|lower }}{% endpartialdef %}
+{% partialdef body %}{% autoescape off %}
+Bonjour {{ invoice.author.first_name }},
+
+Le statut de ta note de frais **« {{ invoice.title }} »** ({{ invoice.total_amount }} €) vient d'évoluer : **{{ invoice.get_status_display }}**.
+{% if invoice.status == "J" %}
+Il manque un ou plusieurs justificatifs : tu peux les ajouter directement en ligne.{% elif invoice.status == "D" %}
+Merci d'envoyer ton RIB à la trésorerie pour que nous puissions procéder au virement.{% elif invoice.status == "R" %}
+Le remboursement a été effectué. Merci pour ton implication ! 🙌{% endif %}
+{% if note %}
+
+**Message de la trésorerie :**
+
+{{ note|blockquote }}{% endif %}
+
+[[Voir ma note de frais|{{ site_url }}{{ invoice.get_absolute_url }}]]
+
+L'équipe {{ site.site_name }}
+{% endautoescape %}{% endpartialdef %}

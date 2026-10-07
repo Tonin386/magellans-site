@@ -1,0 +1,25 @@
+<ul class="divide-y divide-line">
+  {% for line in lines %}
+  <li class="flex flex-wrap items-center gap-4 py-3">
+    <label class="flex cursor-pointer items-center gap-3" title="Accorder / refuser cet objet">
+      <input type="checkbox" class="switch" {% if line.available %}checked{% endif %} hx-post="{% url 'backoffice:order-line' order.pk line.pk %}" hx-target="#order-lines" hx-swap="innerHTML">
+      <span class="sr-only">Accordé</span>
+    </label>
+    <span class="size-11 shrink-0 overflow-hidden rounded-lg {% if line.item.has_photo %}bg-white{% else %}bg-surface-2{% endif %}">{% if line.item.has_photo %}<img src="{{ line.item.image.url }}" alt="" class="size-full object-contain">{% else %}<span class="grid size-full place-items-center text-subtle">{% icon "camera" %}</span>{% endif %}</span>
+    <span class="min-w-0 flex-1">
+      <span class="block truncate font-semibold {% if not line.available %}text-muted line-through{% endif %}">{{ line.item.name }}</span>
+      {% if line.stock %}
+      <span class="text-xs {% if line.conflict %}font-semibold text-red-600 dark:text-red-400{% else %}text-muted{% endif %}">
+        {% if line.conflict %}{% icon "triangle-alert" %} Conflit : {% endif %}{{ line.stock.available }} / {{ line.item.max_stock }} disponible{{ line.stock.available|pluralize }} sur la période{% if line.stock.pending %} · {{ line.stock.pending }} demandé{{ line.stock.pending|pluralize }} ailleurs{% endif %}
+      </span>
+      {% endif %}
+    </span>
+    <form hx-post="{% url 'backoffice:order-line' order.pk line.pk %}" hx-target="#order-lines" hx-trigger="change" class="flex items-center gap-2">
+      <label class="sr-only" for="qty-{{ line.pk }}">Quantité</label>
+      <input id="qty-{{ line.pk }}" type="number" name="quantity" min="1" max="{{ line.item.max_stock }}" value="{{ line.quantity }}" class="input w-20 text-center">
+    </form>
+  </li>
+  {% empty %}
+  <li class="py-3 text-sm text-muted">Aucun objet.</li>
+  {% endfor %}
+</ul>

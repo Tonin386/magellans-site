@@ -1,0 +1,123 @@
+{% load static %}<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Contrat de prêt {{ contract.reference }}</title>
+<style>
+  @font-face { font-family: "Inter"; src: url("static/fonts/inter-latin-wght.woff2"); font-weight: 100 900; }
+  @font-face { font-family: "Bricolage"; src: url("static/fonts/bricolage-latin-opsz.woff2"); font-weight: 100 900; }
+  @page {
+    size: A4;
+    margin: 22mm 18mm 24mm;
+    @bottom-left { content: "Contrat {{ contract.reference }}{% if preview %} — APERÇU NON SIGNÉ{% endif %}"; font: 8pt Inter; color: #8a7d72; }
+    @bottom-right { content: "Page " counter(page) " / " counter(pages); font: 8pt Inter; color: #8a7d72; }
+  }
+  * { box-sizing: border-box; }
+  body { font-family: "Inter", sans-serif; font-size: 9.5pt; line-height: 1.55; color: #1c1612; }
+  h1, h2 { font-family: "Bricolage", "Inter", sans-serif; letter-spacing: -0.01em; }
+  h1 { font-size: 22pt; margin: 0; line-height: 1.1; }
+  h2 { font-size: 12.5pt; margin: 18pt 0 6pt; padding-bottom: 3pt; border-bottom: 1.5pt solid #ffab0e; break-after: avoid; }
+  .header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14pt; }
+  .header img { width: 54px; height: 54px; }
+  .ref { text-align: right; color: #62564c; font-size: 8.5pt; }
+  .ref strong { display: block; color: #1c1612; font-size: 11pt; }
+  .watermark { position: fixed; top: 40%; left: 0; right: 0; text-align: center; transform: rotate(-30deg); font-family: "Bricolage"; font-size: 64pt; color: rgba(185, 98, 4, 0.12); font-weight: 800; }
+  .parties { display: flex; gap: 10pt; }
+  .party { flex: 1; background: #f6f2ec; border-radius: 8pt; padding: 9pt 11pt; }
+  .party .label { font-size: 7.5pt; text-transform: uppercase; letter-spacing: 0.08em; color: #b96204; font-weight: 700; }
+  .party p { margin: 2pt 0 0; }
+  .period { margin-top: 10pt; background: #fff1d6; border-radius: 8pt; padding: 9pt 11pt; text-align: center; }
+  .period strong { font-size: 11pt; }
+  table { width: 100%; border-collapse: collapse; margin-top: 6pt; }
+  th { text-align: left; font-size: 7.5pt; text-transform: uppercase; letter-spacing: 0.06em; color: #62564c; border-bottom: 1pt solid #cfc4b8; padding: 5pt 6pt; }
+  td { padding: 5pt 6pt; border-bottom: 0.5pt solid #e4dcd2; }
+  td.qty { text-align: right; width: 50pt; font-weight: 700; }
+  ul { margin: 4pt 0 0; padding-left: 14pt; }
+  li { margin-bottom: 3pt; }
+  .signatures { display: flex; gap: 14pt; margin-top: 8pt; break-inside: avoid; }
+  .sig { flex: 1; border: 1pt solid #e4dcd2; border-radius: 8pt; padding: 10pt 12pt; min-height: 120pt; }
+  .sig .label { font-size: 7.5pt; text-transform: uppercase; letter-spacing: 0.08em; color: #62564c; font-weight: 700; }
+  .sig img { max-height: 60pt; max-width: 100%; margin: 6pt 0; }
+  .sig .meta { font-size: 7.5pt; color: #62564c; }
+  .proof { margin-top: 12pt; font-size: 7.5pt; color: #62564c; border-top: 0.5pt solid #e4dcd2; padding-top: 6pt; }
+  .proof code { font-family: monospace; color: #1c1612; font-size: 8.5pt; }
+</style>
+</head>
+<body>
+  {% if preview %}<div class="watermark">APERÇU</div>{% endif %}
+  <div class="header">
+    <div style="display:flex;align-items:center;gap:10pt">
+      <img src="static/img/logo.svg" alt="">
+      <div>
+        <h1>Contrat de prêt de matériel</h1>
+        <div style="color:#62564c">{{ terms.association }} · {{ terms.address }}{% if terms.rna %} · RNA {{ terms.rna }}{% endif %}</div>
+      </div>
+    </div>
+    <div class="ref"><strong>{{ contract.reference }}</strong>Réservation n° {{ order.pk }}<br>Projet : {{ order.project_name|default:"—" }}</div>
+  </div>
+
+  <h2>Parties</h2>
+  <div class="parties">
+    <div class="party">
+      <div class="label">Le prêteur</div>
+      <p><strong>{{ terms.association }}</strong>, représentée par {{ terms.signatory_name }}, {{ terms.signatory_title }}</p>
+    </div>
+    <div class="party">
+      <div class="label">Le / la référent·e matériel</div>
+      <p><strong>{{ order.user.display_name }}</strong><br>{{ order.user.email }}{% if order.user.person.phone %} · {{ order.user.person.phone_display }}{% endif %}</p>
+    </div>
+  </div>
+  <div class="parties" style="margin-top:8pt">
+    <div class="party">
+      <div class="label">Réalisation</div>
+      <p>{{ contract.director_name }}<br>{{ contract.director_phone }} · {{ contract.director_email }}</p>
+    </div>
+    <div class="party">
+      <div class="label">Production</div>
+      <p>{{ contract.production_name }}{% if contract.production_address %}, {{ contract.production_address }}{% endif %}<br>{{ contract.production_phone }} · {{ contract.production_email }}</p>
+    </div>
+  </div>
+
+  <h2>Objet du prêt</h2>
+  <p>{{ terms.intro }}</p>
+  <div class="period">
+    Du <strong>{{ order.date_start|date:"l j F Y à H:i" }}</strong> au <strong>{{ order.date_end|date:"l j F Y à H:i" }}</strong><br>
+    Retrait et retour du matériel : {{ terms.pickup_address }}
+  </div>
+  <table>
+    <thead><tr><th>Matériel prêté</th><th style="text-align:right">Quantité</th></tr></thead>
+    <tbody>
+      {% for line in lines %}<tr><td>{{ line.item.name }}</td><td class="qty">{{ line.quantity }}</td></tr>{% endfor %}
+    </tbody>
+  </table>
+
+  <h2>Engagements du bénéficiaire</h2>
+  <ul>{% for item in terms.commitments %}<li>{{ item }}</li>{% endfor %}</ul>
+
+  <h2>Contreparties pour {{ terms.association }}</h2>
+  <ul>{% for item in terms.counterparts %}<li>{{ item }}</li>{% endfor %}</ul>
+
+  <h2>Signatures</h2>
+  <p>Fait {% if terms.city %}à {{ terms.city }}, {% endif %}{% if contract.signed_at %}le {{ contract.signed_at|date:"j F Y" }}{% else %}le … (date de signature){% endif %}, en un exemplaire électronique transmis à chaque partie.</p>
+  <div class="signatures">
+    <div class="sig">
+      <div class="label">Pour {{ terms.association }}</div>
+      {% if board_signature %}<img src="{{ board_signature }}" alt="">{% endif %}
+      <div><strong>{{ terms.signatory_name }}</strong><br>{{ terms.signatory_title }}</div>
+    </div>
+    <div class="sig">
+      <div class="label">Le / la référent·e matériel — « lu et approuvé »</div>
+      {% if member_signature %}<img src="{{ member_signature }}" alt="">{% endif %}
+      <div><strong>{% firstof contract.signer_name order.user.display_name %}</strong></div>
+      {% if contract.signed_at %}<div class="meta">Signé électroniquement le {{ contract.signed_at|date:"j F Y à H:i:s" }}{% if contract.signer_ip %} depuis l'adresse IP {{ contract.signer_ip }}{% endif %}</div>{% endif %}
+    </div>
+  </div>
+
+  {% if verification_code %}
+  <div class="proof">
+    Code de vérification : <code>{{ verification_code }}</code> — authenticité vérifiable sur {{ verification_url }}<br>
+    Document généré le {{ generated_at|date:"j F Y à H:i" }} par le site de {{ terms.association }}.
+  </div>
+  {% endif %}
+</body>
+</html>

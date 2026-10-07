@@ -1,0 +1,103 @@
+{% extends "layouts/app.html" %}
+
+{% block title %}Espace CA{% endblock %}
+
+{% block content %}
+<c-page-header eyebrow="Espace CA" title="Tableau de bord" subtitle="Tout ce qui demande l'attention du conseil d'administration, en un coup d'œil.">
+  <c-button href="{% url 'backoffice:content' %}" variant="secondary" icon="pen-line">Contenus du site</c-button>
+</c-page-header>
+
+{% for warning in helloasso_warnings %}
+<c-alert tone="warning" title="Campagne HelloAsso {{ season.label }} à vérifier" class="mb-4">{{ warning }} Corrige-la directement sur HelloAsso (paramètres de la campagne), puis relance une synchronisation.</c-alert>
+{% endfor %}
+{% if pages_to_review %}
+<c-alert tone="info" title="Textes à relire" class="mb-4">
+  {% for page in pages_to_review %}<a href="{% url 'backoffice:pages-edit' page.pk %}">{{ page.title }}</a>{% if not forloop.last %}, {% endif %}{% endfor %} : ces pages ont été rédigées par défaut et doivent être validées par le CA.
+</c-alert>
+{% endif %}
+{% if webhook_errors %}
+<c-alert tone="danger" title="Notifications HelloAsso en erreur" class="mb-4">{{ webhook_errors }} notification(s) n'ont pas pu être traitées ces 30 derniers jours. <a href="{% url 'backoffice:helloasso' %}">Voir le journal HelloAsso</a></c-alert>
+{% endif %}
+
+<div class="grid grid-cols-2 gap-4 lg:grid-cols-4">
+  <c-stat label="Adhérent·es {{ season.label }}" value="{{ season_stats.count|default:0 }}" icon="id-card" href="{% url 'backoffice:memberships' %}"
+          hint="{% if previous_stats %}{{ previous_stats.count }} sur toute la saison {{ previous.label }}{% endif %}" />
+  <c-stat label="Réservations à traiter" value="{{ pending_orders_count }}" icon="package" href="{% url 'backoffice:orders' %}" tone="{% if pending_orders_count %}warning{% endif %}"
+          hint="{{ to_sign_count }} contrat{{ to_sign_count|pluralize }} en attente de signature" />
+  <c-stat label="Notes de frais à traiter" value="{{ invoices_todo }}" icon="receipt" href="{% url 'backoffice:invoices' %}" tone="{% if invoices_todo %}warning{% endif %}" />
+  {% if balance is not None %}
+  <c-stat label="Solde de trésorerie" value="{{ balance|money }}" icon="landmark" href="{% url 'backoffice:finance' %}" tone="{% if balance < 0 %}danger{% else %}success{% endif %}" />
+  {% else %}
+  <c-stat label="Demandes d'aide" value="{{ funding_todo }}" icon="hand-coins" href="{% url 'backoffice:funding' %}" tone="{% if funding_todo %}warning{% endif %}" />
+  {% endif %}
+</div>
+
+<div class="mt-6 grid gap-6 xl:grid-cols-3">
+  <c-card title="Adhésions" subtitle="Évolution cumulée, comparée à la saison précédente" class="xl:col-span-2">
+    <c-slot name="actions">
+      {% if season %}<form method="post" action="{% url 'backoffice:season-sync' season.pk %}">{% csrf_token %}<button type="submit" class="btn btn-secondary btn-sm"><span class="htmx-indicator spinner -ml-1"></span>{% icon "refresh-cw" %} Synchroniser HelloAsso</button></form>{% endif %}
+    </c-slot>
+    {% if chart %}
+    <figure>
+      <svg viewBox="0 0 {{ chart.width }} {{ chart.height }}" class="h-48 w-full" role="img" aria-label="Courbe des adhésions">
+        <line x1="24" x2="{{ chart.width|add:-24 }}" y1="{{ chart.baseline }}" y2="{{ chart.baseline }}" class="stroke-line" stroke-width="1" />
+        {% for serie in chart.paths %}
+        <path d="{{ serie.area }}" class="{% if serie.tone == 'amber' %}fill-amber-500/15{% else %}fill-ink-400/10{% endif %}" />
+        <path d="{{ serie.line }}" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="{% if serie.tone == 'amber' %}stroke-amber-500{% else %}stroke-ink-400{% endif %}" {% if serie.tone != 'amber' %}stroke-dasharray="5 5"{% endif %} />
+        <circle cx="{{ serie.last.0 }}" cy="{{ serie.last.1 }}" r="4" class="{% if serie.tone == 'amber' %}fill-amber-500{% else %}fill-ink-400{% endif %}" />
+        {% endfor %}
+      </svg>
+      <figcaption class="mt-2 flex flex-wrap gap-4 text-sm">
+        {% for serie in chart.paths %}<span class="flex items-center gap-2"><span class="h-1 w-5 rounded-full {% if serie.tone == 'amber' %}bg-amber-500{% else %}bg-ink-400{% endif %}"></span>{{ serie.label }} : <strong>{{ serie.value }}</strong></span>{% endfor %}
+      </figcaption>
+    </figure>
+    {% else %}
+    <p class="text-sm text-muted">Aucune saison configurée.</p>
+    {% endif %}
+    {% if last_webhook %}<p class="mt-4 text-xs text-muted">Dernière notification HelloAsso reçue le {{ last_webhook.received_at|date:"j F Y à H:i" }} ({{ last_webhook.get_status_display|lower }}).</p>{% endif %}
+  </c-card>
+
+  <c-card title="Cette semaine au magasin">
+    <c-slot name="actions"><c-button href="{% url 'backoffice:calendar' %}" variant="ghost" size="sm" icon="calendar">Calendrier</c-button></c-slot>
+    {% if late_returns %}<c-alert tone="danger" class="mb-4"><a href="{% url 'backoffice:orders' %}?vue=ongoing">{{ late_returns }} retour{{ late_returns|pluralize }} en retard</a></c-alert>{% endif %}
+    {% if stale_orders %}<p class="mb-4 text-sm text-muted">{% icon "archive" %} <a href="{% url 'backoffice:orders' %}" class="link">{{ stale_orders }} ancienne{{ stale_orders|pluralize }} réservation{{ stale_orders|pluralize }} à clôturer</a></p>{% endif %}
+    <p class="mb-2 text-xs font-bold tracking-wide text-muted uppercase">Retraits</p>
+    <ul class="mb-4 space-y-2 text-sm">
+      {% for order in pickups %}<li><a href="{% url 'backoffice:order-detail' order.pk %}" class="flex justify-between gap-2 hover:text-accent"><span class="truncate">#{{ order.pk }} · {{ order.user.display_name }}</span><span class="shrink-0 text-muted">{{ order.date_start|date:"D j H:i" }}</span></a></li>{% empty %}<li class="text-muted">Aucun retrait prévu.</li>{% endfor %}
+    </ul>
+    <p class="mb-2 text-xs font-bold tracking-wide text-muted uppercase">Retours</p>
+    <ul class="space-y-2 text-sm">
+      {% for order in returns %}<li><a href="{% url 'backoffice:order-detail' order.pk %}" class="flex justify-between gap-2 hover:text-accent"><span class="truncate">#{{ order.pk }} · {{ order.user.display_name }}</span><span class="shrink-0 text-muted">{{ order.date_end|date:"D j H:i" }}</span></a></li>{% empty %}<li class="text-muted">Aucun retour prévu.</li>{% endfor %}
+    </ul>
+  </c-card>
+</div>
+
+<div class="mt-6 grid gap-6 xl:grid-cols-3">
+  <c-card title="Réservations à traiter" class="xl:col-span-2">
+    <c-slot name="actions"><c-button href="{% url 'backoffice:orders' %}" variant="ghost" size="sm">Tout voir</c-button></c-slot>
+    {% if pending_orders %}
+    <ul class="divide-y divide-line">
+      {% for order in pending_orders %}
+      <li><a href="{% url 'backoffice:order-detail' order.pk %}" class="-mx-2 flex items-center gap-4 rounded-xl px-2 py-3 transition hover:bg-surface-2">
+        <span class="font-display text-lg font-bold text-muted">#{{ order.pk }}</span>
+        <span class="min-w-0 flex-1"><span class="block truncate font-semibold">{{ order.user.display_name }} · {{ order.project_name }}</span><span class="text-xs text-muted">{{ order.date_start|date:"j M H:i" }} → {{ order.date_end|date:"j M H:i" }}</span></span>
+        <span class="text-xs text-muted">reçue {{ order.date_created|timesince }}</span>
+      </a></li>
+      {% endfor %}
+    </ul>
+    {% else %}
+    <p class="flex items-center gap-2 text-sm text-muted">{% icon "circle-check" css="text-emerald-500" %} Rien en attente, bravo !</p>
+    {% endif %}
+  </c-card>
+  <c-card title="Activité récente">
+    <c-slot name="actions"><c-button href="{% url 'backoffice:activity' %}" variant="ghost" size="sm">Journal</c-button></c-slot>
+    <ol class="space-y-3 text-sm">
+      {% for entry in activity %}
+      <li class="flex gap-3"><span class="mt-1.5 size-2 shrink-0 rounded-full bg-amber-500"></span><div class="min-w-0"><p class="leading-snug">{{ entry.message }}</p><p class="text-xs text-muted">{{ entry.created_at|timesince }} · {{ entry.actor.display_name|default:"site" }}</p></div></li>
+      {% empty %}
+      <li class="text-muted">Aucune activité pour l'instant.</li>
+      {% endfor %}
+    </ol>
+  </c-card>
+</div>
+{% endblock %}

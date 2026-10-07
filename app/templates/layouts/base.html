@@ -1,0 +1,109 @@
+{% load static django_vite %}<!DOCTYPE html>
+<html lang="fr" class="{% block html_class %}{% endblock %}" {% block html_attrs %}{% endblock %}>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>{% block title %}{{ site.tagline }}{% endblock %} · {{ site.site_name }}</title>
+  <meta name="description" content="{% block description %}{{ site.meta_description }}{% endblock %}">
+  <meta name="csrf-token" content="{{ csrf_token }}">
+  <meta name="htmx-config" content='{"allowEval":false,"allowScriptTags":false,"includeIndicatorStyles":false,"historyCacheSize":0}'>
+  <meta name="theme-color" content="#0b0907">
+  <meta name="color-scheme" content="light dark">
+  {% block robots %}{% endblock %}
+  <link rel="canonical" href="{{ SITE_URL }}{{ request.path }}">
+  <link rel="icon" href="{% static 'img/favicon.svg' %}" type="image/svg+xml">
+  <link rel="icon" href="{% static 'img/favicon.ico' %}" sizes="32x32">
+  <link rel="apple-touch-icon" href="{% static 'img/apple-touch-icon.png' %}">
+  <link rel="manifest" href="{% url 'webmanifest' %}">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="fr_FR">
+  <meta property="og:site_name" content="{{ site.site_name }}">
+  <meta property="og:title" content="{% block og_title %}{{ site.site_name }} — {{ site.tagline }}{% endblock %}">
+  <meta property="og:description" content="{% block og_description %}{{ site.meta_description }}{% endblock %}">
+  <meta property="og:url" content="{{ SITE_URL }}{{ request.path }}">
+  <meta property="og:image" content="{% block og_image %}{{ SITE_URL }}{% static 'img/og-image.png' %}{% endblock %}">
+  <meta name="twitter:card" content="summary_large_image">
+  <script nonce="{{ csp_nonce }}">
+    (function () {
+      try {
+        var root = document.documentElement;
+        if (root.hasAttribute("data-force-theme")) return;
+        var theme = localStorage.getItem("magellans-theme") || "system";
+        var dark = theme === "dark" || (theme === "system" && window.matchMedia("(prefers-color-scheme: dark)").matches);
+        root.classList.toggle("dark", dark);
+      } catch (e) {}
+    })();
+  </script>
+  {% vite_hmr_client %}
+  {% vite_asset 'src/main.ts' %}
+  {% block head %}{% endblock %}
+</head>
+<body class="min-h-dvh {% block body_class %}{% endblock %}">
+  <a href="#contenu" class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[100] focus:rounded-full focus:bg-amber-500 focus:px-4 focus:py-2 focus:font-semibold focus:text-ink-950">Aller au contenu</a>
+
+  {% block body %}{% endblock %}
+
+  {# Notifications éphémères #}
+  <div x-data class="pointer-events-none fixed inset-x-0 bottom-0 z-[90] flex flex-col items-center gap-2 p-4 sm:items-end" aria-live="polite">
+    <template x-for="toast in $store.toasts.items" :key="toast.id">
+      <div x-show="toast.visible" x-transition.opacity.duration.250ms
+           class="pointer-events-auto flex w-full max-w-sm animate-toast-in items-start gap-3 rounded-2xl border border-line bg-surface/95 p-4 text-sm text-fg shadow-2xl shadow-black/20 backdrop-blur"
+           role="status">
+        <span class="mt-0.5 grid size-6 shrink-0 place-items-center rounded-full text-xs"
+              :class="{ 'bg-emerald-500 text-white': toast.tone === 'success', 'bg-red-500 text-white': toast.tone === 'error', 'bg-amber-500 text-ink-950': toast.tone === 'warning', 'bg-sky-500 text-white': toast.tone === 'info' }">
+          <template x-if="toast.tone === 'success'">{% icon "check" %}</template>
+          <template x-if="toast.tone === 'error'">{% icon "x" %}</template>
+          <template x-if="toast.tone === 'warning'">{% icon "triangle-alert" %}</template>
+          <template x-if="toast.tone === 'info'">{% icon "info" %}</template>
+        </span>
+        <p class="flex-1 leading-relaxed" x-text="toast.message"></p>
+        <button type="button" class="-m-1 rounded-full p-1 text-muted hover:bg-surface-2 hover:text-fg" @click="$store.toasts.dismiss(toast.id)" aria-label="Fermer">{% icon "x" %}</button>
+      </div>
+    </template>
+  </div>
+
+  {# Boîte de confirmation (attribut hx-confirm) #}
+  <div x-data="confirmDialog">
+    <dialog x-ref="dialog" class="m-auto w-[min(28rem,calc(100vw-2rem))] rounded-3xl border border-line bg-surface p-0 text-fg shadow-2xl backdrop:bg-ink-950/60 backdrop:backdrop-blur-sm" @cancel="cancel()">
+      <div class="p-6">
+        <div class="flex items-start gap-4">
+          <span class="grid size-11 shrink-0 place-items-center rounded-2xl text-xl" :class="danger ? 'bg-red-500/12 text-red-600' : 'bg-accent-soft text-accent'">{% icon "circle-alert" %}</span>
+          <div>
+            <p class="font-display text-lg font-bold">Confirmation</p>
+            <p class="mt-1 text-sm leading-relaxed text-muted" x-text="message"></p>
+          </div>
+        </div>
+        <div class="mt-6 flex justify-end gap-2">
+          <button type="button" class="btn btn-secondary" @click="cancel()">Annuler</button>
+          <button type="button" class="btn" :class="danger ? 'btn-danger' : 'btn-primary'" @click="accept()" x-text="confirmLabel"></button>
+        </div>
+      </div>
+    </dialog>
+  </div>
+
+  {# Modale dont le contenu est chargé par HTMX (hx-target="#modal-content") #}
+  <div x-data="remoteModal">
+    <dialog x-ref="dialog" class="m-auto max-h-[calc(100dvh-2rem)] w-[min(40rem,calc(100vw-2rem))] overflow-y-auto rounded-3xl border border-line bg-surface p-0 text-fg shadow-2xl backdrop:bg-ink-950/60 backdrop:backdrop-blur-sm" @click="backdropClose($event)">
+      <div class="sticky top-0 z-10 flex items-center justify-between gap-4 border-b border-line bg-surface/95 px-6 py-4 backdrop-blur">
+        <p class="font-display text-lg font-bold" x-text="title"></p>
+        <button type="button" class="btn btn-ghost btn-icon btn-sm" @click="hide()" aria-label="Fermer">{% icon "x" %}</button>
+      </div>
+      <div id="modal-content" class="p-6"></div>
+    </dialog>
+  </div>
+
+  {% if site.ga_measurement_id %}
+  <div x-data="consent('{{ site.ga_measurement_id|escapejs }}', '{{ csp_nonce }}')" x-show="visible" x-cloak x-transition
+       class="fixed inset-x-3 bottom-3 z-[95] mx-auto flex max-w-xl flex-col gap-3 rounded-2xl border border-line bg-surface/95 p-4 text-sm text-fg shadow-2xl shadow-black/30 backdrop-blur sm:right-5 sm:bottom-5 sm:left-auto sm:flex-row sm:items-center"
+       role="dialog" aria-label="Gestion des cookies">
+    <p class="flex-1 leading-snug"><strong>🍪 Mesure d'audience ?</strong> <span class="text-muted">Rien n'est déposé sans ton accord.</span> <a href="{% url 'page' 'confidentialite' %}" class="link text-xs">En savoir plus</a></p>
+    <div class="flex shrink-0 justify-end gap-2">
+      <button type="button" class="btn btn-secondary btn-sm" @click="refuse()">Refuser</button>
+      <button type="button" class="btn btn-primary btn-sm" @click="accept()">Accepter</button>
+    </div>
+  </div>
+  {% endif %}
+
+  {% messages_json %}
+</body>
+</html>

@@ -1,0 +1,12 @@
+{% partialdef subject %}Nouvelle adhésion {{ membership.season.label }} : {{ membership.person.display_name }}{% endpartialdef %}
+{% partialdef body %}{% autoescape off %}
+**{{ membership.person.display_name }}** vient d'adhérer pour la saison **{{ membership.season.label }}**{% if membership.amount %} ({{ membership.amount }} €{% if membership.donation %} + {{ membership.donation }} € de don{% endif %}){% endif %} via {{ membership.get_source_display }}.
+
+- **E-mail :** {{ membership.person.email|default:"—" }}
+- **Téléphone :** {{ membership.person.phone_display|default:"—" }}
+{% if created_account %}- Un compte a été créé et une invitation envoyée.{% endif %}
+
+Total d'adhérent·es pour la saison : **{{ season_count }}**.
+
+[[Voir les adhésions|{{ site_url }}{% url 'backoffice:memberships' %}]]
+{% endautoescape %}{% endpartialdef %}

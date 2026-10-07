@@ -1,0 +1,14 @@
+{% comment %} <c-card title="…" subtitle="…"><c-slot name="actions">…</c-slot>contenu</c-card> {% endcomment %}
+<c-vars title="" subtitle="" class="" body_class="" />
+<section class="card {{ class }}" {{ attrs }}>
+  {% if title or actions %}
+  <header class="card-header">
+    <div class="min-w-0">
+      {% if title %}<h2 class="card-title">{{ title }}</h2>{% endif %}
+      {% if subtitle %}<p class="mt-0.5 text-sm text-muted">{{ subtitle }}</p>{% endif %}
+    </div>
+    {% if actions %}<div class="flex flex-wrap items-center gap-2">{{ actions }}</div>{% endif %}
+  </header>
+  {% endif %}
+  <div class="card-body {{ body_class }}">{{ slot }}</div>
+</section>

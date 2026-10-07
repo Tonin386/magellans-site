@@ -1,0 +1,17 @@
+{% extends "layouts/app.html" %}
+{% block title %}Journal d'activité{% endblock %}
+{% block content %}
+<c-page-header eyebrow="Espace CA" title="Journal d'activité" subtitle="Qui a fait quoi, et quand : toutes les actions importantes sont tracées." />
+<form class="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center" hx-get="{{ request.path }}" hx-target="#table" hx-trigger="change" hx-push-url="true">
+  {% include "backoffice/partials/search.html" with placeholder="Rechercher dans le journal…" %}
+  <select name="domaine" class="select sm:w-56" aria-label="Domaine">
+    <option value="">Tous les domaines</option>
+    {% for value, label in categories %}<option value="{{ value }}" {% if value == category %}selected{% endif %}>{{ label }}</option>{% endfor %}
+  </select>
+  <select name="auteur" class="select sm:w-56" aria-label="Auteur">
+    <option value="">Toutes les personnes</option>
+    {% for member in actors %}<option value="{{ member.pk }}" {% if member.pk|stringformat:"s" == actor %}selected{% endif %}>{{ member.display_name }}</option>{% endfor %}
+  </select>
+</form>
+<div id="table" class="card overflow-hidden">{% include "backoffice/partials/activity_table.html" %}</div>
+{% endblock %}

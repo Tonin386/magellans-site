@@ -1,0 +1,41 @@
+{% load bo %}
+<div class="table-wrap">
+  <table class="table">
+    <thead>
+      <tr>
+        <th>{% sort_header "nom" "Adhérent·e" %}</th>
+        <th>Contact</th>
+        <th>{% sort_header "date" "Date" %}</th>
+        <th class="num">{% sort_header "montant" "Montant" %}</th>
+        <th>Origine</th>
+        <th>Compte</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for membership in rows %}
+      <tr>
+        <td><a href="{% url 'backoffice:person-detail' membership.person.pk %}" class="font-semibold hover:text-accent">{{ membership.person.display_name }}</a>{% if not membership.is_active %} <c-badge tone="danger">{{ membership.get_status_display }}</c-badge>{% endif %}</td>
+        <td class="text-muted"><span class="block">{{ membership.person.email|default:"—" }}</span><span class="text-xs">{{ membership.person.phone_display }}</span></td>
+        <td class="whitespace-nowrap">{{ membership.joined_at|date:"j M Y" }}</td>
+        <td class="num">{{ membership.amount|money }}{% if membership.donation %}<span class="block text-xs text-emerald-600">+ {{ membership.donation|money }} de don</span>{% endif %}</td>
+        <td><c-badge tone="{% if membership.source == 'helloasso' %}info{% elif membership.source == 'legacy' %}neutral{% else %}brand{% endif %}" plain="1">{{ membership.get_source_display }}</c-badge></td>
+        <td>
+          {% if membership.person.site_profile %}
+            {% if membership.person.site_profile.is_active %}<span class="text-emerald-600" title="Compte actif">{% icon "circle-check" %}</span>{% else %}<span class="text-amber-600" title="Compte non activé">{% icon "clock" %}</span>{% endif %}
+          {% else %}<span class="text-subtle" title="Pas de compte">—</span>{% endif %}
+        </td>
+        <td class="text-right whitespace-nowrap">
+          {% if not membership.person.site_profile.is_active %}
+          <button type="button" class="btn btn-ghost btn-sm" hx-post="{% url 'backoffice:membership-invite' membership.pk %}" hx-confirm="Envoyer un e-mail d'invitation à {{ membership.person.display_name }} ?" data-confirm-label="Envoyer" title="Inviter à créer son mot de passe">{% icon "send" %}</button>
+          {% endif %}
+          <a href="{% url 'backoffice:membership-edit' membership.pk %}" class="btn btn-ghost btn-sm" aria-label="Modifier">{% icon "pencil" %}</a>
+        </td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="7" class="py-12 text-center text-muted">Aucune adhésion ne correspond.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% include "backoffice/partials/pagination.html" %}

@@ -1,0 +1,8 @@
+{% partialdef subject %}Réservation #{{ order.pk }} annulée par {{ order.user.display_name }}{% endpartialdef %}
+{% partialdef body %}{% autoescape off %}
+**{{ order.user.display_name }}** a annulé sa réservation **#{{ order.pk }}** ({{ order.project_name }}, du {{ order.date_start|date:"j F" }} au {{ order.date_end|date:"j F Y" }}).
+
+Le matériel est de nouveau disponible sur cette période.
+
+[[Voir la réservation|{{ site_url }}{% url 'backoffice:order-detail' order.pk %}]]
+{% endautoescape %}{% endpartialdef %}

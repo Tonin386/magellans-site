@@ -1,0 +1,63 @@
+{% extends "layouts/app.html" %}
+
+{% block title %}Mon profil{% endblock %}
+
+{% block content %}
+<c-page-header title="Mon profil" subtitle="Ces informations servent aux réservations du magasin et, si tu le souhaites, à l'annuaire des membres." />
+
+<div class="grid gap-6 lg:grid-cols-3">
+  <form method="post" enctype="multipart/form-data" class="space-y-6 lg:col-span-2" novalidate>
+    {% csrf_token %}
+    <c-form-errors :form="form" />
+    <c-card title="Identité">
+      <div class="grid gap-5 sm:grid-cols-2">
+        <c-field :field="form.first_name" />
+        <c-field :field="form.last_name" />
+        <c-field :field="form.phone" />
+        <c-field :field="form.gender" />
+      </div>
+      <div class="mt-5">
+        <label class="label">Adresse e-mail</label>
+        <p class="input flex items-center justify-between bg-surface-2 text-muted">{{ user.email }} <span class="text-xs">non modifiable</span></p>
+      </div>
+    </c-card>
+
+    <c-card title="Annuaire des membres" subtitle="Visible uniquement par les adhérent·es connecté·es, si tu le souhaites.">
+      <div class="space-y-5">
+        <c-field :field="form.show_in_directory" />
+        <div class="flex items-center gap-4">
+          <c-avatar name="{{ person.full_name|default:user.email }}" src="{% if person.avatar %}{{ person.avatar.url }}{% endif %}" size="size-16" class="text-lg" />
+          <div class="flex-1 space-y-2">
+            <c-field :field="form.avatar_upload" />
+            {% if person.avatar %}<c-field :field="form.remove_avatar" />{% endif %}
+          </div>
+        </div>
+        <c-field :field="form.bio" />
+        <c-field :field="form.skills" />
+        <div class="grid gap-5 sm:grid-cols-2">
+          <c-field :field="form.portfolio_url" />
+          <c-field :field="form.instagram_url" />
+        </div>
+      </div>
+    </c-card>
+
+    <div class="flex justify-end">
+      <button type="submit" class="btn btn-primary btn-lg">{% icon "check" %} Enregistrer</button>
+    </div>
+  </form>
+
+  <aside class="space-y-6">
+    <c-card title="Sécurité">
+      <p class="text-sm text-muted">Change ton mot de passe régulièrement, et utilise-en un que tu n'emploies nulle part ailleurs.</p>
+      <c-button href="{% url 'members:password-change' %}" variant="secondary" class="mt-4 w-full" icon="key-round">Changer de mot de passe</c-button>
+    </c-card>
+    <c-card title="Mes données">
+      <p class="text-sm text-muted">Conformément au RGPD, tu peux récupérer toutes les données te concernant ou demander leur suppression.</p>
+      <div class="mt-4 space-y-2">
+        <c-button href="{% url 'members:export-data' %}" variant="secondary" class="w-full" icon="download">Télécharger mes données</c-button>
+        <c-button href="{% url 'members:delete-account' %}" variant="soft-danger" class="w-full" icon="trash-2">Supprimer mon compte</c-button>
+      </div>
+    </c-card>
+  </aside>
+</div>
+{% endblock %}

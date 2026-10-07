@@ -1,0 +1,57 @@
+{% extends "layouts/app.html" %}
+
+{% block title %}Adhésions{% endblock %}
+
+{% block content %}
+<c-page-header eyebrow="Espace CA" title="Adhésions" subtitle="Les adhésions HelloAsso arrivent automatiquement ; les paiements en espèces ou par chèque se saisissent ici.">
+  <c-button href="{% url 'backoffice:seasons' %}" variant="secondary" icon="calendar-range">Saisons</c-button>
+  <c-button href="{% url 'backoffice:helloasso' %}" variant="secondary" icon="plug">HelloAsso</c-button>
+  <c-button href="{% url 'backoffice:membership-create' %}" icon="plus">Saisir une adhésion</c-button>
+</c-page-header>
+
+<div class="mb-6 flex flex-wrap gap-2">
+  {% for item in seasons %}
+  <a href="?saison={{ item.label }}" class="rounded-full px-3.5 py-1.5 text-sm font-semibold transition {% if item == season %}bg-fg text-canvas{% else %}bg-surface-2 hover:bg-surface-3{% endif %}">{{ item.label }}{% if item.is_current %} · en cours{% endif %}</a>
+  {% endfor %}
+</div>
+
+{% if season %}
+<div class="mb-6 grid gap-4 lg:grid-cols-4">
+  <c-stat label="Adhérent·es" value="{{ stats.count|default:0 }}" icon="users" />
+  <c-stat label="Cotisations" value="{{ stats.total|default:0|money }}" icon="banknote" />
+  <c-stat label="Dons associés" value="{{ stats.donations|default:0|money }}" icon="heart-handshake" />
+  <div class="card flex flex-col justify-between gap-3 p-5">
+    <div class="flex items-center justify-between gap-3">
+      <span class="text-sm font-medium text-muted">Campagne HelloAsso</span>
+      {% if season.helloasso_state %}<c-badge tone="{% if season.helloasso_state == 'Public' %}success{% else %}warning{% endif %}">{{ season.helloasso_state }}</c-badge>{% endif %}
+    </div>
+    {% if season.has_helloasso %}
+    <a href="{{ season.join_url }}" target="_blank" rel="noopener" class="truncate text-sm font-semibold text-accent hover:underline">{{ season.helloasso_form_slug }} {% icon "external-link" %}</a>
+    <form method="post" action="{% url 'backoffice:season-sync' season.pk %}" class="flex items-center gap-2" hx-post="{% url 'backoffice:season-sync' season.pk %}">
+      {% csrf_token %}
+      <button type="submit" class="btn btn-secondary btn-sm w-full" {% if not api_configured %}disabled title="Identifiants API HelloAsso non configurés"{% endif %}><span class="htmx-indicator spinner -ml-1"></span>{% icon "refresh-cw" %} Synchroniser</button>
+    </form>
+    <p class="text-xs text-muted">{% if season.last_synced_at %}Dernière synchro : {{ season.last_synced_at|timesince }}{% else %}Jamais synchronisée{% endif %}</p>
+    {% else %}
+    <p class="text-sm text-muted">Aucune campagne liée. <a class="link" href="{% url 'backoffice:season-edit' season.pk %}">Ajouter le lien</a></p>
+    {% endif %}
+  </div>
+</div>
+{% for warning in season.helloasso_warnings %}<c-alert tone="warning" class="mb-4">{{ warning }}</c-alert>{% endfor %}
+{% endif %}
+
+<form class="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center" hx-get="{{ request.path }}" hx-target="#table" hx-trigger="change" hx-push-url="true">
+  <input type="hidden" name="saison" value="{{ season.label }}">
+  {% include "backoffice/partials/search.html" with placeholder="Nom, e-mail…" %}
+  <select name="statut" class="select sm:w-48" aria-label="Statut">
+    <option value="">Tous les statuts</option>
+    {% for value, label in statuses %}<option value="{{ value }}" {% if value == status %}selected{% endif %}>{{ label }}</option>{% endfor %}
+  </select>
+  <select name="origine" class="select sm:w-48" aria-label="Origine">
+    <option value="">Toutes origines</option>
+    {% for value, label in sources %}<option value="{{ value }}" {% if value == source %}selected{% endif %}>{{ label }}</option>{% endfor %}
+  </select>
+  <a href="{% url 'backoffice:memberships-export' %}?saison={{ season.label }}" class="btn btn-ghost sm:ml-auto">{% icon "download" %} Export CSV</a>
+</form>
+<div id="table" class="card overflow-hidden">{% include "backoffice/memberships/partials/table.html" %}</div>
+{% endblock %}

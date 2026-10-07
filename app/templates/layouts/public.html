@@ -1,0 +1,82 @@
+{% extends "layouts/base.html" %}
+{% load static %}
+
+{% block html_class %}dark{% endblock %}
+{% block html_attrs %}data-force-theme="dark"{% endblock %}
+{% block body_class %}bg-ink-950 text-ink-50 selection:bg-amber-400/40{% endblock %}
+
+{% block body %}
+<div class="grain" aria-hidden="true"></div>
+{% if site.seasonal_theme == "winter" %}<div x-data="snowfall" aria-hidden="true"></div>{% endif %}
+
+{% if site.announcement_enabled and site.announcement_text %}
+<div class="relative z-50 {% if site.announcement_tone == 'info' %}bg-sky-600 text-white{% elif site.announcement_tone == 'success' %}bg-emerald-600 text-white{% elif site.announcement_tone == 'warning' %}bg-rust-700 text-white{% else %}bg-amber-500 text-ink-950{% endif %}">
+  <p class="mx-auto flex max-w-7xl flex-wrap items-center justify-center gap-x-3 gap-y-1 px-4 py-2 text-center text-sm font-medium">
+    {% icon "megaphone" %} {{ site.announcement_text }}
+    {% if site.announcement_link_url %}
+    <a href="{{ site.announcement_link_url }}" class="inline-flex items-center gap-1 font-bold underline underline-offset-4">{{ site.announcement_link_label|default:"En savoir plus" }} {% icon "arrow-right" %}</a>
+    {% endif %}
+  </p>
+</div>
+{% endif %}
+
+<header x-data="siteHeader" class="vt-header sticky top-0 z-40 transition-colors duration-300"
+        :class="(scrolled || menuOpen) ? 'bg-ink-950/85 backdrop-blur-xl border-b border-white/8' : 'bg-transparent border-b border-transparent'">
+  <nav class="mx-auto flex h-(--header-height) max-w-7xl items-center justify-between gap-6 px-4 sm:px-6" aria-label="Navigation principale">
+    <a href="{% url 'home' %}" class="group flex items-center gap-3" aria-label="{{ site.site_name }} — accueil">
+      <img src="{% static 'img/logo.svg' %}" alt="" width="40" height="40" class="size-10 transition duration-700 ease-out group-hover:rotate-[30deg]">
+      <span class="font-display text-xl font-extrabold tracking-tight">{{ site.site_name }}</span>
+    </a>
+
+    <ul class="hidden items-center gap-1 text-sm font-medium lg:flex">
+      {% block public_nav %}
+      <li><a href="{% url 'films' %}" class="rounded-full px-3.5 py-2 text-ink-200 transition hover:bg-white/8 hover:text-white aria-[current=page]:text-amber-400" {% nav_active '/projets/' %}>Films</a></li>
+      <li><a href="{% url 'warehouse:catalogue' %}" class="rounded-full px-3.5 py-2 text-ink-200 transition hover:bg-white/8 hover:text-white aria-[current=page]:text-amber-400" {% nav_active '/magasin/' %}>Magasin</a></li>
+      <li><a href="{% url 'home' %}#a-propos" class="rounded-full px-3.5 py-2 text-ink-200 transition hover:bg-white/8 hover:text-white">L'asso</a></li>
+      <li><a href="{% url 'home' %}#equipe" class="rounded-full px-3.5 py-2 text-ink-200 transition hover:bg-white/8 hover:text-white">L'équipe</a></li>
+      <li><a href="{% url 'home' %}#contact" class="rounded-full px-3.5 py-2 text-ink-200 transition hover:bg-white/8 hover:text-white">Contact</a></li>
+      {% endblock %}
+    </ul>
+
+    <div class="flex items-center gap-2">
+      {% if user.is_authenticated %}
+      <a href="{% url 'members:home' %}" class="btn btn-glass btn-sm hidden sm:inline-flex">
+        <c-avatar name="{{ user.display_name }}" size="size-6" class="-ml-1.5 text-[0.6rem]" />
+        Mon espace
+      </a>
+      {% else %}
+      <a href="{% url 'login' %}" class="btn btn-ghost btn-sm hidden text-ink-100 hover:bg-white/10 sm:inline-flex">Connexion</a>
+      {% endif %}
+      {% if current_season.is_open %}
+      <a href="{% url 'join' %}" class="btn btn-primary btn-sm">Adhérer {{ current_season.label }}</a>
+      {% endif %}
+      <button type="button" class="btn btn-glass btn-icon btn-sm lg:hidden" @click="toggleMenu()" :aria-expanded="menuOpen" aria-controls="menu-mobile" aria-label="Menu">
+        <span x-show="!menuOpen">{% icon "menu" %}</span><span x-show="menuOpen" x-cloak>{% icon "x" %}</span>
+      </button>
+    </div>
+  </nav>
+
+  <div id="menu-mobile" x-show="menuOpen" x-cloak x-collapse class="border-t border-white/8 lg:hidden">
+    <ul class="mx-auto flex max-w-7xl flex-col gap-1 px-4 py-4 font-display text-2xl font-bold" @click="closeMenu()">
+      <li><a href="{% url 'films' %}" class="block rounded-2xl px-3 py-2.5 hover:bg-white/8">Films</a></li>
+      <li><a href="{% url 'warehouse:catalogue' %}" class="block rounded-2xl px-3 py-2.5 hover:bg-white/8">Magasin</a></li>
+      <li><a href="{% url 'home' %}#a-propos" class="block rounded-2xl px-3 py-2.5 hover:bg-white/8">L'asso</a></li>
+      <li><a href="{% url 'home' %}#equipe" class="block rounded-2xl px-3 py-2.5 hover:bg-white/8">L'équipe</a></li>
+      <li><a href="{% url 'home' %}#contact" class="block rounded-2xl px-3 py-2.5 hover:bg-white/8">Contact</a></li>
+      <li class="mt-3 border-t border-white/8 pt-4">
+        {% if user.is_authenticated %}
+        <a href="{% url 'members:home' %}" class="btn btn-glass w-full">{% icon "user-round" %} Mon espace membre</a>
+        {% else %}
+        <a href="{% url 'login' %}" class="btn btn-glass w-full">{% icon "log-in" %} Connexion</a>
+        {% endif %}
+      </li>
+    </ul>
+  </div>
+</header>
+
+<main id="contenu">
+  {% block content %}{% endblock %}
+</main>
+
+{% include "partials/public_footer.html" %}
+{% endblock %}

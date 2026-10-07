@@ -1,0 +1,65 @@
+{% load static %}
+<footer class="relative overflow-hidden border-t border-white/8 bg-ink-950 text-ink-300">
+  <div class="pointer-events-none absolute -top-40 left-1/2 h-80 w-[60rem] -translate-x-1/2 rounded-full bg-amber-500/10 blur-3xl" aria-hidden="true"></div>
+  <div class="relative mx-auto grid max-w-7xl gap-12 px-4 py-16 sm:px-6 lg:grid-cols-12">
+    <div class="lg:col-span-5">
+      <a href="{% url 'home' %}" class="flex items-center gap-3 text-white">
+        <img src="{% static 'img/logo.svg' %}" alt="" width="44" height="44" class="size-11">
+        <span class="font-display text-2xl font-extrabold">{{ site.site_name }}</span>
+      </a>
+      <p class="mt-4 max-w-sm leading-relaxed">{{ site.tagline }}. On tourne, on apprend, on partage le matériel — et on recommence.</p>
+      {% if site.social_links %}
+      <ul class="mt-6 flex flex-wrap gap-2">
+        {% for social in site.social_links %}
+        <li>
+          <a href="{{ social.url }}" target="_blank" rel="noopener" class="grid size-10 place-items-center rounded-full border border-white/10 bg-white/5 text-ink-100 transition hover:-translate-y-0.5 hover:border-amber-400/50 hover:text-amber-400" aria-label="{{ site.site_name }} sur {{ social.label }}">
+            {% if social.key == "instagram" %}{% icon "brand-instagram" %}{% elif social.key == "tiktok" %}{% icon "brand-tiktok" %}{% elif social.key == "youtube" %}{% icon "brand-youtube" %}{% elif social.key == "twitch" %}{% icon "brand-twitch" %}{% elif social.key == "discord" %}{% icon "brand-discord" %}{% else %}{% icon "brand-linkedin" %}{% endif %}
+          </a>
+        </li>
+        {% endfor %}
+      </ul>
+      {% endif %}
+    </div>
+    <nav class="grid grid-cols-2 gap-8 text-sm sm:grid-cols-3 lg:col-span-7" aria-label="Pied de page">
+      <div>
+        <p class="font-display font-bold text-white">Explorer</p>
+        <ul class="mt-4 space-y-2.5">
+          <li><a class="transition hover:text-amber-400" href="{% url 'films' %}">Nos films</a></li>
+          <li><a class="transition hover:text-amber-400" href="{% url 'warehouse:catalogue' %}">Le magasin</a></li>
+          <li><a class="transition hover:text-amber-400" href="{% url 'join' %}">Adhérer</a></li>
+          {% if site.donation_url %}<li><a class="transition hover:text-amber-400" href="{{ site.donation_url }}" target="_blank" rel="noopener">Faire un don</a></li>{% endif %}
+        </ul>
+      </div>
+      <div>
+        <p class="font-display font-bold text-white">Espace membre</p>
+        <ul class="mt-4 space-y-2.5">
+          {% if user.is_authenticated %}
+          <li><a class="transition hover:text-amber-400" href="{% url 'members:home' %}">Mon espace</a></li>
+          {% if "backoffice" in caps %}<li><a class="transition hover:text-amber-400" href="{% url 'backoffice:dashboard' %}">Espace CA</a></li>{% endif %}
+          {% else %}
+          <li><a class="transition hover:text-amber-400" href="{% url 'login' %}">Connexion</a></li>
+          <li><a class="transition hover:text-amber-400" href="{% url 'register' %}">Créer un compte</a></li>
+          {% endif %}
+          <li><a class="transition hover:text-amber-400" href="{% url 'home' %}#contact">Nous écrire</a></li>
+        </ul>
+      </div>
+      <div>
+        <p class="font-display font-bold text-white">Infos</p>
+        <ul class="mt-4 space-y-2.5">
+          {% for page in footer_pages %}
+          <li><a class="transition hover:text-amber-400" href="{{ page.get_absolute_url }}">{{ page.title }}</a></li>
+          {% endfor %}
+          {% if site.ga_measurement_id %}
+          <li x-data><button type="button" class="transition hover:text-amber-400" @click="$dispatch('open-consent')">Gérer les cookies</button></li>
+          {% endif %}
+        </ul>
+      </div>
+    </nav>
+  </div>
+  <div class="relative border-t border-white/8">
+    <div class="mx-auto flex max-w-7xl flex-col gap-2 px-4 py-6 text-xs text-ink-400 sm:flex-row sm:items-center sm:justify-between sm:px-6">
+      <p>© {% now "Y" %} {{ site.site_name }} — association loi 1901{% if site.rna_number %} · RNA {{ site.rna_number }}{% endif %}{% if site.city %} · {{ site.city }}{% endif %}</p>
+      <p>Fait avec ❤️ et beaucoup de café par les bénévoles de Magellans.</p>
+    </div>
+  </div>
+</footer>

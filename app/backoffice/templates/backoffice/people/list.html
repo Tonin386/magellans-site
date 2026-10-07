@@ -1,0 +1,19 @@
+{% extends "layouts/app.html" %}
+{% block title %}Personnes{% endblock %}
+{% block content %}
+<c-page-header eyebrow="Espace CA" title="Personnes" subtitle="Adhérent·es, inscrit·es sur le site, contacts externes et organisations (tiers de la trésorerie, partenaires…).">
+  <c-button href="{% url 'backoffice:person-create' %}" icon="user-plus">Nouvelle fiche</c-button>
+</c-page-header>
+<form class="mb-4 flex flex-col gap-3 lg:flex-row lg:items-center" hx-get="{{ request.path }}" hx-target="#table" hx-trigger="change" hx-push-url="true">
+  {% include "backoffice/partials/search.html" with placeholder="Nom, e-mail, téléphone…" %}
+  <div class="scrollbar-none flex gap-2 overflow-x-auto">
+    {% for value, label in filters %}
+    <label class="shrink-0 cursor-pointer rounded-full border border-line px-3 py-1.5 text-sm font-semibold transition has-checked:border-fg has-checked:bg-fg has-checked:text-canvas">
+      <input type="radio" name="filtre" value="{{ value }}" class="sr-only" {% if value == filter %}checked{% endif %}>{{ label }}
+    </label>
+    {% endfor %}
+  </div>
+  <a href="{% url 'backoffice:people-export' %}?filtre={{ filter }}" class="btn btn-ghost lg:ml-auto">{% icon "download" %} CSV</a>
+</form>
+<div id="table" class="card overflow-hidden">{% include "backoffice/people/partials/table.html" %}</div>
+{% endblock %}

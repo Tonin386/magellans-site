@@ -1,0 +1,98 @@
+{% extends "layouts/app.html" %}
+
+{% block title %}Contrat de prêt — réservation #{{ order.pk }}{% endblock %}
+
+{% block content %}
+<c-page-header title="Contrat de prêt" subtitle="Réservation #{{ order.pk }} · {{ order.project_name }}" back="{{ order.get_absolute_url }}" back_label="Ma réservation" />
+
+<ol class="mb-8 flex items-center gap-3 text-sm font-semibold">
+  <li class="flex items-center gap-2 {% if step == 'info' %}text-fg{% else %}text-emerald-600 dark:text-emerald-400{% endif %}">
+    <span class="grid size-7 place-items-center rounded-full {% if step == 'info' %}bg-amber-500 text-ink-950{% else %}bg-emerald-500 text-white{% endif %}">{% if step == 'info' %}1{% else %}{% icon "check" %}{% endif %}</span> Informations
+  </li>
+  <li class="h-px w-10 bg-line" aria-hidden="true"></li>
+  <li class="flex items-center gap-2 {% if step == 'sign' %}text-fg{% else %}text-subtle{% endif %}">
+    <span class="grid size-7 place-items-center rounded-full {% if step == 'sign' %}bg-amber-500 text-ink-950{% else %}bg-surface-3{% endif %}">2</span> Lecture & signature
+  </li>
+</ol>
+
+{% if step == "info" %}
+<form method="post" class="max-w-3xl space-y-6" novalidate>
+  {% csrf_token %}
+  <input type="hidden" name="step" value="info">
+  <c-alert tone="info">Ces informations figurent sur le contrat : vérifie bien leur exactitude, sinon le magasin pourra te demander de le refaire.</c-alert>
+  <c-card title="Réalisation">
+    <div class="grid gap-5 sm:grid-cols-3">
+      <c-field :field="info_form.director_name" />
+      <c-field :field="info_form.director_phone" />
+      <c-field :field="info_form.director_email" />
+    </div>
+  </c-card>
+  <c-card title="Production">
+    <div class="grid gap-5 sm:grid-cols-2">
+      <c-field :field="info_form.production_name" />
+      <c-field :field="info_form.production_address" />
+      <c-field :field="info_form.production_phone" />
+      <c-field :field="info_form.production_email" />
+    </div>
+  </c-card>
+  <div class="flex justify-end"><button type="submit" class="btn btn-primary btn-lg">Continuer {% icon "arrow-right" %}</button></div>
+</form>
+{% else %}
+<div class="grid gap-6 lg:grid-cols-[1fr_26rem] lg:items-start">
+  <div class="space-y-6">
+    <c-card title="Résumé du contrat">
+      <c-slot name="actions">
+        <c-button href="?modifier=1" variant="ghost" size="sm" icon="pencil">Modifier</c-button>
+        <c-button href="{% url 'warehouse:contract-pdf' order.pk %}" variant="secondary" size="sm" icon="file-text" target="_blank">Lire le PDF</c-button>
+      </c-slot>
+      <dl class="grid gap-4 text-sm sm:grid-cols-2">
+        <div><dt class="text-xs font-semibold text-muted uppercase">Prêteur</dt><dd class="mt-0.5 font-semibold">{{ terms.association }}, représentée par {{ terms.signatory_name }} ({{ terms.signatory_title }})</dd></div>
+        <div><dt class="text-xs font-semibold text-muted uppercase">Référent·e matériel</dt><dd class="mt-0.5 font-semibold">{{ user.display_name }}</dd></div>
+        <div><dt class="text-xs font-semibold text-muted uppercase">Réalisation</dt><dd class="mt-0.5">{{ contract.director_name }} · {{ contract.director_phone|phone }} · {{ contract.director_email }}</dd></div>
+        <div><dt class="text-xs font-semibold text-muted uppercase">Production</dt><dd class="mt-0.5">{{ contract.production_name }}{% if contract.production_address %}, {{ contract.production_address }}{% endif %}</dd></div>
+        <div class="sm:col-span-2"><dt class="text-xs font-semibold text-muted uppercase">Période</dt><dd class="mt-0.5 font-semibold">Du {{ order.date_start|date:"l j F Y H:i" }} au {{ order.date_end|date:"l j F Y H:i" }} — {{ terms.pickup_address }}</dd></div>
+      </dl>
+      <ul class="mt-5 flex flex-wrap gap-2">
+        {% for line in lines %}<li class="rounded-full bg-surface-2 px-3 py-1 text-sm">{{ line.quantity }} × {{ line.item.name }}</li>{% endfor %}
+      </ul>
+    </c-card>
+
+    <details class="card group" open>
+      <summary class="card-header cursor-pointer list-none"><span class="card-title">Engagements & contreparties</span><span class="text-muted transition group-open:rotate-180">{% icon "chevron-down" %}</span></summary>
+      <div class="card-body prose-mag text-sm">
+        <p>{{ terms.intro }}</p>
+        <h3>Le bénéficiaire s'engage à :</h3>
+        <ul>{% for item in terms.commitments %}<li>{{ item }}</li>{% endfor %}</ul>
+        <h3>Contreparties pour {{ terms.association }} :</h3>
+        <ul>{% for item in terms.counterparts %}<li>{{ item }}</li>{% endfor %}</ul>
+      </div>
+    </details>
+  </div>
+
+  <form method="post" class="card lg:sticky lg:top-6" novalidate x-data="signatureField">
+    {% csrf_token %}
+    <input type="hidden" name="step" value="sign">
+    <div class="card-header"><h2 class="card-title">Signature</h2></div>
+    <div class="card-body space-y-5">
+      <c-form-errors :form="sign_form" />
+      <c-field :field="sign_form.signer_name" />
+      <div>
+        <div class="mb-1.5 flex items-center justify-between">
+          <span class="label mb-0">Signe ici</span>
+          <button type="button" class="text-sm font-medium text-accent hover:underline" @click="clear()">Effacer</button>
+        </div>
+        <div class="relative overflow-hidden rounded-2xl border-2 border-dashed border-line-strong bg-white">
+          <canvas x-ref="canvas" class="block h-48 w-full touch-none" aria-label="Zone de signature (au doigt, au stylet ou à la souris)"></canvas>
+          <span x-show="empty" class="pointer-events-none absolute inset-0 grid place-items-center text-sm text-ink-400">Dessine ta signature au doigt ou à la souris</span>
+          <span class="pointer-events-none absolute right-4 bottom-10 left-4 border-b border-ink-300"></span>
+        </div>
+        <input type="hidden" name="sign-signature" x-ref="input">
+        <p class="help">Ta signature est ajoutée au PDF avec la date, l'heure et l'adresse IP de signature.</p>
+      </div>
+      <c-field :field="sign_form.approve" />
+      <button type="submit" class="btn btn-primary btn-lg w-full" :disabled="empty">{% icon "signature" %} Signer le contrat</button>
+    </div>
+  </form>
+</div>
+{% endif %}
+{% endblock %}

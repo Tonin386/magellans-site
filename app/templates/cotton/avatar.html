@@ -1,0 +1,6 @@
+<c-vars name="" src="" size="size-10" class="" />
+{% if src %}
+<img src="{{ src }}" alt="" class="{{ size }} shrink-0 rounded-full object-cover ring-2 ring-surface {{ class }}" loading="lazy">
+{% else %}
+<span class="avatar {{ size }} text-[0.8em] {{ class }}" aria-hidden="true">{{ name|initials }}</span>
+{% endif %}

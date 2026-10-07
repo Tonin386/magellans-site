@@ -1,0 +1,43 @@
+{% extends "layouts/app.html" %}
+
+{% block title %}Nouvelle note de frais{% endblock %}
+
+{% block content %}
+<c-page-header title="Nouvelle note de frais" back="{% url 'bank:list' %}" back_label="Mes notes de frais" />
+
+<div class="grid gap-6 lg:grid-cols-[1fr_20rem] lg:items-start">
+  <form method="post" enctype="multipart/form-data" class="space-y-6" novalidate x-data="formset('depenses')">
+    {% csrf_token %}
+    {{ formset.management_form }}
+    <c-form-errors :form="form" />
+    {% if formset.non_form_errors %}<c-alert tone="danger">{% for error in formset.non_form_errors %}{{ error }}{% endfor %}</c-alert>{% endif %}
+
+    <c-card title="La note de frais">
+      <div class="grid gap-5 sm:grid-cols-2">
+        <c-field :field="form.title" class="sm:col-span-2" />
+        <c-field :field="form.project" />
+        <c-field :field="form.role" />
+        <c-field :field="form.comm" class="sm:col-span-2" />
+      </div>
+    </c-card>
+
+    <c-card title="Les dépenses" subtitle="Une ligne par dépense, avec son justificatif.">
+      <div x-ref="rows" class="space-y-4">
+        {% for expense_form in formset %}
+        {% include "bank/partials/expense_row.html" with f=expense_form %}
+        {% endfor %}
+      </div>
+      <template x-ref="template">{% include "bank/partials/expense_row.html" with f=formset.empty_form %}</template>
+      <button type="button" class="btn btn-secondary mt-4 w-full border-dashed" @click="add()">{% icon "plus" %} Ajouter une dépense</button>
+    </c-card>
+
+    <div class="flex justify-end"><button type="submit" class="btn btn-primary btn-lg">{% icon "send" %} Envoyer à la trésorerie</button></div>
+  </form>
+
+  <aside class="space-y-4 lg:sticky lg:top-6">
+    <c-card title="Comment ça marche ?">
+      <div class="prose-mag text-sm">{{ site.expense_intro|markdown }}</div>
+    </c-card>
+  </aside>
+</div>
+{% endblock %}

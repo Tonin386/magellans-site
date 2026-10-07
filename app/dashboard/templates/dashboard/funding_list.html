@@ -1,0 +1,31 @@
+{% extends "layouts/app.html" %}
+
+{% block title %}Aides à projet{% endblock %}
+
+{% block content %}
+<c-page-header title="Aides à projet" subtitle="Magellans soutient financièrement des projets de ses membres, jusqu'à {{ site.funding_max_amount }} € par projet.">
+  <c-button href="{% url 'funding:create' %}" icon="plus">Nouvelle demande</c-button>
+</c-page-header>
+{% if funding_requests %}
+<div class="card overflow-hidden">
+  <ul class="divide-y divide-line">
+    {% for funding in funding_requests %}
+    <li>
+      <a href="{{ funding.get_absolute_url }}" class="flex flex-col gap-3 p-4 transition hover:bg-surface-2 sm:flex-row sm:items-center sm:gap-5 sm:px-6">
+        <span class="min-w-0 flex-1">
+          <span class="block truncate font-semibold">{{ funding.name }}</span>
+          <span class="text-sm text-muted">Déposée le {{ funding.deposit_date|date:"j F Y" }} · {{ funding.funding_value }} € demandés{% if funding.granted_amount %} · {{ funding.granted_amount|money }} accordés{% endif %}</span>
+        </span>
+        <c-badge tone="{{ funding.status_tone }}">{{ funding.get_status_display }}</c-badge>
+      </a>
+    </li>
+    {% endfor %}
+  </ul>
+</div>
+{% else %}
+<c-empty icon="hand-coins" title="Aucune demande pour l'instant">
+  Tu as un projet de film ? Présente-le au CA pour obtenir un coup de pouce financier.
+  <c-slot name="actions"><c-button href="{% url 'funding:create' %}">Présenter mon projet</c-button></c-slot>
+</c-empty>
+{% endif %}
+{% endblock %}

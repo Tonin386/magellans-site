@@ -1,0 +1,29 @@
+{% extends "layouts/base.html" %}
+{% load static %}
+
+{% block robots %}<meta name="robots" content="noindex">{% endblock %}
+
+{% block body %}
+<div class="grid min-h-dvh lg:grid-cols-2">
+  <main id="contenu" class="flex flex-col px-5 py-8 sm:px-10">
+    <a href="{% url 'home' %}" class="inline-flex items-center gap-2.5 self-start font-display text-lg font-extrabold">
+      <img src="{% static 'img/logo.svg' %}" alt="" class="size-9"> {{ site.site_name }}
+    </a>
+    <div class="mx-auto flex w-full max-w-md flex-1 flex-col justify-center py-12">
+      {% block auth_content %}{% endblock %}
+    </div>
+    <p class="text-center text-xs text-subtle">
+      {% for page in footer_pages %}<a href="{{ page.get_absolute_url }}" class="hover:text-fg">{{ page.title }}</a>{% if not forloop.last %} · {% endif %}{% endfor %}
+    </p>
+  </main>
+  <aside class="relative hidden overflow-hidden bg-ink-950 lg:block" aria-hidden="true">
+    <div class="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgb(255_171_14/0.35),transparent_45%),radial-gradient(circle_at_80%_90%,rgb(127_63_23/0.6),transparent_50%)]"></div>
+    <div class="grain absolute!"></div>
+    <img src="{% static 'img/logo.svg' %}" alt="" class="absolute -right-32 -bottom-32 size-[36rem] opacity-20 motion-safe:animate-[spin_90s_linear_infinite]">
+    <div class="relative flex h-full flex-col justify-end p-14 text-white">
+      <p class="font-serif text-5xl leading-tight italic">« Faire des films,<br>ensemble. »</p>
+      <p class="mt-6 max-w-sm text-ink-300">{{ site.tagline }} — matériel, tournages, entraide et rencontres.</p>
+    </div>
+  </aside>
+</div>
+{% endblock %}

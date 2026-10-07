@@ -1,0 +1,41 @@
+<li id="item-{{ item.pk }}" class="card group flex flex-col overflow-hidden" data-search="{{ item.name }} {% for tag in item.tags.all %}{{ tag.name }} {% endfor %}{{ item.description|truncatewords:30 }}" data-tags="{% for tag in item.tags.all %}{{ tag.pk }} {% endfor %}">
+  <button type="button" class="relative aspect-[4/3] overflow-hidden text-left {% if item.has_photo %}bg-white{% else %}bg-surface-2{% endif %}" hx-get="{% url 'warehouse:item-detail' item.pk %}" hx-target="#modal-content" aria-label="Voir le détail de {{ item.name }}">
+    {% if item.has_photo %}
+    <img src="{{ item.image.url }}" alt="" loading="lazy" class="size-full object-contain p-3 transition duration-500 group-hover:scale-[1.03]">
+    {% else %}
+    <span class="grid size-full place-items-center text-5xl text-subtle">{% icon "camera" %}</span>
+    {% endif %}
+    {% if item.in_cart %}<span class="absolute top-3 right-3 rounded-full bg-amber-500 px-2.5 py-1 text-xs font-bold text-ink-950 shadow">× {{ item.in_cart }} dans ta demande</span>{% endif %}
+  </button>
+  <div class="flex flex-1 flex-col gap-3 p-4">
+    <div>
+      <p class="font-display leading-snug font-bold">{{ item.name }}</p>
+      <div class="mt-1.5 flex flex-wrap gap-1.5">
+        <c-badge tone="{{ item.state_tone }}">{{ item.get_state_display }}</c-badge>
+        {% for tag in item.tags.all %}<span class="rounded-full px-2 py-0.5 text-[0.7rem] font-semibold text-white" style="background-color: {{ tag.color }}">{{ tag.name }}</span>{% endfor %}
+      </div>
+    </div>
+    <p class="mt-auto text-sm">
+      {% if not item.is_bookable %}
+      <span class="font-semibold text-red-600 dark:text-red-400">Non réservable pour le moment</span>
+      {% elif has_dates %}
+      {% if item.stock.available > 0 %}<span class="font-semibold text-emerald-700 dark:text-emerald-400">{{ item.stock.available }} / {{ item.max_stock }} dispo.</span> <span class="text-muted">sur tes dates</span>
+      {% else %}<span class="font-semibold text-red-600 dark:text-red-400">Indisponible sur tes dates</span>{% endif %}
+      {% if item.stock.pending %}<span class="block text-xs text-muted">{{ item.stock.pending }} demandé{{ item.stock.pending|pluralize }} par d'autres membres (en attente)</span>{% endif %}
+      {% else %}
+      <span class="text-muted">{{ item.max_stock }} au total</span>
+      {% endif %}
+    </p>
+    {% if user.is_authenticated and not blockers and item.is_bookable %}
+    <div class="flex items-center gap-2" hx-target="#item-{{ item.pk }}" hx-swap="outerHTML">
+      {% if item.in_cart %}
+      <button type="button" class="btn btn-secondary btn-icon btn-sm" hx-post="{% url 'warehouse:cart-change' item.pk %}" hx-vals='{"delta": -1}' aria-label="Retirer un {{ item.name }}">{% icon "minus" %}</button>
+      <span class="min-w-8 text-center font-display text-lg font-bold tabular" aria-live="polite">{{ item.in_cart }}</span>
+      <button type="button" class="btn btn-secondary btn-icon btn-sm" hx-post="{% url 'warehouse:cart-change' item.pk %}" hx-vals='{"delta": 1}' aria-label="Ajouter un {{ item.name }}" {% if has_dates and item.in_cart >= item.stock.available %}disabled{% elif item.in_cart >= item.max_stock %}disabled{% endif %}>{% icon "plus" %}</button>
+      {% else %}
+      <button type="button" class="btn btn-primary btn-sm w-full" hx-post="{% url 'warehouse:cart-change' item.pk %}" hx-vals='{"delta": 1}' {% if has_dates and item.stock.available < 1 %}disabled{% endif %}>{% icon "plus" %} Ajouter</button>
+      {% endif %}
+    </div>
+    {% endif %}
+  </div>
+</li>

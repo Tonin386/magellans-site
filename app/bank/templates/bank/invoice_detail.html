@@ -1,0 +1,62 @@
+{% extends "layouts/app.html" %}
+
+{% block title %}Note de frais — {{ invoice.title }}{% endblock %}
+
+{% block content %}
+<c-page-header title="{{ invoice.title }}" subtitle="{{ invoice.project }} · déposée le {{ invoice.date_created|date:'j F Y' }} par {{ invoice.author.display_name }}"
+               back="{% if is_author %}{% url 'bank:list' %}{% else %}{% url 'backoffice:invoices' %}{% endif %}" back_label="{% if is_author %}Mes notes de frais{% else %}Notes de frais{% endif %}">
+  <c-badge tone="{{ invoice.status_tone }}" class="text-sm">{{ invoice.get_status_display }}</c-badge>
+  {% if is_treasury and not is_author %}<c-button href="{% url 'backoffice:invoice-detail' invoice.pk %}" variant="secondary" icon="settings">Traiter</c-button>{% endif %}
+</c-page-header>
+
+{% if is_author and invoice.status == "J" %}<c-alert tone="warning" title="Justificatif(s) manquant(s)" class="mb-6">Ajoute les justificatifs manquants ci-dessous pour que la trésorerie puisse procéder au remboursement.</c-alert>{% endif %}
+{% if is_author and invoice.status == "D" %}<c-alert tone="warning" title="Informations bancaires demandées" class="mb-6">La trésorerie a besoin de ton RIB : réponds dans la discussion ci-dessous ou par e-mail.</c-alert>{% endif %}
+
+<div class="grid gap-6 lg:grid-cols-[1fr_22rem] lg:items-start">
+  <div class="space-y-6">
+    <c-card title="Dépenses">
+      <div class="table-wrap">
+        <table class="table">
+          <thead><tr><th>Dépense</th><th>Date</th><th class="num">Montant</th><th>Justificatif</th></tr></thead>
+          <tbody>
+            {% for expense in expenses %}
+            <tr>
+              <td><span class="font-semibold">{{ expense.title }}</span>{% if expense.comm %}<span class="block text-xs text-muted">{{ expense.comm }}</span>{% endif %}</td>
+              <td class="whitespace-nowrap">{{ expense.date|date:"j M Y" }}</td>
+              <td class="num font-semibold">{{ expense.amount|money }}</td>
+              <td>
+                {% if expense.proof %}
+                <a href="{{ expense|private_url:'proof' }}" target="_blank" class="link inline-flex items-center gap-1 text-sm">{% icon "paperclip" %} Voir</a>
+                {% elif is_author and invoice.status != "R" and invoice.status != "X" %}
+                <form method="post" enctype="multipart/form-data" action="{% url 'bank:expense-proof' expense.pk %}" class="flex items-center gap-2">
+                  {% csrf_token %}
+                  <input type="file" name="proof" accept=".pdf,image/*" required class="input max-w-48 text-xs" aria-label="Justificatif pour {{ expense.title }}">
+                  <button type="submit" class="btn btn-secondary btn-sm">{% icon "upload" %}</button>
+                </form>
+                {% else %}
+                <c-badge tone="danger">Manquant</c-badge>
+                {% endif %}
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+          <tfoot><tr><td colspan="2" class="px-4 py-3 text-right font-semibold">Total</td><td class="num px-4 py-3 font-display text-lg font-extrabold">{{ invoice.total_amount|money }}</td><td></td></tr></tfoot>
+        </table>
+      </div>
+    </c-card>
+    <c-card title="Échanges avec la trésorerie">
+      <div id="invoice-thread">{% include "bank/partials/thread.html" %}</div>
+    </c-card>
+  </div>
+  <aside>
+    <c-card title="Suivi">
+      <ol class="space-y-3 text-sm">
+        <li class="flex items-center gap-2"><span class="size-2 rounded-full bg-emerald-500"></span> Déposée le {{ invoice.date_created|date:"j F Y" }}</li>
+        <li class="flex items-center gap-2"><span class="size-2 rounded-full {% if invoice.status == 'V' %}bg-amber-500{% else %}bg-emerald-500{% endif %}"></span> {% if invoice.status == 'V' %}En attente de validation{% else %}Étudiée par la trésorerie{% endif %}</li>
+        <li class="flex items-center gap-2"><span class="size-2 rounded-full {% if invoice.status == 'R' %}bg-emerald-500{% elif invoice.status == 'X' %}bg-red-500{% else %}bg-surface-3{% endif %}"></span> {% if invoice.status == 'X' %}Refusée{% elif invoice.status == 'R' %}Remboursée{% else %}Remboursement à venir{% endif %}</li>
+      </ol>
+      <p class="mt-4 text-xs text-muted">Une question ? Écris dans la discussion : la trésorerie est prévenue par e-mail.</p>
+    </c-card>
+  </aside>
+</div>
+{% endblock %}

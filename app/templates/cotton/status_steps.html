@@ -1,0 +1,17 @@
+{% comment %} Frise d'avancement : steps = liste de dicts {label, state: done|current|todo|failed, date} {% endcomment %}
+<c-vars steps="" />
+<ol class="grid gap-3 sm:grid-flow-col sm:auto-cols-fr">
+  {% for step in steps %}
+  <li class="relative flex items-start gap-3 sm:flex-col sm:gap-2">
+    <span class="grid size-8 shrink-0 place-items-center rounded-full text-sm font-bold ring-4 ring-surface
+      {% if step.state == 'done' %}bg-emerald-500 text-white{% elif step.state == 'current' %}bg-amber-500 text-ink-950{% elif step.state == 'failed' %}bg-red-500 text-white{% else %}bg-surface-3 text-subtle{% endif %}">
+      {% if step.state == 'done' %}{% icon "check" %}{% elif step.state == 'failed' %}{% icon "x" %}{% else %}{{ forloop.counter }}{% endif %}
+    </span>
+    {% if not forloop.last %}<span class="absolute top-4 left-10 hidden h-0.5 w-[calc(100%-2.5rem)] sm:block {% if step.state == 'done' %}bg-emerald-500/60{% else %}bg-line{% endif %}" aria-hidden="true"></span>{% endif %}
+    <div>
+      <p class="text-sm font-semibold {% if step.state == 'todo' %}text-subtle{% endif %}">{{ step.label }}</p>
+      {% if step.date %}<p class="text-xs text-muted">{{ step.date }}</p>{% endif %}
+    </div>
+  </li>
+  {% endfor %}
+</ol>

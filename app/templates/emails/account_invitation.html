@@ -1,0 +1,15 @@
+{% partialdef subject %}Bienvenue chez {{ site.site_name }} ! Ton espace membre t'attend{% endpartialdef %}
+{% partialdef body %}{% autoescape off %}
+Bonjour {{ user.first_name|default:"" }} 🎬
+
+{% if membership %}Ton adhésion **{{ membership.season.label }}** est bien enregistrée : bienvenue dans l'équipage !{% else %}Un compte a été créé pour toi sur le site de {{ site.site_name }}.{% endif %}
+
+Choisis ton mot de passe pour accéder à ton espace membre : réservation de matériel, ressources, aides à projet, annuaire des membres…
+
+[[Accéder à mon espace|{{ site_url }}{{ invitation_path }}]]
+
+Le lien est valable 7 jours. Passé ce délai, utilise simplement « Mot de passe oublié » sur la page de connexion avec l'adresse {{ user.email }}.
+
+À très vite sur un tournage,
+L'équipe {{ site.site_name }}
+{% endautoescape %}{% endpartialdef %}

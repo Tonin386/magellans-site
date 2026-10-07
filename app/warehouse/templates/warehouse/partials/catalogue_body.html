@@ -1,0 +1,52 @@
+<div class="grid gap-6 lg:items-start {% if user.is_authenticated %}lg:grid-cols-[1fr_20rem]{% endif %}">
+  <div x-data="filterList" class="min-w-0">
+    {% if user.is_authenticated %}
+    <form hx-post="{% url 'warehouse:set-dates' %}" hx-target="#catalogue-body" hx-swap="innerHTML" method="post" action="{% url 'warehouse:set-dates' %}"
+          class="card mb-5 flex flex-col gap-4 p-4 sm:flex-row sm:items-end">
+      {% csrf_token %}
+      <div class="flex items-center gap-3 sm:w-40 sm:shrink-0 sm:self-center">
+        <span class="grid size-10 shrink-0 place-items-center rounded-xl bg-accent-soft text-lg text-accent">{% icon "calendar-range" %}</span>
+        <p class="text-sm leading-tight font-semibold">Tes dates de tournage</p>
+      </div>
+      <div class="grid flex-1 gap-3 sm:grid-cols-2">
+        <c-field :field="dates_form.start" />
+        <c-field :field="dates_form.end" />
+      </div>
+      <button type="submit" class="btn btn-primary sm:mb-0.5"><span class="htmx-indicator spinner -ml-1"></span>{% if has_dates %}Mettre à jour{% else %}Voir les disponibilités{% endif %}</button>
+    </form>
+    {% for error in dates_form.non_field_errors %}<c-alert tone="danger" class="-mt-2 mb-5">{{ error }}</c-alert>{% endfor %}
+    {% endif %}
+
+    <div class="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center">
+      <label class="relative block sm:w-72">
+        <span class="sr-only">Rechercher du matériel</span>
+        <span class="pointer-events-none absolute top-1/2 left-3.5 -translate-y-1/2 text-subtle">{% icon "search" %}</span>
+        <input type="search" x-model="query" @input="apply()" placeholder="Caméra, micro, trépied…" class="input pl-10">
+      </label>
+      <div class="scrollbar-none flex gap-2 overflow-x-auto pb-1">
+        {% for tag in tags %}
+        <button type="button" @click="toggleTag('{{ tag.pk }}')" :class="hasTag('{{ tag.pk }}') ? 'ring-2 ring-offset-2 ring-offset-canvas' : 'opacity-80 hover:opacity-100'"
+                class="shrink-0 rounded-full px-3 py-1.5 text-xs font-bold text-white transition" style="background-color: {{ tag.color }}; --tw-ring-color: {{ tag.color }}">{{ tag.name }}</button>
+        {% endfor %}
+      </div>
+      <p class="text-sm text-muted sm:ml-auto sm:shrink-0"><span x-text="visibleCount">{{ items|length }}</span> objet<span x-show="visibleCount > 1">s</span></p>
+    </div>
+
+    {% if items %}
+    <ul class="grid grid-cols-1 gap-4 min-[480px]:grid-cols-2 {% if user.is_authenticated %}xl:grid-cols-3{% else %}lg:grid-cols-3 xl:grid-cols-4{% endif %}" id="item-grid">
+      {% for item in items %}{% include "warehouse/partials/item_card.html" %}{% endfor %}
+    </ul>
+    <p x-show="visibleCount === 0" x-cloak class="py-16 text-center text-muted">Aucun objet ne correspond. <button type="button" class="link" @click="clear()">Réinitialiser les filtres</button></p>
+    {% else %}
+    <c-empty icon="package" title="Le catalogue est vide pour le moment">Le matériel du magasin sera bientôt listé ici.</c-empty>
+    {% endif %}
+  </div>
+
+  {% if user.is_authenticated %}
+  <aside class="lg:sticky lg:top-6">
+    <div id="cart-panel" hx-get="{% url 'warehouse:cart-panel' %}" hx-trigger="cart-updated from:body" hx-swap="innerHTML">
+      {% include "warehouse/partials/cart_panel.html" %}
+    </div>
+  </aside>
+  {% endif %}
+</div>

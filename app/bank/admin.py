@@ -1,22 +1,31 @@
 from django.contrib import admin
-from .models import *
 
+from .models import Expense, Invoice, Operation
+
+
+@admin.register(Operation)
 class OperationAdmin(admin.ModelAdmin):
-    list_display = ('date', 'type', 'id', 'amount', 'desc', 'third_party')
-    list_filter = ('type', 'third_party')
-    search_fields = ('date', 'type', 'id', 'amount', 'desc', 'third_party__email', 'third_party__first_name', 'third_party__last_name')
-    ordering = ('-date', 'type', 'id', 'amount')
-class InvoiceAdmin(admin.ModelAdmin):
-    list_display = ('date_created', 'title', 'project', 'author', 'role', 'status')
-    list_filter = ('date_created', 'project', 'author', 'role', 'status')
-    search_fields = ('author__site_person__first_name', 'author__site_person__last_name', 'author__site_person__email', 'title', 'role', 'status', 'project__name')
-    ordering = ('date_created', )
-class ExpenseAdmin(admin.ModelAdmin):
-    list_display = ('date_created', 'date', 'title', 'amount', 'author')
-    list_filter = ('date_created', 'date', 'author')
-    search_fields = ('author__site_person__first_name', 'author__site_person__last_name', 'author__site_person__email', 'title', 'amount')
-    ordering = ('date_created', 'date')
+    list_display = ("id", "date", "type", "category", "amount", "desc", "third_party")
+    list_filter = ("type", "category")
+    search_fields = ("id", "desc", "third_party__last_name", "third_party__first_name", "third_party__email")
+    autocomplete_fields = ("third_party",)
 
-admin.site.register(Operation, OperationAdmin)
-admin.site.register(Invoice, InvoiceAdmin)
-admin.site.register(Expense, ExpenseAdmin)
+
+class ExpenseInline(admin.TabularInline):
+    model = Expense
+    extra = 0
+    fk_name = "linked_invoice"
+
+
+@admin.register(Invoice)
+class InvoiceAdmin(admin.ModelAdmin):
+    list_display = ("pk", "date_created", "title", "project", "author", "status", "total")
+    list_filter = ("status", "project")
+    search_fields = ("title", "author__email", "author__site_person__last_name")
+    inlines = [ExpenseInline]
+
+
+@admin.register(Expense)
+class ExpenseAdmin(admin.ModelAdmin):
+    list_display = ("date", "title", "amount", "author", "linked_invoice")
+    search_fields = ("title", "author__email")

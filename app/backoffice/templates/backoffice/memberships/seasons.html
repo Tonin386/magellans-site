@@ -1,0 +1,36 @@
+{% extends "layouts/app.html" %}
+{% block title %}Saisons{% endblock %}
+{% block content %}
+<c-page-header eyebrow="Adhésions" title="Saisons" subtitle="Chaque saison correspond à une campagne d'adhésion HelloAsso. La saison « en cours » détermine qui est à jour et ce qu'affiche le site." back="{% url 'backoffice:memberships' %}" back_label="Adhésions">
+  <c-button href="{% url 'backoffice:season-create' %}" icon="plus">Nouvelle saison</c-button>
+</c-page-header>
+<div class="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+  {% for season in seasons %}
+  <article class="card flex flex-col gap-4 p-5 {% if season.is_current %}ring-2 ring-amber-500{% endif %}">
+    <div class="flex items-start justify-between gap-3">
+      <div>
+        <h2 class="font-display text-2xl font-extrabold">{{ season.label }}</h2>
+        <p class="text-sm text-muted">{{ season.start_date|date:"j M Y" }} → {{ season.end_date|date:"j M Y" }}</p>
+      </div>
+      <div class="flex flex-col items-end gap-1">
+        {% if season.is_current %}<c-badge tone="brand">En cours</c-badge>{% endif %}
+        {% if season.registrations_open %}<c-badge tone="success">Adhésions ouvertes</c-badge>{% else %}<c-badge tone="neutral">Fermées</c-badge>{% endif %}
+      </div>
+    </div>
+    <dl class="grid grid-cols-2 gap-3 text-sm">
+      <div class="rounded-xl bg-surface-2 p-3"><dt class="text-xs text-muted">Adhérent·es</dt><dd class="font-display text-xl font-bold">{{ season.stat.count }}</dd></div>
+      <div class="rounded-xl bg-surface-2 p-3"><dt class="text-xs text-muted">Cotisation</dt><dd class="font-display text-xl font-bold">{% if season.price %}{{ season.price|money }}{% else %}—{% endif %}</dd></div>
+    </dl>
+    {% if season.has_helloasso %}<a href="{{ season.join_url }}" target="_blank" rel="noopener" class="truncate text-sm text-accent hover:underline">{% icon "external-link" %} {{ season.helloasso_form_slug }}</a>{% else %}<p class="text-sm text-amber-700 dark:text-amber-400">Aucune campagne HelloAsso liée.</p>{% endif %}
+    {% for warning in season.helloasso_warnings %}<p class="rounded-xl bg-amber-500/10 p-3 text-xs text-amber-900 dark:text-amber-200">{% icon "triangle-alert" %} {{ warning }}</p>{% endfor %}
+    <div class="mt-auto flex flex-wrap gap-2 border-t border-line pt-4">
+      <c-button href="{% url 'backoffice:season-edit' season.pk %}" variant="secondary" size="sm" icon="pencil">Modifier</c-button>
+      <c-button href="{% url 'backoffice:memberships' %}?saison={{ season.label }}" variant="ghost" size="sm" icon="users">Adhésions</c-button>
+      {% if not season.is_current %}
+      <button type="button" class="btn btn-ghost btn-sm" hx-post="{% url 'backoffice:season-activate' season.pk %}" hx-confirm="Faire de {{ season.label }} la saison en cours ? Le site affichera cette saison partout (adhésion, équipe, statut des membres)." data-confirm-label="Activer">{% icon "star" %} Définir en cours</button>
+      {% endif %}
+    </div>
+  </article>
+  {% endfor %}
+</div>
+{% endblock %}

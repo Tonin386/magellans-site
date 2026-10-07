@@ -1,0 +1,33 @@
+{% extends "layouts/app.html" %}
+
+{% block title %}Mes réservations{% endblock %}
+
+{% block content %}
+<c-page-header title="Mes réservations" subtitle="Toutes tes demandes de matériel et leur suivi.">
+  <c-button href="{% url 'warehouse:catalogue' %}" icon="plus">Nouvelle demande</c-button>
+</c-page-header>
+{% if orders %}
+<div class="card overflow-hidden">
+  <ul class="divide-y divide-line">
+    {% for order in orders %}
+    <li>
+      <a href="{{ order.get_absolute_url }}" class="flex flex-col gap-3 p-4 transition hover:bg-surface-2 sm:flex-row sm:items-center sm:gap-5 sm:px-6">
+        <span class="font-display text-lg font-extrabold text-muted sm:w-16">#{{ order.pk }}</span>
+        <span class="min-w-0 flex-1">
+          <span class="block truncate font-semibold">{{ order.project_name|default:"Sans projet" }}</span>
+          <span class="text-sm text-muted">{{ order.date_start|date:"j M Y H:i" }} → {{ order.date_end|date:"j M Y H:i" }}</span>
+          <span class="mt-1 block truncate text-xs text-subtle">{% for line in order.lines.all %}{{ line.quantity }} × {{ line.item.name }}{% if not forloop.last %} · {% endif %}{% endfor %}</span>
+        </span>
+        <c-badge tone="{{ order.status_tone }}">{{ order.get_status_display }}</c-badge>
+      </a>
+    </li>
+    {% endfor %}
+  </ul>
+</div>
+{% else %}
+<c-empty icon="package" title="Aucune réservation pour l'instant">
+  Le magasin prête gratuitement son matériel aux membres.
+  <c-slot name="actions"><c-button href="{% url 'warehouse:catalogue' %}">Découvrir le catalogue</c-button></c-slot>
+</c-empty>
+{% endif %}
+{% endblock %}

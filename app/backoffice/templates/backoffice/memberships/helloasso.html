@@ -1,0 +1,54 @@
+{% extends "layouts/app.html" %}
+{% block title %}Connexion HelloAsso{% endblock %}
+{% block content %}
+<c-page-header eyebrow="Adhésions" title="Connexion HelloAsso" subtitle="Comment le site est informé des nouvelles adhésions, et ce qu'il a reçu récemment." back="{% url 'backoffice:memberships' %}" back_label="Adhésions" />
+
+<div class="grid gap-6 lg:grid-cols-2">
+  <c-card title="État de la configuration">
+    <ul class="space-y-3 text-sm">
+      <li class="flex items-start gap-3">{% if api_configured %}<span class="text-emerald-600">{% icon "circle-check" %}</span> <span><strong>API HelloAsso connectée.</strong> Chaque notification est revérifiée auprès de HelloAsso, et la synchronisation manuelle est disponible.</span>{% else %}<span class="text-red-600">{% icon "circle-alert" %}</span> <span><strong>API non configurée</strong> : renseigner HELLOASSO_CLIENTID et HELLOASSO_CLIENTSECRET sur le serveur (espace HelloAsso › Mon compte › Intégrations et API).</span>{% endif %}</li>
+      <li class="flex items-start gap-3">{% if secret_configured %}<span class="text-emerald-600">{% icon "circle-check" %}</span> <span><strong>URL secrète configurée</strong> (HELLOASSO_WEBHOOK_SECRET).</span>{% else %}<span class="text-amber-600">{% icon "triangle-alert" %}</span> <span><strong>Pas d'URL secrète</strong> : recommandé en complément (variable HELLOASSO_WEBHOOK_SECRET).</span>{% endif %}</li>
+    </ul>
+  </c-card>
+  <c-card title="Adresse de notification à déclarer sur HelloAsso">
+    <p class="text-sm text-muted">Dans HelloAsso : Mon compte › Intégrations et API › Notifications. Colle l'adresse ci-dessous.</p>
+    {% if secret_url and can_see_secret %}
+    <div x-data="copyable('{{ secret_url|escapejs }}')" class="mt-4 flex gap-2">
+      <input class="input font-mono text-xs" value="{{ secret_url }}" readonly aria-label="URL du webhook">
+      <button type="button" class="btn btn-secondary" @click="copy()"><span x-show="!copied">{% icon "copy" %}</span><span x-show="copied" x-cloak>{% icon "check" %}</span></button>
+    </div>
+    {% elif secret_url %}
+    <p class="mt-4 text-sm">L'adresse secrète est visible par la présidence et le ou la webmaster.</p>
+    {% else %}
+    <div x-data="copyable('{{ legacy_url|escapejs }}')" class="mt-4 flex gap-2">
+      <input class="input font-mono text-xs" value="{{ legacy_url }}" readonly aria-label="URL du webhook">
+      <button type="button" class="btn btn-secondary" @click="copy()"><span x-show="!copied">{% icon "copy" %}</span><span x-show="copied" x-cloak>{% icon "check" %}</span></button>
+    </div>
+    {% endif %}
+  </c-card>
+</div>
+
+<c-card title="Dernières notifications reçues" class="mt-6">
+  {% if events %}
+  <div class="table-wrap -mx-5 sm:-mx-6">
+    <table class="table">
+      <thead><tr><th>Reçue</th><th>Type</th><th>Commande</th><th>Campagne</th><th>Statut</th><th>Résultat</th></tr></thead>
+      <tbody>
+        {% for event in events %}
+        <tr>
+          <td class="whitespace-nowrap">{{ event.received_at|date:"d/m H:i" }}</td>
+          <td>{{ event.event_type|default:"—" }}</td>
+          <td class="font-mono text-xs">{{ event.order_id|default:"—" }}</td>
+          <td class="text-xs">{{ event.form_slug|default:"—" }}</td>
+          <td><c-badge tone="{% if event.status == 'processed' %}success{% elif event.status == 'ignored' %}neutral{% else %}danger{% endif %}">{{ event.get_status_display }}</c-badge>{% if event.verified %} <span class="text-xs text-emerald-600" title="Confirmée par l'API HelloAsso">{% icon "shield-check" %}</span>{% endif %}</td>
+          <td class="text-xs text-muted">{{ event.result|truncatechars:140 }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <p class="text-sm text-muted">Aucune notification reçue pour l'instant.</p>
+  {% endif %}
+</c-card>
+{% endblock %}

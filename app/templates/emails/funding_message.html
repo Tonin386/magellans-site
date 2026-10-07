@@ -1,0 +1,12 @@
+{% partialdef subject %}{% if from_board %}Message du CA — demande d'aide « {{ funding.name }} »{% else %}Message de {{ funding.asker.display_name }} — demande d'aide « {{ funding.name }} »{% endif %}{% endpartialdef %}
+{% partialdef body %}{% autoescape off %}
+{% if from_board %}Bonjour {{ funding.asker.first_name }},
+
+Le CA t'a écrit à propos de ta demande d'aide **« {{ funding.name }} »** :{% else %}**{{ funding.asker.display_name }}** a écrit à propos de la demande d'aide **« {{ funding.name }} »** :{% endif %}
+
+{{ body|blockquote }}
+
+[[Voir la demande|{{ site_url }}{% if from_board %}{{ funding.get_absolute_url }}{% else %}{% url 'backoffice:funding-detail' funding.pk %}{% endif %}]]
+
+L'équipe {{ site.site_name }}
+{% endautoescape %}{% endpartialdef %}

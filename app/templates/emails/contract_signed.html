@@ -1,0 +1,16 @@
+{% partialdef subject %}Ton contrat de prêt {{ contract.reference }} signé{% endpartialdef %}
+{% partialdef body %}{% autoescape off %}
+Bonjour {{ order.user.first_name }},
+
+Ton contrat de prêt pour la réservation **#{{ order.pk }}** est signé : tu le trouveras en pièce jointe.
+
+- **Retrait :** {{ order.date_start|date:"l j F Y à H:i" }}
+- **Retour :** {{ order.date_end|date:"l j F Y à H:i" }}
+- **Lieu :** {{ site.pickup_address }}
+
+Bon tournage ! 🎬
+
+[[Voir ma réservation|{{ site_url }}{{ order.get_absolute_url }}]]
+
+L'équipe {{ site.site_name }}
+{% endautoescape %}{% endpartialdef %}

@@ -1,0 +1,20 @@
+{% partialdef subject %}Nouvelle demande de matériel #{{ order.pk }} — {{ order.user.display_name }}{% endpartialdef %}
+{% partialdef body %}{% autoescape off %}
+**{{ order.user.display_name }}** ({{ order.user.email }}{% if order.user.person.phone %}, {{ order.user.person.phone_display }}{% endif %}) a envoyé une demande de réservation.
+
+- **Projet :** {{ order.project_name }}
+- **Retrait :** {{ order.date_start|date:"l j F Y à H:i" }}
+- **Retour :** {{ order.date_end|date:"l j F Y à H:i" }}
+- **Récupération par :** {{ order.pickup_display }}{% if order.pickup_phone %} ({{ order.pickup_phone }}){% endif %}
+
+**Matériel :**
+{% for line in lines %}
+- {{ line.quantity }} × {{ line.item.name }}{% endfor %}
+{% if order.message %}
+
+**Message :**
+
+{{ order.message }}{% endif %}
+
+[[Traiter la demande|{{ site_url }}{% url 'backoffice:order-detail' order.pk %}]]
+{% endautoescape %}{% endpartialdef %}

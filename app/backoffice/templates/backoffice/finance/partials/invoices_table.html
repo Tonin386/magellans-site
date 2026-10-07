@@ -1,0 +1,21 @@
+{% load bo %}
+<div class="table-wrap">
+  <table class="table">
+    <thead><tr><th>{% sort_header "titre" "Note de frais" %}</th><th>Auteur·ice</th><th>Projet</th><th>{% sort_header "date" "Déposée" %}</th><th class="num">Total</th><th>Statut</th></tr></thead>
+    <tbody>
+      {% for invoice in rows %}
+      <tr>
+        <td><a href="{% url 'backoffice:invoice-detail' invoice.pk %}" class="font-semibold hover:text-accent">{{ invoice.title }}</a>{% if invoice.missing_proofs %}<span class="block text-xs text-red-600">{{ invoice.missing_proofs|length }} justificatif(s) manquant(s)</span>{% endif %}</td>
+        <td>{{ invoice.author.display_name }}</td>
+        <td class="text-muted">{{ invoice.project }}</td>
+        <td class="whitespace-nowrap text-muted">{{ invoice.date_created|date:"j M Y" }}</td>
+        <td class="num font-semibold">{{ invoice.total_amount|money }}</td>
+        <td><c-badge tone="{{ invoice.status_tone }}">{{ invoice.get_status_display }}</c-badge></td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="6" class="py-12 text-center text-muted">Aucune note de frais dans cette vue.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% include "backoffice/partials/pagination.html" %}

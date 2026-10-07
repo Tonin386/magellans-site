@@ -1,0 +1,9 @@
+{% partialdef subject %}Contrat {{ contract.reference }} signé — réservation #{{ order.pk }}{% endpartialdef %}
+{% partialdef body %}{% autoescape off %}
+**{{ contract.signer_name }}** a signé le contrat de prêt de la réservation **#{{ order.pk }}** ({{ order.project_name }}). Le PDF est en pièce jointe.
+
+- **Retrait :** {{ order.date_start|date:"l j F Y à H:i" }}
+- **Retour :** {{ order.date_end|date:"l j F Y à H:i" }}
+
+[[Voir la réservation|{{ site_url }}{% url 'backoffice:order-detail' order.pk %}]]
+{% endautoescape %}{% endpartialdef %}

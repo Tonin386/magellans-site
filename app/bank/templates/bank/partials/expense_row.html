@@ -1,0 +1,13 @@
+<fieldset data-formset-row class="relative rounded-2xl border border-line bg-surface-2/50 p-4 {% if f.errors %}border-red-500/50{% endif %}">
+  <legend class="sr-only">Dépense</legend>
+  {% for hidden in f.hidden_fields %}{{ hidden }}{% endfor %}
+  <div class="hidden">{{ f.DELETE }}</div>
+  <button type="button" class="btn btn-ghost btn-icon btn-sm absolute top-2 right-2 text-muted hover:text-red-600" @click="remove($event)" aria-label="Retirer cette dépense">{% icon "x" %}</button>
+  <div class="grid gap-4 pr-8 sm:grid-cols-6">
+    <c-field :field="f.title" class="sm:col-span-3" />
+    <c-field :field="f.date" class="sm:col-span-2" />
+    <c-field :field="f.amount" class="sm:col-span-1" />
+    <c-field :field="f.proof" class="sm:col-span-3" />
+    <c-field :field="f.comm" class="sm:col-span-3" />
+  </div>
+</fieldset>

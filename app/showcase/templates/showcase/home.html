@@ -1,0 +1,287 @@
+{% extends "layouts/public.html" %}
+{% load static %}
+
+{% block title %}{{ site.tagline }}{% endblock %}
+
+{% block content %}
+{# ================================================================= HÉROS #}
+<section x-data="heroVideo" class="relative isolate -mt-(--header-height) flex min-h-[100svh] items-end overflow-hidden">
+  <video x-ref="video" class="absolute inset-0 -z-20 size-full object-cover" muted loop playsinline preload="none"
+         poster="{% if site.hero_image %}{{ site.hero_image.url }}{% else %}{% static 'img/hero-poster.webp' %}{% endif %}"
+         data-src="{% if site.hero_video %}{{ site.hero_video.url }}{% else %}{% static 'video/presentation.mp4' %}{% endif %}" aria-hidden="true"></video>
+  <div class="absolute inset-x-0 top-0 -z-10 h-40 bg-gradient-to-b from-ink-950/70 to-transparent" aria-hidden="true"></div>
+  <div class="absolute inset-0 -z-10 bg-gradient-to-t from-ink-950 via-ink-950/25 via-35% to-transparent" aria-hidden="true"></div>
+  <div class="absolute inset-0 -z-10 bg-gradient-to-r from-ink-950/75 via-ink-950/25 via-45% to-transparent" aria-hidden="true"></div>
+
+  <div class="mx-auto w-full max-w-7xl px-4 pt-40 pb-14 sm:px-6 sm:pb-20">
+    <p class="mb-5 inline-flex animate-fade-up items-center gap-2 rounded-full border border-white/15 bg-white/8 px-3.5 py-1.5 text-sm font-medium text-ink-100 backdrop-blur">
+      <span class="size-2 animate-pulse rounded-full bg-amber-400"></span>{{ site.hero_kicker }}
+    </p>
+    <h1 class="max-w-5xl animate-fade-up text-[clamp(2.75rem,7.2vw,6.75rem)] leading-[0.95] drop-shadow-[0_2px_24px_rgb(0_0_0/0.35)] font-extrabold text-white [animation-delay:120ms]">
+      {% first_words site.hero_title as title_start %}{% last_words site.hero_title as title_end %}
+      {% if title_start %}{{ title_start }} {% endif %}<span class="accent-serif text-gradient pr-2">{{ title_end }}</span>
+    </h1>
+    <p class="mt-5 max-w-lg animate-fade-up text-lg leading-relaxed text-ink-100 [animation-delay:240ms]">{{ site.hero_text }}</p>
+    <div class="mt-9 flex animate-fade-up flex-wrap items-center gap-3 [animation-delay:360ms]">
+      {% if current_season.is_open %}
+      <c-button href="{% url 'join' %}" size="lg" icon_right="arrow-right">Adhérer pour {{ current_season.label }}</c-button>
+      {% else %}
+      <c-button href="#contact" size="lg" icon_right="arrow-right">Nous contacter</c-button>
+      {% endif %}
+      <c-button href="{% url 'films' %}" variant="glass" size="lg" icon="clapperboard">Voir nos films</c-button>
+    </div>
+  </div>
+
+  <button type="button" @click="toggle()" class="absolute right-4 bottom-6 grid size-11 place-items-center rounded-full border border-white/15 bg-black/30 text-white backdrop-blur transition hover:bg-black/50 sm:right-6"
+          :aria-label="paused ? 'Lire la vidéo' : 'Mettre la vidéo en pause'">
+    <span x-show="!paused">{% icon "pause" %}</span><span x-show="paused" x-cloak>{% icon "play" %}</span>
+  </button>
+</section>
+
+{# ================================================================ CHIFFRES #}
+<section class="border-y border-white/8 bg-ink-900/60">
+  <dl class="mx-auto grid max-w-7xl grid-cols-2 divide-white/8 px-4 sm:px-6 lg:grid-cols-4 lg:divide-x">
+    <div class="flex flex-col px-2 py-8 text-center lg:px-6" x-data="countUp({{ stats.years }})" x-intersect.once="start()">
+      <dt class="text-sm text-ink-400">ans d'aventure</dt>
+      <dd class="order-first font-display text-4xl font-extrabold text-white sm:text-5xl"><span x-text="value">{{ stats.years }}</span></dd>
+    </div>
+    <div class="flex flex-col px-2 py-8 text-center lg:px-6" x-data="countUp({{ stats.members }})" x-intersect.once="start()">
+      <dt class="text-sm text-ink-400">membres depuis la création</dt>
+      <dd class="order-first font-display text-4xl font-extrabold text-white sm:text-5xl"><span x-text="value">{{ stats.members }}</span></dd>
+    </div>
+    <div class="flex flex-col px-2 py-8 text-center lg:px-6" x-data="countUp({{ stats.films }})" x-intersect.once="start()">
+      <dt class="text-sm text-ink-400">films au catalogue</dt>
+      <dd class="order-first font-display text-4xl font-extrabold text-white sm:text-5xl"><span x-text="value">{{ stats.films }}</span></dd>
+    </div>
+    <div class="flex flex-col px-2 py-8 text-center lg:px-6" x-data="countUp({{ stats.items }})" x-intersect.once="start()">
+      <dt class="text-sm text-ink-400">objets à emprunter</dt>
+      <dd class="order-first font-display text-4xl font-extrabold text-white sm:text-5xl"><span x-text="value">{{ stats.items }}</span></dd>
+    </div>
+  </dl>
+</section>
+
+{# ============================================================ COULISSES #}
+<section class="mx-auto max-w-7xl px-4 pt-24 sm:px-6 sm:pt-32">
+  <div class="reveal flex flex-wrap items-end justify-between gap-6">
+    <div class="max-w-2xl">
+      <p class="eyebrow">Dans les coulisses</p>
+      <h2 class="mt-3 text-4xl font-extrabold text-white sm:text-5xl">Ça tourne chez <span class="accent-serif text-amber-400">Magellans</span></h2>
+    </div>
+    <p class="max-w-sm text-ink-300">Cadre, son, lumière, maquillage, décors… chaque tournage est l'occasion d'apprendre en faisant.</p>
+  </div>
+  <div class="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4 lg:grid-rows-2">
+    <div x-data="inlineVideo" x-intersect:enter.half="enter()" x-intersect:leave="leave()"
+         class="reveal group relative overflow-hidden rounded-3xl border border-white/10 bg-ink-900 sm:col-span-2 lg:col-span-3 lg:row-span-2">
+      <video x-ref="video" class="aspect-video size-full object-cover" muted loop playsinline preload="none"
+             poster="{% static 'img/hero-poster.webp' %}"
+             data-src="{% if site.hero_video %}{{ site.hero_video.url }}{% else %}{% static 'video/presentation.mp4' %}{% endif %}"
+             aria-label="Extraits de tournages des membres de Magellans"></video>
+      <div class="pointer-events-none absolute inset-0 bg-gradient-to-t from-ink-950/70 via-transparent to-transparent"></div>
+      <div class="absolute right-4 bottom-4 left-4 flex items-center justify-between gap-3">
+        <p class="text-sm font-medium text-ink-100">Extraits de tournages · {{ site.site_name }}</p>
+        <div class="flex gap-2">
+          <button type="button" @click="toggle()" class="btn btn-glass btn-icon btn-sm" :aria-label="playing ? 'Mettre en pause' : 'Lire la vidéo'">
+            <span x-show="playing">{% icon "pause" %}</span><span x-show="!playing">{% icon "play" %}</span>
+          </button>
+          <button type="button" @click="fullscreen()" class="btn btn-glass btn-icon btn-sm" aria-label="Voir en plein écran">{% icon "maximize" %}</button>
+        </div>
+      </div>
+    </div>
+    <figure class="reveal relative overflow-hidden rounded-3xl border border-white/10">
+      <img src="{% static 'img/coulisses/lumiere.webp' %}" alt="Installation d'un projecteur lors d'un tournage en extérieur" loading="lazy" class="aspect-[4/3] size-full object-cover transition duration-700 hover:scale-105">
+      <figcaption class="absolute bottom-3 left-3 rounded-full bg-ink-950/70 px-3 py-1 text-xs font-semibold text-white backdrop-blur">Lumière</figcaption>
+    </figure>
+    <figure class="reveal relative overflow-hidden rounded-3xl border border-white/10">
+      <img src="{% static 'img/coulisses/maquillage.webp' %}" alt="Préparation du maquillage avant une prise" loading="lazy" class="aspect-[4/3] size-full object-cover transition duration-700 hover:scale-105">
+      <figcaption class="absolute bottom-3 left-3 rounded-full bg-ink-950/70 px-3 py-1 text-xs font-semibold text-white backdrop-blur">Maquillage</figcaption>
+    </figure>
+  </div>
+</section>
+
+{# ================================================================ SERVICES #}
+{% if services %}
+<section class="relative mx-auto max-w-7xl px-4 py-24 sm:px-6 sm:py-32">
+  <div class="reveal max-w-2xl">
+    <p class="eyebrow">Ce qu'on fait ensemble</p>
+    <h2 class="mt-3 text-4xl font-extrabold text-white sm:text-5xl">Une asso pour <span class="accent-serif text-amber-400">faire des films</span>, pas juste en parler.</h2>
+  </div>
+  <div class="mt-14 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+    {% for service in services %}
+    <article class="reveal group relative overflow-hidden rounded-3xl border border-white/8 bg-gradient-to-b from-white/[0.06] to-white/[0.02] p-7 transition duration-500 hover:-translate-y-1 hover:border-amber-400/40">
+      <div class="absolute -top-16 -right-16 size-40 rounded-full bg-amber-500/0 blur-2xl transition duration-500 group-hover:bg-amber-500/20" aria-hidden="true"></div>
+      <span class="grid size-12 place-items-center rounded-2xl bg-amber-500 text-2xl text-ink-950 shadow-lg shadow-amber-500/25">{% icon service.icon %}</span>
+      <h3 class="mt-6 text-xl font-bold text-white">{{ service.title }}</h3>
+      <p class="mt-2 leading-relaxed text-ink-300">{{ service.body }}</p>
+    </article>
+    {% endfor %}
+  </div>
+</section>
+{% endif %}
+
+{# ============================================================= MISE EN AVANT #}
+{% if site.spotlight_enabled and site.spotlight_video_url %}
+{% with video=site.spotlight_video_url|video_embed %}
+{% if video %}
+<section class="mx-auto max-w-7xl px-4 pb-24 sm:px-6">
+  <div class="reveal grid items-center gap-10 overflow-hidden rounded-[2rem] border border-white/8 bg-ink-900 p-6 sm:p-10 lg:grid-cols-5">
+    <div class="lg:col-span-2">
+      <p class="eyebrow">À l'affiche</p>
+      <h2 class="mt-3 text-3xl font-extrabold text-white sm:text-4xl">{{ site.spotlight_title }}</h2>
+      {% if site.spotlight_text %}<p class="mt-4 leading-relaxed text-ink-300">{{ site.spotlight_text }}</p>{% endif %}
+    </div>
+    <div class="lg:col-span-3">{% include "partials/video_facade.html" with video=video title=site.spotlight_title %}</div>
+  </div>
+</section>
+{% endif %}
+{% endwith %}
+{% endif %}
+
+{# =================================================================== FILMS #}
+{% if projects %}
+<section class="relative overflow-hidden bg-ink-900/40 py-24 sm:py-32">
+  <div class="mx-auto flex max-w-7xl flex-wrap items-end justify-between gap-6 px-4 sm:px-6">
+    <div class="reveal max-w-2xl">
+      <p class="eyebrow">Catalogue</p>
+      <h2 class="mt-3 text-4xl font-extrabold text-white sm:text-5xl">Nos films</h2>
+      <p class="mt-3 text-lg text-ink-300">Fictions, clips, documentaires, animation… des courts-métrages faits avec passion par nos membres.</p>
+    </div>
+    <c-button href="{% url 'films' %}" variant="glass" icon_right="arrow-right">Tout le catalogue</c-button>
+  </div>
+  <div class="scrollbar-none mt-12 flex snap-x snap-mandatory gap-5 overflow-x-auto scroll-px-4 px-4 pb-4 sm:scroll-px-6 sm:px-6 xl:px-[max(1.5rem,calc((100vw-80rem)/2+1.5rem))]">
+    {% for project in projects %}
+    {% include "showcase/partials/poster_card.html" with project=project extra_class="w-60 shrink-0 snap-start sm:w-72" %}
+    {% endfor %}
+  </div>
+</section>
+{% endif %}
+
+{# ================================================================ ADHÉSION #}
+<section class="mx-auto max-w-7xl px-4 py-24 sm:px-6 sm:py-32">
+  <div class="reveal relative isolate overflow-hidden rounded-[2.5rem] bg-amber-500 px-6 py-14 text-ink-950 sm:px-14 sm:py-20">
+    <img src="{% static 'img/logo.svg' %}" alt="" class="absolute -right-24 -bottom-24 -z-10 size-[28rem] opacity-15 mix-blend-multiply motion-safe:animate-[spin_60s_linear_infinite]" aria-hidden="true">
+    <div class="grid gap-10 lg:grid-cols-2 lg:items-center">
+      <div>
+        <p class="text-sm font-bold tracking-[0.18em] uppercase opacity-75">{% if current_season %}Saison {{ current_season.label }}{% else %}Adhésion{% endif %}</p>
+        <h2 class="mt-3 text-4xl leading-tight font-extrabold sm:text-6xl">Deviens membre de <span class="accent-serif">l'équipage</span></h2>
+        {% if current_season.price %}
+        <p class="mt-5 text-lg">Une seule cotisation de <strong class="text-2xl">{{ current_season.price|money }}</strong> pour toute l'année.</p>
+        {% endif %}
+      </div>
+      <div class="rounded-3xl bg-ink-950/90 p-7 text-ink-100 shadow-2xl sm:p-9">
+        <div class="prose-mag text-ink-200 [&_strong]:text-white">{% if current_season.pitch %}{{ current_season.pitch|markdown }}{% else %}<p>Accède au magasin, participe aux tournages et rencontre d'autres passionné·es.</p>{% endif %}</div>
+        <div class="mt-7 flex flex-wrap gap-3">
+          {% if current_season.is_open %}
+          <c-button href="{% url 'join' %}" icon_right="arrow-right">J'adhère</c-button>
+          {% endif %}
+          <c-button href="{% url 'join' %}#faq" variant="glass">Questions fréquentes</c-button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+{# ================================================================ À PROPOS #}
+<section id="a-propos" class="mx-auto grid max-w-7xl gap-12 px-4 pb-24 sm:px-6 lg:grid-cols-12 lg:pb-32">
+  <div class="reveal lg:col-span-5">
+    <p class="eyebrow">À propos</p>
+    <h2 class="mt-3 text-4xl font-extrabold text-white sm:text-5xl">{{ site.about_title }}</h2>
+    {% if site.full_address %}
+    <p class="mt-6 inline-flex items-center gap-2 text-ink-300">{% icon "map-pin" css="text-amber-400" %} {{ site.full_address }}</p>
+    {% endif %}
+    <img src="{% static 'img/coulisses/son.webp' %}" alt="Prise de son en intérieur pendant un tournage" loading="lazy" class="mt-8 hidden aspect-[4/3] w-full rounded-3xl border border-white/10 object-cover lg:block">
+  </div>
+  <div class="reveal prose-mag text-lg text-ink-200 lg:col-span-7 [&_p]:leading-relaxed">{{ site.about_text|markdown }}</div>
+</section>
+
+{# ================================================================ HISTOIRE #}
+{% if timeline %}
+<section class="relative border-t border-white/8 bg-ink-900/40 py-24 sm:py-32">
+  <div class="mx-auto max-w-5xl px-4 sm:px-6">
+    <div class="reveal text-center">
+      <p class="eyebrow">Notre histoire</p>
+      <h2 class="mt-3 text-4xl font-extrabold text-white sm:text-5xl">Le carnet de bord</h2>
+    </div>
+    <ol class="relative mt-16 space-y-12 before:absolute before:top-0 before:bottom-0 before:left-6 before:w-px before:bg-gradient-to-b before:from-amber-500 before:via-amber-500/40 before:to-transparent sm:before:left-1/2">
+      {% for entry in timeline %}
+      <li class="reveal relative grid gap-4 pl-16 sm:grid-cols-2 sm:gap-12 sm:pl-0">
+        <span class="absolute top-1 left-6 grid size-4 -translate-x-1/2 place-items-center rounded-full bg-amber-500 ring-8 ring-amber-500/15 sm:left-1/2" aria-hidden="true"></span>
+        <div class="{% cycle 'sm:text-right' 'sm:order-2' %}">
+          <p class="font-display text-sm font-bold tracking-wide text-amber-400 uppercase">{{ entry.date_label }}</p>
+          <h3 class="mt-1 text-2xl font-bold text-white">{{ entry.title }}</h3>
+          <p class="mt-2 leading-relaxed text-ink-300">{{ entry.body }}</p>
+        </div>
+        <div class="{% cycle '' 'sm:order-1 sm:flex sm:justify-end' %}">
+          {% if entry.image %}<img src="{{ entry.image.url }}" alt="" loading="lazy" class="aspect-[4/3] w-full max-w-xs rounded-2xl border border-white/10 bg-ink-800 object-cover">{% endif %}
+        </div>
+      </li>
+      {% endfor %}
+      <li class="reveal relative pl-16 sm:pl-0 sm:text-center">
+        <span class="absolute top-2 left-6 size-4 -translate-x-1/2 rounded-full border-2 border-amber-500 bg-ink-950 sm:left-1/2" aria-hidden="true"></span>
+        <p class="font-serif text-3xl text-white italic sm:pt-10">Écris la suite avec nous !</p>
+      </li>
+    </ol>
+  </div>
+</section>
+{% endif %}
+
+{# =================================================================== ÉQUIPE #}
+{% if team %}
+<section id="equipe" class="mx-auto max-w-7xl px-4 py-24 sm:px-6 sm:py-32">
+  <div class="reveal max-w-2xl">
+    <p class="eyebrow">L'équipe</p>
+    <h2 class="mt-3 text-4xl font-extrabold text-white sm:text-5xl">Le conseil d'administration{% if team_season %} <span class="accent-serif text-amber-400">{{ team_season.label }}</span>{% endif %}</h2>
+    <p class="mt-3 text-lg text-ink-300">Les bénévoles qui orchestrent Magellans au quotidien.</p>
+  </div>
+  <ul class="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+    {% for member in team %}
+    <li class="reveal group overflow-hidden rounded-3xl border border-white/8 bg-ink-900">
+      <div class="relative aspect-square overflow-hidden bg-ink-800">
+        {% if member.photo %}
+        <img src="{{ member.photo.url }}" alt="Portrait de {{ member.name }}" loading="lazy" class="size-full object-cover grayscale transition duration-700 group-hover:scale-105 group-hover:grayscale-0">
+        {% else %}
+        <div class="grid size-full place-items-center bg-gradient-to-br from-amber-500/30 to-rust-700/40 font-display text-6xl font-extrabold text-white/80">{{ member.initials }}</div>
+        {% endif %}
+        <div class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-ink-950 to-transparent p-5 pt-16">
+          <p class="font-display text-2xl font-bold text-white">{{ member.name }}</p>
+          <p class="text-amber-400">{{ member.role_title }}</p>
+        </div>
+      </div>
+      <div class="flex items-center justify-between gap-3 p-4">
+        {% if member.email %}<a href="mailto:{{ member.email }}" class="truncate text-sm text-ink-300 hover:text-amber-400">{{ member.email }}</a>{% else %}<span></span>{% endif %}
+        <div class="flex shrink-0 gap-1.5">
+          {% if member.instagram_url %}<a href="{{ member.instagram_url }}" target="_blank" rel="noopener" class="grid size-9 place-items-center rounded-full bg-white/5 text-ink-200 hover:text-amber-400" aria-label="Instagram de {{ member.name }}">{% icon "brand-instagram" %}</a>{% endif %}
+          {% if member.linkedin_url %}<a href="{{ member.linkedin_url }}" target="_blank" rel="noopener" class="grid size-9 place-items-center rounded-full bg-white/5 text-ink-200 hover:text-amber-400" aria-label="LinkedIn de {{ member.name }}">{% icon "brand-linkedin" %}</a>{% endif %}
+        </div>
+      </div>
+    </li>
+    {% endfor %}
+  </ul>
+  {% if site.photo_credit_list %}
+  <p class="mt-8 text-sm text-ink-400">Crédits photos :
+    {% for credit in site.photo_credit_list %}{% if credit.url %}<a href="{{ credit.url }}" target="_blank" rel="noopener" class="underline-offset-4 hover:text-amber-400 hover:underline">{{ credit.name }}</a>{% else %}{{ credit.name }}{% endif %}{% if not forloop.last %}, {% endif %}{% endfor %}
+  </p>
+  {% endif %}
+</section>
+{% endif %}
+
+{# ================================================================== CONTACT #}
+<section id="contact" class="border-t border-white/8 bg-ink-900/40">
+  <div class="mx-auto grid max-w-7xl gap-12 px-4 py-24 sm:px-6 sm:py-32 lg:grid-cols-5">
+    <div class="reveal lg:col-span-2">
+      <p class="eyebrow">Contact</p>
+      <h2 class="mt-3 text-4xl font-extrabold text-white sm:text-5xl">Écris-nous</h2>
+      <p class="mt-4 text-lg leading-relaxed text-ink-300">Une question, une idée de projet, une captation à organiser ? Nous lisons tous les messages et répondons dans la semaine.</p>
+      <ul class="mt-8 space-y-3 text-ink-200">
+        <li class="flex items-center gap-3">{% icon "mail" css="text-amber-400" %} <a href="mailto:{{ site.contact_email }}" class="hover:text-amber-400">{{ site.contact_email }}</a></li>
+        {% if site.contact_phone %}<li class="flex items-center gap-3">{% icon "phone" css="text-amber-400" %} {{ site.contact_phone }}</li>{% endif %}
+        {% if site.full_address %}<li class="flex items-center gap-3">{% icon "map-pin" css="text-amber-400" %} {{ site.full_address }}</li>{% endif %}
+      </ul>
+    </div>
+    <div class="reveal lg:col-span-3">
+      <div class="rounded-3xl border border-white/10 bg-ink-950/60 p-6 sm:p-8">
+        {% include "showcase/partials/contact_form.html" %}
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

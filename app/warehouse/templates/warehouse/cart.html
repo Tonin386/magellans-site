@@ -1,0 +1,56 @@
+{% extends "layouts/app.html" %}
+
+{% block title %}Ma demande de matériel{% endblock %}
+
+{% block content %}
+<c-page-header title="Ma demande de matériel" subtitle="Vérifie le matériel et les dates, puis envoie ta demande à l'équipe du magasin." back="{% url 'warehouse:catalogue' %}" back_label="Retour au catalogue" />
+
+{% for reason in blockers %}<c-alert tone="warning" class="mb-4">{{ reason }} {% if not user.profile_complete %}<a href="{% url 'members:profile' %}">Compléter mon profil</a>{% endif %}</c-alert>{% endfor %}
+
+<div class="grid gap-6 lg:grid-cols-[1fr_24rem] lg:items-start">
+  <div class="space-y-6">
+    <c-card title="Matériel demandé">
+      <c-slot name="actions"><c-button href="{% url 'warehouse:catalogue' %}" variant="ghost" size="sm" icon="plus">Ajouter</c-button></c-slot>
+      {% include "warehouse/partials/cart_lines.html" %}
+    </c-card>
+
+    <c-card title="Dates" subtitle="Retrait et retour du matériel">
+      <form method="post" action="{% url 'warehouse:set-dates' %}" class="flex flex-col gap-4 sm:flex-row sm:items-end">
+        {% csrf_token %}
+        <input type="hidden" name="next" value="{% url 'warehouse:cart' %}">
+        <div class="grid flex-1 gap-3 sm:grid-cols-2">
+          <c-field :field="dates_form.start" />
+          <c-field :field="dates_form.end" />
+        </div>
+        <button type="submit" class="btn btn-secondary">Enregistrer les dates</button>
+      </form>
+      {% if site.pickup_address %}<p class="mt-4 flex items-center gap-2 text-sm text-muted">{% icon "map-pin" %} Retrait et retour : {{ site.pickup_address }}</p>{% endif %}
+    </c-card>
+  </div>
+
+  <form method="post" class="card lg:sticky lg:top-6" novalidate>
+    {% csrf_token %}
+    <div class="card-header"><h2 class="card-title">Envoyer la demande</h2></div>
+    <div class="card-body space-y-5">
+      <c-form-errors :form="form" />
+      <c-field :field="form.project_name" />
+      <fieldset class="space-y-3">
+        <legend class="label">Qui vient chercher le matériel ?</legend>
+        <p class="help -mt-1">Par défaut : toi. Modifie si quelqu'un d'autre s'en charge.</p>
+        <div class="grid grid-cols-2 gap-3">
+          <c-field :field="form.pickup_first_name" />
+          <c-field :field="form.pickup_last_name" />
+        </div>
+        <c-field :field="form.pickup_phone" />
+      </fieldset>
+      <c-field :field="form.message" />
+      <div class="{% if form.tos.errors %}has-error{% endif %}">
+        <label class="flex items-start gap-3 text-sm">{{ form.tos }}<span>J'ai lu et j'accepte les <a href="{% url 'page' 'cgu-magasin' %}" target="_blank" class="link">conditions d'utilisation du magasin</a>.</span></label>
+        {% for error in form.tos.errors %}<p class="field-error">{% icon "circle-alert" %} {{ error }}</p>{% endfor %}
+      </div>
+      <button type="submit" class="btn btn-primary btn-lg w-full" {% if blockers or not lines or not draft.date_start %}disabled{% endif %}>{% icon "send" %} Envoyer ma demande</button>
+      {% if not draft.date_start %}<p class="help text-center">Choisis d'abord tes dates.</p>{% endif %}
+    </div>
+  </form>
+</div>
+{% endblock %}

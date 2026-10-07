@@ -1,0 +1,32 @@
+{% extends "layouts/app.html" %}
+
+{% block title %}{% if object %}Modifier{% else %}Ajouter{% endif %} — {{ crud.title }}{% endblock %}
+
+{% block content %}
+<c-page-header eyebrow="{{ crud.title }}" title="{% if object %}{{ object }}{% else %}Ajouter {{ crud.singular }}{% endif %}" back="{{ crud.list_url }}" back_label="{{ crud.title }}" />
+<form method="post" enctype="multipart/form-data" class="max-w-3xl space-y-6" novalidate>
+  {% csrf_token %}
+  <c-form-errors :form="form" />
+  {% if datalist %}<datalist id="{{ datalist_id }}">{% for value in datalist %}<option value="{{ value }}">{% endfor %}</datalist>{% endif %}
+  <c-card>
+    <div class="grid gap-5 sm:grid-cols-2">
+      {% for field in form %}
+      <c-field :field="field" class="{% if field.widget_type == 'textarea' or field.widget_type == 'clearablefile' or field.widget_type == 'checkbox' %}sm:col-span-2{% endif %}" />
+      {% endfor %}
+    </div>
+    {% if crud.name == "pages" and object %}
+    <div class="mt-6 rounded-2xl border border-line p-4">
+      <p class="mb-3 text-xs font-bold tracking-wide text-muted uppercase">Aperçu</p>
+      <div class="prose-mag">{{ object.body|markdown }}</div>
+    </div>
+    {% endif %}
+  </c-card>
+  <div class="flex flex-wrap items-center justify-between gap-3">
+    {% if object and crud.name == "pages" %}<a href="{{ object.get_absolute_url }}" target="_blank" class="link text-sm">Voir la page sur le site</a>{% else %}<span></span>{% endif %}
+    <div class="flex gap-2">
+      <c-button href="{{ crud.list_url }}" variant="secondary">Annuler</c-button>
+      <button type="submit" class="btn btn-primary">{% icon "check" %} Enregistrer</button>
+    </div>
+  </div>
+</form>
+{% endblock %}

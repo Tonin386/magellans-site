@@ -1,0 +1,24 @@
+{% load bo %}
+<div class="table-wrap">
+  <table class="table">
+    <thead><tr><th>{% sort_header "nom" "Projet" %}</th><th>Réalisation</th><th>{% sort_header "sortie" "Sortie" %}</th><th>Visibilité</th></tr></thead>
+    <tbody>
+      {% for project in rows %}
+      <tr>
+        <td>
+          <a href="{% url 'backoffice:project-edit' project.pk %}" class="flex items-center gap-3 font-semibold hover:text-accent">
+            <span class="h-12 w-8 shrink-0 overflow-hidden rounded bg-surface-2">{% if project.has_poster %}<img src="{{ project.poster.url }}" alt="" loading="lazy" class="size-full object-cover">{% endif %}</span>
+            <span class="min-w-0"><span class="block truncate">{{ project.name }}</span><span class="text-xs font-normal text-muted">{{ project.genre }}</span></span>
+          </a>
+        </td>
+        <td class="text-muted">{{ project.director.display_name|default:"—" }}</td>
+        <td class="whitespace-nowrap text-muted">{{ project.release_date|date:"j M Y"|default:"—" }}</td>
+        <td>{% if project.public %}<c-badge tone="success">Public</c-badge>{% else %}<c-badge tone="neutral">Privé</c-badge>{% endif %}{% if project.featured %} <c-badge tone="brand" plain="1">À la une</c-badge>{% endif %}</td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="4" class="py-12 text-center text-muted">Aucun projet.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% include "backoffice/partials/pagination.html" %}

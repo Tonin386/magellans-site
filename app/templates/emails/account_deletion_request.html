@@ -1,0 +1,10 @@
+{% partialdef subject %}Demande de suppression de compte — {{ member.email }}{% endpartialdef %}
+{% partialdef body %}{% autoescape off %}
+**{{ member.display_name }}** ({{ member.email }}) demande la suppression de son compte et de ses données personnelles.
+
+{% if reason %}Message : « {{ reason }} »{% endif %}
+
+Pour traiter la demande : désactiver le compte, anonymiser la fiche personne (en conservant les éléments comptables obligatoires), puis confirmer à la personne par e-mail dans un délai d'un mois (RGPD).
+
+[[Ouvrir la fiche dans l'espace CA|{{ site_url }}{% url 'backoffice:person-detail' member.person.pk %}]]
+{% endautoescape %}{% endpartialdef %}

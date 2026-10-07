@@ -1,0 +1,27 @@
+{% with lines=draft.lines.all %}
+<div class="card overflow-hidden max-lg:fixed max-lg:inset-x-3 max-lg:bottom-3 max-lg:z-30 max-lg:shadow-2xl {% if not lines %}max-lg:hidden{% endif %}">
+  <div class="flex items-center justify-between gap-3 border-b border-line px-5 py-4 max-lg:border-0 max-lg:py-3">
+    <p class="flex items-center gap-2 font-display font-bold">{% icon "shopping-basket" css="text-accent" %} Ma demande</p>
+    <span class="rounded-full bg-surface-2 px-2.5 py-0.5 text-xs font-bold">{{ draft.total_items|default:0 }} objet{{ draft.total_items|pluralize }}</span>
+  </div>
+  <div class="max-lg:hidden">
+    {% if lines %}
+    <ul class="max-h-80 divide-y divide-line overflow-y-auto px-5">
+      {% for line in lines %}
+      <li class="flex items-center justify-between gap-3 py-2.5 text-sm"><span class="truncate">{{ line.item.name }}</span><span class="shrink-0 font-semibold tabular">× {{ line.quantity }}</span></li>
+      {% endfor %}
+    </ul>
+    {% else %}
+    <p class="px-5 py-6 text-sm text-muted">Ajoute du matériel depuis le catalogue pour préparer ta demande.</p>
+    {% endif %}
+    {% if draft.date_start %}
+    <p class="border-t border-line px-5 py-3 text-xs text-muted">{% icon "calendar" %} Du {{ draft.date_start|date:"D j M H:i" }} au {{ draft.date_end|date:"D j M H:i" }}</p>
+    {% endif %}
+  </div>
+  {% if lines %}
+  <div class="p-4 pt-0 lg:pt-4">
+    <a href="{% url 'warehouse:cart' %}" class="btn btn-primary w-full">Finaliser ma demande {% icon "arrow-right" %}</a>
+  </div>
+  {% endif %}
+</div>
+{% endwith %}

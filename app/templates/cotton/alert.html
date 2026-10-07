@@ -1,0 +1,17 @@
+{% comment %} <c-alert tone="info|success|warning|danger|brand" title="…">texte</c-alert> {% endcomment %}
+<c-vars tone="info" title="" icon="" class="" />
+<div role="{% if tone == 'danger' %}alert{% else %}status{% endif %}"
+     class="flex gap-3 rounded-2xl border p-4 text-sm
+     {% if tone == 'success' %}border-emerald-500/25 bg-emerald-500/8 text-emerald-900 dark:text-emerald-100
+     {% elif tone == 'warning' %}border-amber-500/30 bg-amber-500/10 text-amber-950 dark:text-amber-100
+     {% elif tone == 'danger' %}border-red-500/25 bg-red-500/8 text-red-900 dark:text-red-100
+     {% elif tone == 'brand' %}border-amber-500/40 bg-gradient-to-br from-amber-500/15 to-rust-500/10 text-fg
+     {% else %}border-sky-500/25 bg-sky-500/8 text-sky-950 dark:text-sky-100{% endif %} {{ class }}" {{ attrs }}>
+  <span class="mt-0.5 text-base">
+    {% if icon %}{% icon icon %}{% elif tone == 'success' %}{% icon "circle-check" %}{% elif tone == 'warning' %}{% icon "triangle-alert" %}{% elif tone == 'danger' %}{% icon "circle-alert" %}{% elif tone == 'brand' %}{% icon "sparkles" %}{% else %}{% icon "info" %}{% endif %}
+  </span>
+  <div class="min-w-0 flex-1 leading-relaxed">
+    {% if title %}<p class="font-semibold">{{ title }}</p>{% endif %}
+    <div class="{% if title %}mt-1 {% endif %}[&_a]:font-semibold [&_a]:underline">{{ slot }}</div>
+  </div>
+</div>

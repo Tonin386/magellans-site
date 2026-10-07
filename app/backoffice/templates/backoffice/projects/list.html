@@ -1,0 +1,13 @@
+{% extends "layouts/app.html" %}
+{% block title %}Projets{% endblock %}
+{% block content %}
+<c-page-header eyebrow="Espace CA" title="Projets" subtitle="Les films et projets de l'association. Les projets « publics » apparaissent dans le catalogue du site.">
+  <c-button href="{% url 'backoffice:funding' %}" variant="secondary" icon="hand-coins">Demandes d'aide</c-button>
+  <c-button href="{% url 'backoffice:project-create' %}" icon="plus">Nouveau projet</c-button>
+</c-page-header>
+<form class="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center" hx-get="{{ request.path }}" hx-target="#table" hx-trigger="change" hx-push-url="true">
+  {% include "backoffice/partials/search.html" with placeholder="Titre, genre, réalisation…" %}
+  <select name="visibilite" class="select sm:w-52" aria-label="Visibilité"><option value="">Tous</option><option value="publics" {% if visibility == "publics" %}selected{% endif %}>Publics</option><option value="prives" {% if visibility == "prives" %}selected{% endif %}>Privés</option></select>
+</form>
+<div id="table" class="card overflow-hidden">{% include "backoffice/projects/partials/table.html" %}</div>
+{% endblock %}

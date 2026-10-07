@@ -1,0 +1,28 @@
+<span data-modal-title hidden>{{ item.name }}</span>
+<div class="grid gap-6 sm:grid-cols-2">
+  <div class="aspect-square overflow-hidden rounded-2xl {% if item.has_photo %}bg-white{% else %}bg-surface-2{% endif %}">
+    {% if item.has_photo %}<img src="{{ item.image.url }}" alt="Photo de {{ item.name }}" class="size-full object-contain p-4">{% else %}<span class="grid size-full place-items-center text-6xl text-subtle">{% icon "camera" %}</span>{% endif %}
+  </div>
+  <div class="space-y-4">
+    <div class="flex flex-wrap gap-1.5">
+      <c-badge tone="{{ item.state_tone }}">{{ item.get_state_display }}</c-badge>
+      {% for tag in item.tags.all %}<span class="rounded-full px-2 py-0.5 text-xs font-semibold text-white" style="background-color: {{ tag.color }}">{{ tag.name }}</span>{% endfor %}
+    </div>
+    <dl class="grid grid-cols-2 gap-3 text-sm">
+      <div class="rounded-xl bg-surface-2 p-3"><dt class="text-xs text-muted">Quantité totale</dt><dd class="font-display text-xl font-bold">{{ item.max_stock }}</dd></div>
+      <div class="rounded-xl bg-surface-2 p-3"><dt class="text-xs text-muted">{% if has_dates %}Dispo. sur tes dates{% else %}Disponible{% endif %}</dt><dd class="font-display text-xl font-bold">{{ item.stock.available }}</dd></div>
+    </dl>
+    {% if item.description %}<div class="prose-mag text-sm">{{ item.description|markdown }}</div>{% endif %}
+    {% if item.owner %}<p class="text-xs text-muted">Propriétaire : {{ item.owner }}</p>{% endif %}
+  </div>
+</div>
+{% if upcoming %}
+<div class="mt-6">
+  <p class="font-display font-bold">Prochaines sorties</p>
+  <ul class="mt-2 divide-y divide-line text-sm">
+    {% for line in upcoming %}
+    <li class="flex justify-between gap-4 py-2"><span>{{ line.order.date_start|date:"D j M" }} → {{ line.order.date_end|date:"D j M" }}</span><span class="text-muted">× {{ line.quantity }}</span></li>
+    {% endfor %}
+  </ul>
+</div>
+{% endif %}

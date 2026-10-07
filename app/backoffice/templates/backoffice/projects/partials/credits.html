@@ -1,0 +1,16 @@
+<ul class="mb-4 divide-y divide-line">
+  {% for credit in credits %}
+  <li class="flex items-center justify-between gap-2 py-2.5 text-sm">
+    <span class="min-w-0"><span class="block truncate font-semibold">{{ credit.person.display_name }}</span><span class="text-xs text-muted">{{ credit.display_role }}</span></span>
+    <button type="button" class="btn btn-ghost btn-icon btn-sm text-red-600" hx-post="{% url 'backoffice:project-credit-delete' project.pk credit.pk %}" hx-target="#credits" aria-label="Retirer">{% icon "x" %}</button>
+  </li>
+  {% empty %}
+  <li class="py-2 text-sm text-muted">Personne au générique pour l'instant.</li>
+  {% endfor %}
+</ul>
+<form hx-post="{% url 'backoffice:project-credit-add' project.pk %}" hx-target="#credits" class="space-y-3 border-t border-line pt-4">
+  {% csrf_token %}
+  <c-field :field="credit_form.person" />
+  <div class="grid grid-cols-2 gap-3"><c-field :field="credit_form.role_name" /><c-field :field="credit_form.label" /></div>
+  <button type="submit" class="btn btn-secondary btn-sm w-full">{% icon "plus" %} Ajouter au générique</button>
+</form>

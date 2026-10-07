@@ -1,0 +1,17 @@
+<a href="{{ project.get_absolute_url }}" class="group relative block {{ extra_class }}" data-search="{{ project.name }} {{ project.genre }} {{ project.year|default_if_none:'' }}" data-tags="{{ project.genre|slugify }}">
+  <div class="relative aspect-[2/3] overflow-hidden rounded-2xl border border-white/10 bg-ink-800 shadow-xl shadow-black/40" style="view-transition-name: poster-{{ project.pk }}">
+    {% if project.has_poster %}
+    <img src="{{ project.poster.url }}" alt="Affiche de {{ project.name }}" loading="lazy" class="size-full object-cover transition duration-700 group-hover:scale-[1.04]">
+    {% else %}
+    <div class="flex size-full flex-col justify-end bg-gradient-to-br from-rust-700 via-ink-800 to-ink-950 p-5">
+      <span class="font-display text-2xl leading-tight font-extrabold text-white">{{ project.name }}</span>
+    </div>
+    {% endif %}
+    <div class="absolute inset-0 bg-gradient-to-t from-ink-950/90 via-transparent to-transparent opacity-0 transition duration-500 group-hover:opacity-100"></div>
+    {% if project.video_url %}<span class="absolute top-3 right-3 grid size-9 place-items-center rounded-full bg-black/50 text-white backdrop-blur" aria-label="Vidéo disponible">{% icon "play" %}</span>{% endif %}
+  </div>
+  <div class="mt-3">
+    <p class="font-display text-lg leading-tight font-bold text-white transition group-hover:text-amber-400">{{ project.name }}</p>
+    <p class="text-sm text-ink-400">{% if project.genre and project.genre != "Non-spécifié" %}{{ project.genre }}{% endif %}{% if project.year %}{% if project.genre and project.genre != "Non-spécifié" %} · {% endif %}{{ project.year }}{% endif %}</p>
+  </div>
+</a>
