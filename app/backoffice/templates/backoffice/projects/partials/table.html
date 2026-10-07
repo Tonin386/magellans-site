@@ -4,7 +4,7 @@
     <thead><tr><th>{% sort_header "nom" "Projet" %}</th><th>Réalisation</th><th>{% sort_header "sortie" "Sortie" %}</th><th>Visibilité</th></tr></thead>
     <tbody>
       {% for project in rows %}
-      <tr>
+      <tr data-href="{% url 'backoffice:project-edit' project.pk %}">
         <td>
           <a href="{% url 'backoffice:project-edit' project.pk %}" class="flex items-center gap-3 font-semibold hover:text-accent">
             <span class="h-12 w-8 shrink-0 overflow-hidden rounded bg-surface-2">{% if project.has_poster %}<img src="{{ project.poster.url }}" alt="" loading="lazy" class="size-full object-cover">{% endif %}</span>

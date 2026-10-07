@@ -156,6 +156,10 @@
     font-feature-settings: "cv11", "ss01";
   }
 
+  /* Une colonne de grille ne s'élargit jamais à cause d'un contenu insécable (titre
+     tronqué, liste ou tableau défilant) : sur un petit écran, toute la page déborderait. */
+  .grid > * { min-width: 0; }
+
   h1, h2, h3, .font-display {
     font-family: var(--font-display);
     font-optical-sizing: auto;
@@ -297,6 +301,8 @@
   }
   .table tbody td { @apply border-b border-line px-4 py-3 align-middle; }
   .table tbody tr { @apply transition-colors hover:bg-surface-2/60; }
+  /* Ligne cliquable : toute la ligne mène à la fiche (voir lib/row-links.ts). */
+  .table tbody tr[data-href] { @apply cursor-pointer hover:bg-accent-soft; }
   .table tbody tr:last-child td { @apply border-b-0; }
   .table .num { @apply text-right tabular-nums; }
   .sort-link { @apply inline-flex items-center gap-1 hover:text-fg; }
@@ -335,9 +341,11 @@
   .prose-mag ul { @apply list-disc space-y-1.5 pl-5 marker:text-amber-500; }
   .prose-mag ol { @apply list-decimal space-y-1.5 pl-5 marker:font-semibold marker:text-amber-600; }
   .prose-mag blockquote { @apply rounded-r-xl border-l-4 border-amber-500 bg-accent-soft px-4 py-3 text-fg; }
-  .prose-mag table { @apply w-full overflow-hidden rounded-xl border border-line text-sm; }
-  .prose-mag th { @apply bg-surface-2 px-3 py-2 text-left font-semibold; }
-  .prose-mag td { @apply border-t border-line px-3 py-2 align-top; }
+  .prose-mag .table-scroll { @apply max-w-full overflow-x-auto rounded-xl border border-line; }
+  .prose-mag table { @apply w-full text-sm; }
+  .prose-mag th { @apply bg-surface-2 px-2.5 py-2 text-left font-semibold sm:px-3; }
+  .prose-mag td { @apply border-t border-line px-2.5 py-2 align-top sm:px-3; }
+  .prose-mag :is(th, td) { hyphens: auto; overflow-wrap: break-word; }
   .prose-mag code { @apply rounded bg-surface-2 px-1.5 py-0.5 text-[0.85em]; }
   .prose-mag strong { @apply font-semibold text-fg; }
 

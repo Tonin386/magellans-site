@@ -4,7 +4,7 @@
     <thead><tr><th>{% sort_header "nom" "Objet" %}</th><th>Catégories</th><th class="num">{% sort_header "stock" "Quantité" %}</th><th>{% sort_header "etat" "État" %}</th><th>Réservation</th><th class="num">Prêts en cours</th></tr></thead>
     <tbody>
       {% for item in rows %}
-      <tr>
+      <tr data-href="{% url 'backoffice:item-edit' item.pk %}">
         <td>
           <a href="{% url 'backoffice:item-edit' item.pk %}" class="flex items-center gap-3 font-semibold hover:text-accent">
             <span class="size-11 shrink-0 overflow-hidden rounded-lg {% if item.has_photo %}bg-white{% else %}bg-surface-2{% endif %}">{% if item.has_photo %}<img src="{{ item.image.url }}" alt="" loading="lazy" class="size-full object-contain">{% else %}<span class="grid size-full place-items-center text-subtle">{% icon "camera" %}</span>{% endif %}</span>

@@ -16,7 +16,7 @@
 {% endif %}
 <form class="mb-4 flex flex-col gap-3 lg:flex-row lg:items-center" hx-get="{{ request.path }}" hx-target="#table" hx-trigger="change" hx-push-url="true">
   {% include "backoffice/partials/search.html" with placeholder="N°, demandeur, projet…" %}
-  <div class="scrollbar-none flex gap-2 overflow-x-auto">
+  <div class="scrollbar-none relative flex gap-2 overflow-x-auto">
     {% for key, label, count in filters %}
     <label class="flex shrink-0 cursor-pointer items-center gap-1.5 rounded-full border border-line px-3 py-1.5 text-sm font-semibold transition has-checked:border-fg has-checked:bg-fg has-checked:text-canvas">
       <input type="radio" name="vue" value="{{ key }}" class="sr-only" {% if key == view %}checked{% endif %}>{{ label }}{% if count %}<span class="rounded-full bg-amber-500 px-1.5 text-[0.7rem] text-ink-950">{{ count }}</span>{% endif %}

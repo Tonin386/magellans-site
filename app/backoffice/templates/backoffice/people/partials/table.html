@@ -4,7 +4,7 @@
     <thead><tr><th>{% sort_header "nom" "Nom" %}</th><th>Contact</th><th>Statut</th><th>{% sort_header "creation" "Créée" %}</th></tr></thead>
     <tbody>
       {% for person in rows %}
-      <tr>
+      <tr data-href="{% url 'backoffice:person-detail' person.pk %}">
         <td>
           <a href="{% url 'backoffice:person-detail' person.pk %}" class="flex items-center gap-3 font-semibold hover:text-accent">
             <c-avatar name="{{ person.display_name }}" src="{% if person.avatar %}{{ person.avatar.url }}{% endif %}" size="size-8" class="text-[0.65rem]" />

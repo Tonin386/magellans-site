@@ -6,7 +6,7 @@
 </c-page-header>
 <form class="mb-4 flex flex-col gap-3 lg:flex-row lg:items-center" hx-get="{{ request.path }}" hx-target="#table" hx-trigger="change" hx-push-url="true">
   {% include "backoffice/partials/search.html" with placeholder="Nom, e-mail, téléphone…" %}
-  <div class="scrollbar-none flex gap-2 overflow-x-auto">
+  <div class="scrollbar-none relative flex gap-2 overflow-x-auto">
     {% for value, label in filters %}
     <label class="shrink-0 cursor-pointer rounded-full border border-line px-3 py-1.5 text-sm font-semibold transition has-checked:border-fg has-checked:bg-fg has-checked:text-canvas">
       <input type="radio" name="filtre" value="{{ value }}" class="sr-only" {% if value == filter %}checked{% endif %}>{{ label }}

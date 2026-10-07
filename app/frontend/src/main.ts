@@ -17,6 +17,7 @@ import htmx from "htmx.org";
 import { registerComponents } from "./components";
 import { enhance } from "./lib/enhance";
 import { setupHtmx } from "./lib/htmx";
+import { setupRowLinks } from "./lib/row-links";
 import { setupToasts } from "./lib/toasts";
 
 declare global {
@@ -36,6 +37,7 @@ window.Alpine = Alpine;
 Alpine.start();
 
 enhance(document);
+setupRowLinks();
 document.body.addEventListener("htmx:afterSettle", (event) => {
   enhance(event.target as Element);
 });
