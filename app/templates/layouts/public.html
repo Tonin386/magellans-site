@@ -22,10 +22,10 @@
 
 <header x-data="siteHeader" class="vt-header sticky top-0 z-40 transition-colors duration-300"
         :class="(scrolled || menuOpen) ? 'bg-ink-950/85 backdrop-blur-xl border-b border-white/8' : 'bg-transparent border-b border-transparent'">
-  <nav class="mx-auto flex h-(--header-height) max-w-7xl items-center justify-between gap-6 px-4 sm:px-6" aria-label="Navigation principale">
-    <a href="{% url 'home' %}" class="group flex items-center gap-3" aria-label="{{ site.site_name }} — accueil">
-      <img src="{% static 'img/logo.svg' %}" alt="" width="40" height="40" class="size-10 transition duration-700 ease-out group-hover:rotate-[30deg]">
-      <span class="font-display text-xl font-extrabold tracking-tight">{{ site.site_name }}</span>
+  <nav class="mx-auto flex h-(--header-height) max-w-7xl items-center justify-between gap-3 px-4 sm:gap-6 sm:px-6" aria-label="Navigation principale">
+    <a href="{% url 'home' %}" class="group flex min-w-0 items-center gap-2 sm:gap-3" aria-label="{{ site.site_name }} — accueil">
+      <img src="{% static 'img/logo.svg' %}" alt="" width="40" height="40" class="size-9 shrink-0 transition duration-700 ease-out group-hover:rotate-[30deg] sm:size-10">
+      <span class="truncate font-display text-lg font-extrabold tracking-tight sm:text-xl">{{ site.site_name }}</span>
     </a>
 
     <ul class="hidden items-center gap-1 text-sm font-medium lg:flex">
@@ -38,7 +38,7 @@
       {% endblock %}
     </ul>
 
-    <div class="flex items-center gap-2">
+    <div class="flex shrink-0 items-center gap-2">
       {% if user.is_authenticated %}
       <a href="{% url 'members:home' %}" class="btn btn-glass btn-sm hidden sm:inline-flex">
         <c-avatar name="{{ user.display_name }}" size="size-6" class="-ml-1.5 text-[0.6rem]" />
@@ -48,7 +48,7 @@
       <a href="{% url 'login' %}" class="btn btn-ghost btn-sm hidden text-ink-100 hover:bg-white/10 sm:inline-flex">Connexion</a>
       {% endif %}
       {% if current_season.is_open %}
-      <a href="{% url 'join' %}" class="btn btn-primary btn-sm">Adhérer {{ current_season.label }}</a>
+      <a href="{% url 'join' %}" class="btn btn-primary btn-sm">Adhérer<span class="hidden sm:inline">&nbsp;{{ current_season.label }}</span></a>
       {% endif %}
       <button type="button" class="btn btn-glass btn-icon btn-sm lg:hidden" @click="toggleMenu()" :aria-expanded="menuOpen" aria-controls="menu-mobile" aria-label="Menu">
         <span x-show="!menuOpen">{% icon "menu" %}</span><span x-show="menuOpen" x-cloak>{% icon "x" %}</span>

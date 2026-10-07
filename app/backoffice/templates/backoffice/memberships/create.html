@@ -6,7 +6,7 @@
   {% csrf_token %}
   <c-form-errors :form="form" />
   <c-card title="Qui ?">
-    <div class="mb-5 flex gap-2" role="radiogroup">
+    <div class="mb-5 flex flex-wrap gap-2" role="radiogroup">
       <button type="button" class="btn btn-sm" :class="mode === 'existing' ? 'btn-primary' : 'btn-secondary'" @click="mode = 'existing'">Personne existante</button>
       <button type="button" class="btn btn-sm" :class="mode === 'new' ? 'btn-primary' : 'btn-secondary'" @click="mode = 'new'">Nouvelle personne</button>
     </div>

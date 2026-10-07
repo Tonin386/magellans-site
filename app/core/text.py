@@ -25,4 +25,6 @@ def render_markdown(text, *, inline=False):
     )
     if inline and cleaned.startswith("<p>") and cleaned.endswith("</p>") and cleaned.count("<p>") == 1:
         cleaned = cleaned[3:-4]
+    # Un tableau trop large défile dans son cadre au lieu d'élargir la page (mobile).
+    cleaned = cleaned.replace("<table>", '<div class="table-scroll"><table>').replace("</table>", "</table></div>")
     return mark_safe(cleaned)

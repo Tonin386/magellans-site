@@ -4,7 +4,7 @@
     <thead><tr><th>Projet</th><th>Demandeur·se</th><th class="num">{% sort_header "montant" "Montant" %}</th><th>{% sort_header "date" "Déposée" %}</th><th>Statut</th></tr></thead>
     <tbody>
       {% for funding in rows %}
-      <tr>
+      <tr data-href="{% url 'backoffice:funding-detail' funding.pk %}">
         <td><a href="{% url 'backoffice:funding-detail' funding.pk %}" class="font-semibold hover:text-accent">{{ funding.name }}</a><span class="block text-xs text-muted">{{ funding.genre }} · {{ funding.directors }}</span></td>
         <td>{{ funding.asker.display_name|default:"—" }}</td>
         <td class="num font-semibold">{{ funding.funding_value }} €{% if funding.granted_amount %}<span class="block text-xs text-emerald-600">{{ funding.granted_amount|money }} accordés</span>{% endif %}</td>

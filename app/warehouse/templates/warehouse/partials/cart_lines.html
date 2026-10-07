@@ -2,13 +2,13 @@
   {% if lines %}
   <ul class="divide-y divide-line">
     {% for line in lines %}
-    <li class="flex items-center gap-4 py-3">
+    <li class="flex flex-wrap items-center gap-x-4 gap-y-2 py-3">
       <span class="size-14 shrink-0 overflow-hidden rounded-xl {% if line.item.has_photo %}bg-white{% else %}bg-surface-2{% endif %}">{% if line.item.has_photo %}<img src="{{ line.item.image.url }}" alt="" class="size-full object-contain p-1">{% else %}<span class="grid size-full place-items-center text-subtle">{% icon "camera" %}</span>{% endif %}</span>
       <div class="min-w-0 flex-1">
-        <p class="truncate font-semibold">{{ line.item.name }}</p>
+        <p class="line-clamp-2 font-semibold">{{ line.item.name }}</p>
         {% if line.max_available is not None %}<p class="text-xs font-semibold text-red-600 dark:text-red-400">Seulement {{ line.max_available }} disponible{{ line.max_available|pluralize }} sur ces dates</p>{% endif %}
       </div>
-      <div class="flex items-center gap-1.5" hx-target="#cart-lines" hx-swap="outerHTML">
+      <div class="flex items-center gap-1.5 max-sm:w-full max-sm:justify-end" hx-target="#cart-lines" hx-swap="outerHTML">
         <button type="button" class="btn btn-secondary btn-icon btn-sm" hx-post="{% url 'warehouse:cart-change' line.item_id %}" hx-vals='{"delta": -1, "target": "line"}' aria-label="Retirer un">{% icon "minus" %}</button>
         <span class="min-w-7 text-center font-bold tabular">{{ line.quantity }}</span>
         <button type="button" class="btn btn-secondary btn-icon btn-sm" hx-post="{% url 'warehouse:cart-change' line.item_id %}" hx-vals='{"delta": 1, "target": "line"}' aria-label="Ajouter un">{% icon "plus" %}</button>

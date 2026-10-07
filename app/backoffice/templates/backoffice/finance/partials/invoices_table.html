@@ -4,7 +4,7 @@
     <thead><tr><th>{% sort_header "titre" "Note de frais" %}</th><th>Auteur·ice</th><th>Projet</th><th>{% sort_header "date" "Déposée" %}</th><th class="num">Total</th><th>Statut</th></tr></thead>
     <tbody>
       {% for invoice in rows %}
-      <tr>
+      <tr data-href="{% url 'backoffice:invoice-detail' invoice.pk %}">
         <td><a href="{% url 'backoffice:invoice-detail' invoice.pk %}" class="font-semibold hover:text-accent">{{ invoice.title }}</a>{% if invoice.missing_proofs %}<span class="block text-xs text-red-600">{{ invoice.missing_proofs|length }} justificatif(s) manquant(s)</span>{% endif %}</td>
         <td>{{ invoice.author.display_name }}</td>
         <td class="text-muted">{{ invoice.project }}</td>
