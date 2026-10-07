@@ -1,0 +1,12 @@
+{% extends "layouts/auth.html" %}
+{% block title %}Lien expiré{% endblock %}
+{% block auth_content %}
+<span class="grid size-14 place-items-center rounded-2xl bg-red-500/10 text-2xl text-red-600">{% icon "link-2-off" %}</span>
+<h1 class="mt-6 text-3xl font-extrabold">Ce lien n'est plus valide</h1>
+<p class="mt-3 leading-relaxed text-muted">Il a peut-être expiré ou déjà été utilisé. Demande un nouveau lien ci-dessous.</p>
+<form method="post" action="{% url 'resend-activation' %}" class="mt-6 flex gap-2">
+  {% csrf_token %}
+  <input type="email" name="email" required value="{{ user_email|default:'' }}" placeholder="ton@email.fr" class="input" aria-label="Adresse e-mail">
+  <button type="submit" class="btn btn-primary">Renvoyer</button>
+</form>
+{% endblock %}

@@ -1,0 +1,25 @@
+{% extends "layouts/app.html" %}
+{% block title %}{% if operation %}Opération {{ operation.id }}{% else %}Nouvelle opération{% endif %}{% endblock %}
+{% block content %}
+<c-page-header eyebrow="Trésorerie" title="{% if operation %}Opération {{ operation.id }}{% else %}Nouvelle opération{% endif %}" back="{% url 'backoffice:finance' %}" back_label="Trésorerie" />
+<form method="post" enctype="multipart/form-data" class="max-w-3xl space-y-6" novalidate>
+  {% csrf_token %}
+  <c-form-errors :form="form" />
+  <c-card>
+    <div class="grid gap-5 sm:grid-cols-3">
+      <c-field :field="form.date" />
+      <c-field :field="form.type" />
+      <c-field :field="form.amount" />
+      <c-field :field="form.desc" class="sm:col-span-3" />
+      <c-field :field="form.category" />
+      <div class="sm:col-span-2">
+        <c-field :field="form.third_party" />
+        <a href="{% url 'backoffice:person-create' %}?next=operation" class="mt-1.5 inline-block text-xs font-semibold text-accent hover:underline">+ Créer une nouvelle fiche (tiers, fournisseur…)</a>
+      </div>
+      <c-field :field="form.invoice" class="sm:col-span-3" />
+      <c-field :field="form.attachment" class="sm:col-span-3" />
+    </div>
+  </c-card>
+  <div class="flex justify-end gap-2"><c-button href="{% url 'backoffice:finance' %}" variant="secondary">Annuler</c-button><button type="submit" class="btn btn-primary">{% icon "check" %} Enregistrer</button></div>
+</form>
+{% endblock %}

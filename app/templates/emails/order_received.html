@@ -1,0 +1,19 @@
+{% partialdef subject %}Ta demande de matériel #{{ order.pk }} est bien reçue{% endpartialdef %}
+{% partialdef body %}{% autoescape off %}
+Bonjour {{ order.user.first_name }},
+
+Ta demande de réservation **#{{ order.pk }}** pour le projet « {{ order.project_name }} » a bien été transmise à l'équipe du magasin.
+
+- **Retrait :** {{ order.date_start|date:"l j F Y à H:i" }}
+- **Retour :** {{ order.date_end|date:"l j F Y à H:i" }}
+
+**Matériel demandé :**
+{% for line in lines %}
+- {{ line.quantity }} × {{ line.item.name }}{% endfor %}
+
+Tu recevras un e-mail dès qu'elle aura été étudiée. Une fois acceptée, il te restera à signer le contrat de prêt en ligne.
+
+[[Suivre ma réservation|{{ site_url }}{{ order.get_absolute_url }}]]
+
+L'équipe {{ site.site_name }}
+{% endautoescape %}{% endpartialdef %}

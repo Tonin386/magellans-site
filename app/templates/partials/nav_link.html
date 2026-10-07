@@ -1,0 +1,7 @@
+<li>
+  <a href="{{ url }}" {% if exact %}{% nav_active url exact=True %}{% else %}{% nav_active url %}{% endif %}
+     class="group flex items-center gap-3 rounded-xl px-3 py-2 font-medium text-muted transition hover:bg-surface-2 hover:text-fg aria-[current=page]:bg-accent-soft aria-[current=page]:text-fg">
+    <span class="text-base text-subtle transition group-hover:text-fg group-aria-[current=page]:text-accent">{% icon icon %}</span>
+    <span class="truncate">{{ label }}</span>
+  </a>
+</li>

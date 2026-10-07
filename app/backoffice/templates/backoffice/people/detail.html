@@ -1,0 +1,153 @@
+{% extends "layouts/app.html" %}
+
+{% block title %}{{ person.display_name }}{% endblock %}
+
+{% block content %}
+<c-page-header eyebrow="Personnes" title="{{ person.display_name }}" back="{% url 'backoffice:people' %}" back_label="Personnes">
+  {% if person.email %}<c-button href="mailto:{{ person.email }}" variant="secondary" icon="mail">Écrire</c-button>{% endif %}
+</c-page-header>
+
+<div class="mb-6 flex flex-wrap items-center gap-2">
+  {% for label in person.board_role_labels %}<c-badge tone="brand" plain="1">{{ label }}</c-badge>{% endfor %}
+  {% if person.is_current_member %}<c-badge tone="success">Adhérent·e à jour</c-badge>{% else %}<c-badge tone="neutral">Pas d'adhésion en cours</c-badge>{% endif %}
+  {% if person.site_profile %}{% if person.site_profile.is_active %}<c-badge tone="info">Compte actif</c-badge>{% else %}<c-badge tone="warning">Compte non activé</c-badge>{% endif %}{% else %}<c-badge tone="neutral">Sans compte</c-badge>{% endif %}
+  {% if person.is_organisation %}<c-badge tone="info">Organisation</c-badge>{% endif %}
+</div>
+
+<div class="grid gap-6 xl:grid-cols-[1fr_22rem]" x-data="tabs('infos')">
+  <div class="min-w-0 space-y-6">
+    <div class="scrollbar-none flex gap-1 overflow-x-auto rounded-2xl bg-surface-2 p-1 text-sm font-semibold" role="tablist">
+      <button type="button" role="tab" data-tab="infos" class="shrink-0 rounded-xl px-3.5 py-2 transition" :class="isActive('infos') ? 'bg-surface shadow-sm' : 'text-muted hover:text-fg'" @click="select('infos')">Informations</button>
+      <button type="button" role="tab" data-tab="adhesions" class="shrink-0 rounded-xl px-3.5 py-2 transition" :class="isActive('adhesions') ? 'bg-surface shadow-sm' : 'text-muted hover:text-fg'" @click="select('adhesions')">Adhésions ({{ memberships|length }})</button>
+      {% if person.site_profile %}
+      <button type="button" role="tab" data-tab="magasin" class="shrink-0 rounded-xl px-3.5 py-2 transition" :class="isActive('magasin') ? 'bg-surface shadow-sm' : 'text-muted hover:text-fg'" @click="select('magasin')">Réservations ({{ orders|length }})</button>
+      <button type="button" role="tab" data-tab="frais" class="shrink-0 rounded-xl px-3.5 py-2 transition" :class="isActive('frais') ? 'bg-surface shadow-sm' : 'text-muted hover:text-fg'" @click="select('frais')">Notes de frais ({{ invoices|length }})</button>
+      {% endif %}
+      {% if operations is not None %}<button type="button" role="tab" data-tab="operations" class="shrink-0 rounded-xl px-3.5 py-2 transition" :class="isActive('operations') ? 'bg-surface shadow-sm' : 'text-muted hover:text-fg'" @click="select('operations')">Opérations ({{ operations|length }})</button>{% endif %}
+      <button type="button" role="tab" data-tab="projets" class="shrink-0 rounded-xl px-3.5 py-2 transition" :class="isActive('projets') ? 'bg-surface shadow-sm' : 'text-muted hover:text-fg'" @click="select('projets')">Projets</button>
+    </div>
+
+    <section x-show="isActive('infos')">
+      <form method="post" novalidate>
+        {% csrf_token %}
+        <input type="hidden" name="action" value="save">
+        <c-card>
+          <c-form-errors :form="form" />
+          <div class="grid gap-5 sm:grid-cols-2">
+            <c-field :field="form.kind" />
+            <c-field :field="form.gender" />
+            <c-field :field="form.first_name" />
+            <c-field :field="form.last_name" />
+            <c-field :field="form.organisation_name" class="sm:col-span-2" />
+            <c-field :field="form.email" />
+            <c-field :field="form.phone" />
+            <c-field :field="form.additional_notes" class="sm:col-span-2" />
+          </div>
+          <div class="mt-5 flex justify-end"><button type="submit" class="btn btn-primary">{% icon "check" %} Enregistrer</button></div>
+        </c-card>
+      </form>
+    </section>
+
+    <section x-show="isActive('adhesions')" x-cloak>
+      <c-card title="Historique des adhésions">
+        <c-slot name="actions"><c-button href="{% url 'backoffice:membership-create' %}" variant="ghost" size="sm" icon="plus">Saisir</c-button></c-slot>
+        <ul class="divide-y divide-line">
+          {% for membership in memberships %}
+          <li class="flex items-center justify-between gap-3 py-3 text-sm">
+            <span><strong>{{ membership.season.label }}</strong> · {{ membership.joined_at|date:"j M Y" }} · {{ membership.get_source_display }}</span>
+            <span class="flex items-center gap-2">{{ membership.amount|money }} <c-badge tone="{% if membership.is_active %}success{% else %}danger{% endif %}">{{ membership.get_status_display }}</c-badge><a href="{% url 'backoffice:membership-edit' membership.pk %}" class="btn btn-ghost btn-sm" aria-label="Modifier">{% icon "pencil" %}</a></span>
+          </li>
+          {% empty %}<li class="py-3 text-sm text-muted">Aucune adhésion.</li>{% endfor %}
+        </ul>
+      </c-card>
+    </section>
+
+    {% if person.site_profile %}
+    <section x-show="isActive('magasin')" x-cloak>
+      <c-card title="Réservations">
+        <ul class="divide-y divide-line">
+          {% for order in orders %}
+          <li><a href="{% url 'backoffice:order-detail' order.pk %}" class="flex items-center justify-between gap-3 py-3 text-sm hover:text-accent"><span>#{{ order.pk }} · {{ order.project_name }} · {{ order.date_start|date:"j M Y" }}</span><c-badge tone="{{ order.status_tone }}">{{ order.get_status_display }}</c-badge></a></li>
+          {% empty %}<li class="py-3 text-sm text-muted">Aucune réservation.</li>{% endfor %}
+        </ul>
+      </c-card>
+    </section>
+    <section x-show="isActive('frais')" x-cloak>
+      <c-card title="Notes de frais">
+        <ul class="divide-y divide-line">
+          {% for invoice in invoices %}
+          <li><a href="{% url 'backoffice:invoice-detail' invoice.pk %}" class="flex items-center justify-between gap-3 py-3 text-sm hover:text-accent"><span>{{ invoice.title }} · {{ invoice.date_created|date:"j M Y" }}</span><span class="flex items-center gap-2">{{ invoice.total_amount|money }} <c-badge tone="{{ invoice.status_tone }}">{{ invoice.get_status_display }}</c-badge></span></a></li>
+          {% empty %}<li class="py-3 text-sm text-muted">Aucune note de frais.</li>{% endfor %}
+        </ul>
+      </c-card>
+    </section>
+    {% endif %}
+
+    {% if operations is not None %}
+    <section x-show="isActive('operations')" x-cloak>
+      <c-card title="Opérations de trésorerie">
+        <ul class="divide-y divide-line">
+          {% for operation in operations %}
+          <li class="flex items-center justify-between gap-3 py-3 text-sm"><span><span class="font-mono text-xs text-muted">{{ operation.id }}</span> · {{ operation.date|date:"j M Y" }} · {{ operation.desc|truncatechars:60 }}</span><span class="font-semibold tabular {% if operation.type == 'C' %}text-emerald-600{% else %}text-red-600{% endif %}">{{ operation.signed_amount|money:True }}</span></li>
+          {% empty %}<li class="py-3 text-sm text-muted">Aucune opération.</li>{% endfor %}
+        </ul>
+      </c-card>
+    </section>
+    {% endif %}
+
+    <section x-show="isActive('projets')" x-cloak>
+      <c-card title="Projets">
+        <ul class="divide-y divide-line text-sm">
+          {% for project in directed %}<li class="py-3"><a class="hover:text-accent" href="{% url 'backoffice:project-edit' project.pk %}"><strong>{{ project.name }}</strong> — réalisation</a></li>{% endfor %}
+          {% for credit in credits %}<li class="py-3"><a class="hover:text-accent" href="{% url 'backoffice:project-edit' credit.project.pk %}"><strong>{{ credit.project.name }}</strong> — {{ credit.display_role }}</a></li>{% endfor %}
+          {% if not directed and not credits %}<li class="py-3 text-muted">Aucun projet.</li>{% endif %}
+        </ul>
+      </c-card>
+    </section>
+  </div>
+
+  <aside class="space-y-6">
+    <c-card title="Compte du site">
+      {% if person.site_profile %}
+      <dl class="space-y-2 text-sm">
+        <div><dt class="text-xs text-muted">E-mail de connexion</dt><dd class="break-all">{{ person.site_profile.email }}</dd></div>
+        <div><dt class="text-xs text-muted">Inscription</dt><dd>{{ person.site_profile.date_joined|date:"j F Y" }}</dd></div>
+        <div><dt class="text-xs text-muted">Dernière connexion</dt><dd>{{ person.site_profile.last_login|date:"j F Y H:i"|default:"jamais" }}</dd></div>
+      </dl>
+      {% if not person.site_profile.is_active %}
+      <button type="button" class="btn btn-secondary btn-sm mt-4 w-full" hx-post="{% url 'backoffice:person-invite' person.pk %}">{% icon "send" %} Renvoyer l'invitation</button>
+      {% endif %}
+      {% else %}
+      <p class="text-sm text-muted">Pas de compte sur le site.</p>
+      {% if person.email %}<button type="button" class="btn btn-secondary btn-sm mt-4 w-full" hx-post="{% url 'backoffice:person-invite' person.pk %}" hx-confirm="Créer un compte et envoyer une invitation à {{ person.email }} ?" data-confirm-label="Inviter">{% icon "user-plus" %} Créer un compte et inviter</button>{% endif %}
+      <details class="mt-4 text-sm">
+        <summary class="cursor-pointer font-semibold text-accent">Associer à un compte existant</summary>
+        <form method="post" action="{% url 'backoffice:person-link' person.pk %}" class="mt-3 space-y-3">
+          {% csrf_token %}
+          <c-field :field="link_form.account" />
+          <button type="submit" class="btn btn-secondary btn-sm w-full">Associer / fusionner</button>
+        </form>
+      </details>
+      {% endif %}
+    </c-card>
+
+    <c-card title="Rôles au CA">
+      {% if can_edit_roles %}
+      <form method="post" action="{% url 'backoffice:person-roles' person.pk %}" class="space-y-3">
+        {% csrf_token %}
+        <div class="grid gap-2">
+          {% for choice in roles_form.roles %}
+          <label class="choice py-2.5">{{ choice.tag }}<span class="text-sm font-medium">{{ choice.choice_label }}</span></label>
+          {% endfor %}
+        </div>
+        <button type="submit" class="btn btn-primary btn-sm w-full">{% icon "shield-check" %} Mettre à jour les rôles</button>
+        <p class="help">Les rôles donnent accès à l'espace CA. Trésorerie et magasin ouvrent des droits spécifiques.</p>
+      </form>
+      {% else %}
+      <p class="text-sm">{{ person.board_role_labels|join:", "|default:"Aucun rôle." }}</p>
+      <p class="help">Seuls la présidence et le ou la webmaster attribuent les rôles.</p>
+      {% endif %}
+    </c-card>
+  </aside>
+</div>
+{% endblock %}

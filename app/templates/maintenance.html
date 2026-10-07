@@ -1,51 +1,27 @@
-{% load static %}
-
-<!doctype html>
-<title>Projet Magellans - Site en maintenance</title>
-<style>
-  body { text-align: center; padding: 150px; }
-  h1 { font-size: 50px; }
-  body { font: 20px Helvetica, sans-serif; color: #333; }
-  article { display: block; text-align: left; width: 650px; margin: 0 auto; }
-  a { color: #dc8100; text-decoration: none; }
-  a:hover { color: #333; text-decoration: none; }
-</style>
+{% load static %}<!DOCTYPE html>
+<html lang="fr" class="dark">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-
-    <meta name="keywords" content="association,magellans,projet,réseau,film,magasin,matériel,location,social,network,cinema,films,france,fr,paris,région parisienne">
-    <meta property="og:keywords" content="association,magellans,projet,réseau,film,magasin,matériel,location,social,network,cinema,films,france,fr,paris,région parisienne">
-
-    <meta name="author" content="https://github.com/Tonin386">
-    <meta property="og:author" content="https://github.com/Tonin386">
-
-    <meta name="type" content="website">
-    <meta property="og:type" content="website">
-
-    <meta name="site_name" content="Magellans"> 
-    <meta property="og:site_name" content="Magellans">
-
-    <meta name="image" content="{% static 'img/logo.png' %}">
-    <meta property="og:image" content="{% static 'img/logo.png' %}"> 
-    <meta property="og:image:secure_url" content="https://magellans.fr{% static 'img/logo.png' %}">
-
-    <meta name="twitter:image" content="https://magellans.fr{% static 'img/logo.png' %}">
-    <link rel="shortcut icon" type="image/x-icon" href="{% static 'img/favicon.ico' %}">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <title>Maintenance · {{ site.site_name }}</title>
+  <link rel="icon" href="{% static 'img/favicon.svg' %}" type="image/svg+xml">
+  <style nonce="{{ csp_nonce }}">
+    body { margin: 0; min-height: 100vh; display: grid; place-items: center; background: radial-gradient(circle at 30% 20%, rgba(255,171,14,.25), transparent 50%), #0b0907; color: #f4eee7; font: 17px/1.6 system-ui, sans-serif; text-align: center; padding: 1.5rem; }
+    img { width: 96px; height: 96px; animation: spin 20s linear infinite; }
+    h1 { font-size: clamp(2rem, 6vw, 3.25rem); margin: 1.5rem 0 .5rem; }
+    p { color: #b0a396; max-width: 34rem; margin: 0 auto; }
+    a { color: #ffb320; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    @media (prefers-reduced-motion: reduce) { img { animation: none; } }
+  </style>
 </head>
-
-<article>
-    <h1>
-        Nous revenons très vite !
-    </h1>
-    <hr>
-    <div>
-        <p>
-            Veuillez nous excuser de tout dérangement, mais nous sommes en maintenance pour le moment.<br>
-            N'hésitez pas à nous contacter sur instagram ou par whatsapp en attendant, mais ne vous en faites pas nous serons de retour très vite !
-        </p>
-        <p>L'équipe Magellans.</p>
-        <img src="{% static 'img/logo.png' %}" height="128" style="display: block; margin: auto;">
-    </div>
-</article>
+<body>
+  <main>
+    <img src="{% static 'img/logo.svg' %}" alt="">
+    <h1>Nous revenons très vite !</h1>
+    <p>{{ site.maintenance_message }}</p>
+    {% if site.instagram_url %}<p style="margin-top:1rem"><a href="{{ site.instagram_url }}">Instagram</a>{% if site.contact_email %} · <a href="mailto:{{ site.contact_email }}">{{ site.contact_email }}</a>{% endif %}</p>{% endif %}
+  </main>
+</body>
+</html>

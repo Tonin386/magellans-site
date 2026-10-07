@@ -1,0 +1,30 @@
+{% load bo %}
+<div class="table-wrap">
+  <table class="table">
+    <thead><tr><th>{% sort_header "nom" "Nom" %}</th><th>Contact</th><th>Statut</th><th>{% sort_header "creation" "Créée" %}</th></tr></thead>
+    <tbody>
+      {% for person in rows %}
+      <tr>
+        <td>
+          <a href="{% url 'backoffice:person-detail' person.pk %}" class="flex items-center gap-3 font-semibold hover:text-accent">
+            <c-avatar name="{{ person.display_name }}" src="{% if person.avatar %}{{ person.avatar.url }}{% endif %}" size="size-8" class="text-[0.65rem]" />
+            {{ person.display_name }}
+          </a>
+        </td>
+        <td class="text-muted"><span class="block">{{ person.contact_email|default:"—" }}</span><span class="text-xs">{{ person.phone_display }}</span></td>
+        <td>
+          <div class="flex flex-wrap gap-1">
+            {% for label in person.board_role_labels %}<c-badge tone="brand" plain="1">{{ label }}</c-badge>{% endfor %}
+            {% if person.is_member %}<c-badge tone="success">Adhérent·e {{ season.label }}</c-badge>{% endif %}
+            {% if person.is_organisation %}<c-badge tone="info">Organisation</c-badge>{% elif person.site_profile %}{% if not person.is_member %}<c-badge tone="neutral">Inscrit·e</c-badge>{% endif %}{% elif not person.is_member %}<c-badge tone="neutral">Externe</c-badge>{% endif %}
+          </div>
+        </td>
+        <td class="text-sm whitespace-nowrap text-muted">{{ person.created_at|date:"j M Y"|default:"—" }}</td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="4" class="py-12 text-center text-muted">Personne ne correspond.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% include "backoffice/partials/pagination.html" %}

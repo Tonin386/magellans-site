@@ -1,0 +1,52 @@
+{% extends "layouts/app.html" %}
+{% block title %}{% if project %}{{ project.name }}{% else %}Nouveau projet{% endif %}{% endblock %}
+{% block content %}
+<c-page-header eyebrow="Projets" title="{% if project %}{{ project.name }}{% else %}Nouveau projet{% endif %}" back="{% url 'backoffice:projects' %}" back_label="Projets">
+  {% if project %}
+  <c-button href="{{ project.get_absolute_url }}" variant="ghost" icon="eye" target="_blank">Voir la page</c-button>
+  <button type="button" class="btn btn-soft-danger" hx-post="{% url 'backoffice:project-delete' project.pk %}" hx-confirm="Supprimer le projet « {{ project.name }} » ?" data-confirm-danger data-confirm-label="Supprimer">{% icon "trash-2" %}</button>
+  {% endif %}
+</c-page-header>
+<div class="grid gap-6 xl:grid-cols-[1fr_24rem] xl:items-start">
+  <form method="post" enctype="multipart/form-data" class="min-w-0 space-y-6" novalidate>
+    {% csrf_token %}
+    <c-form-errors :form="form" />
+    <c-card title="Présentation">
+      <div class="grid gap-5 sm:grid-cols-2">
+        <c-field :field="form.name" />
+        <c-field :field="form.genre" />
+        <c-field :field="form.short_desc" class="sm:col-span-2" />
+        <c-field :field="form.desc" class="sm:col-span-2" />
+        <c-field :field="form.video_url" class="sm:col-span-2" />
+      </div>
+    </c-card>
+    <c-card title="Fiche technique">
+      <div class="grid gap-5 sm:grid-cols-3">
+        <c-field :field="form.status" />
+        <c-field :field="form.shoot_date" />
+        <c-field :field="form.release_date" />
+        <c-field :field="form.duration_minutes" />
+        <c-field :field="form.director" />
+        <c-field :field="form.money_handler" />
+        <c-field :field="form.festivals" class="sm:col-span-3" />
+      </div>
+    </c-card>
+    <c-card title="Affiche & visibilité">
+      <div class="flex flex-col gap-5 sm:flex-row">
+        <span class="aspect-[2/3] w-32 shrink-0 overflow-hidden rounded-xl bg-surface-2">{% if project.has_poster %}<img src="{{ project.poster.url }}" alt="" class="size-full object-cover">{% else %}<span class="grid size-full place-items-center text-3xl text-subtle">{% icon "image" %}</span>{% endif %}</span>
+        <div class="flex-1 space-y-4"><c-field :field="form.poster" /><c-field :field="form.public" /><c-field :field="form.featured" /></div>
+      </div>
+    </c-card>
+    <div class="flex justify-end"><button type="submit" class="btn btn-primary">{% icon "check" %} Enregistrer</button></div>
+  </form>
+  <aside>
+    <c-card title="Générique" subtitle="Affiché sur la page publique du film.">
+      {% if project %}
+      <div id="credits">{% include "backoffice/projects/partials/credits.html" %}</div>
+      {% else %}
+      <p class="text-sm text-muted">Enregistre d'abord le projet pour composer son générique.</p>
+      {% endif %}
+    </c-card>
+  </aside>
+</div>
+{% endblock %}

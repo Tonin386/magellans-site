@@ -1,71 +1,117 @@
-from django.utils.decorators import method_decorator
-from members.decorators import staff_required
-from django.views.generic import DetailView
-from django.shortcuts import render
-from warehouse.models import *
-from members.models import *
-from .models import *
+"""Demandes d'aide à projet et ressources, côté membres."""
 
-@staff_required("Tableau de bord utilisateurs", "Page de gestion des membres de l'association Magellans.")
-def dashboard_members(request):
-    title = request.title
-    og_description = request.og_description
-    members = Member.objects.all()
-    external_users = UnregisteredMember.objects.all()
-    
-    return render(request, "dashboard_members.html", locals())
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from django.core.exceptions import PermissionDenied
+from django.shortcuts import get_object_or_404, redirect, render
+from django.views.decorators.http import require_POST
 
-@staff_required("Tableau de bord projets", "Page de gestion des projets de l'association Magellans.")
-def dashboard_projects(request):
-    title = request.title
-    og_description = request.og_description
+from core.audit import log_activity
+from core.emails import send_templated_email
+from core.models import SiteSettings
+from core.permissions import has_capability
+from core.threads import MessageForm, post_message, thread_for
 
-    projects = Project.objects.all()
+from .forms import FundingRequestForm
+from .models import ProjectFundingRequest, ResourceFile
 
-    members = Member.objects.all()
-    external_users = UnregisteredMember.objects.all()
+MAX_ATTACHMENTS_BYTES = 15 * 1024 * 1024
 
-    site_persons = []
-    ext_persons = []
 
-    for m in members:
-        site_persons.append(m.site_person)
+def funding_recipients():
+    return SiteSettings.load().recipients("funding")
 
-    for m in external_users:
-        ext_persons.append(m.ext_person)
 
-    return render(request, "dashboard_projects.html", locals())
+def _request_for(request, pk):
+    funding = get_object_or_404(ProjectFundingRequest.objects.select_related("asker"), pk=pk)
+    if funding.asker_id != request.user.pk and not has_capability(request.user, "funding"):
+        raise PermissionDenied
+    return funding
 
-@staff_required("Tableau de bord commandes", "Page de gestion des réservations et commande du magasin de l'association Magellans.")
-def dashboard_orders(request):
-    title = request.title
-    og_description = request.og_description
 
-    orders = Order.objects.all()
+@login_required
+def funding_list(request):
+    requests_ = ProjectFundingRequest.objects.filter(asker=request.user)
+    return render(request, "dashboard/funding_list.html", {"funding_requests": requests_, "site": SiteSettings.load()})
 
-    return render(request, "dashboard_orders.html", locals())
 
-class ProjectDetailView(DetailView):
-    model = Project
-    template_name = "project_detail.html"
+def _attachments(funding):
+    files, total = [], 0
+    for _field, field_file, label in funding.files:
+        try:
+            with field_file.storage.open(field_file.name, "rb") as handle:
+                data = handle.read()
+        except OSError:
+            continue
+        total += len(data)
+        if total > MAX_ATTACHMENTS_BYTES:
+            break
+        extension = field_file.name.rsplit(".", 1)[-1]
+        files.append((f"{label}.{extension}", data, None))
+    return files
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
 
-        members = Member.objects.all()
-        external_users = UnregisteredMember.objects.all()
+@login_required
+def funding_create(request):
+    form = FundingRequestForm(request.POST or None, request.FILES or None)
+    if request.method == "POST" and form.is_valid():
+        funding = form.save(commit=False)
+        funding.asker = request.user
+        funding.save()
+        sent = send_templated_email(
+            "funding_new", {"funding": funding}, funding_recipients(), reply_to=[request.user.email], attachments=_attachments(funding)
+        )
+        if sent:
+            ProjectFundingRequest.objects.filter(pk=funding.pk).update(sent_by_mail=True)
+        send_templated_email("funding_received", {"funding": funding}, [request.user.email])
+        log_activity(request, "funding-created", f"Nouvelle demande d'aide « {funding.name} » ({funding.funding_value} €).", target=funding, category="funding")
+        messages.success(request, "Ta demande est déposée ! Elle sera étudiée lors d'une prochaine réunion du CA.")
+        return redirect(funding.get_absolute_url())
+    return render(request, "dashboard/funding_form.html", {"form": form, "site": SiteSettings.load()})
 
-        site_persons = []
-        ext_persons = []
 
-        for m in members:
-            site_persons.append(m.site_person)
+@login_required
+def funding_detail(request, pk):
+    funding = _request_for(request, pk)
+    is_board = has_capability(request.user, "funding")
+    return render(
+        request,
+        "dashboard/funding_detail.html",
+        {
+            "funding": funding,
+            "thread": thread_for(funding, include_internal=is_board),
+            "message_form": MessageForm(allow_internal=is_board),
+            "is_asker": funding.asker_id == request.user.pk,
+            "is_board": is_board,
+        },
+    )
 
-        for m in external_users:
-            ext_persons.append(m.ext_person)
 
-        context["site_persons"] = site_persons
-        context["ext_persons"] = ext_persons
-        context["title"] = f"Projet {self.object.name}"
-        context["og_description"] = f"Page des détails du projet '{self.object.name}' auquel a participé l'association Magellans."
-        return context
+@login_required
+@require_POST
+def funding_message(request, pk):
+    funding = _request_for(request, pk)
+    is_board = has_capability(request.user, "funding")
+    form = MessageForm(request.POST, allow_internal=is_board)
+    if form.is_valid():
+        internal = form.cleaned_data.get("is_internal", False)
+        from_board = is_board and funding.asker_id != request.user.pk
+        post_message(funding, author=request.user, body=form.cleaned_data["body"], is_internal=internal, is_from_board=from_board)
+        if not internal:
+            recipients = [funding.asker.email] if from_board and funding.asker else funding_recipients()
+            send_templated_email("funding_message", {"funding": funding, "body": form.cleaned_data["body"], "from_board": from_board}, recipients)
+        form = MessageForm(allow_internal=is_board)
+    return render(
+        request,
+        "dashboard/partials/funding_thread.html",
+        {"funding": funding, "thread": thread_for(funding, include_internal=is_board), "message_form": form},
+    )
+
+
+@login_required
+def resource_list(request):
+    resources = ResourceFile.objects.order_by("category", "name")
+    categories = {}
+    for resource in resources:
+        categories.setdefault(resource.category or "Divers", []).append(resource)
+    return render(request, "dashboard/resource_list.html", {"categories": categories, "count": len(resources)})

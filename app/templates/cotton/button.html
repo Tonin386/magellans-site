@@ -1,0 +1,10 @@
+{% comment %}
+  <c-button href="/" variant="primary|secondary|ghost|danger|soft-danger|glass" size="sm|lg" icon="plus" icon_right="arrow-right">Texte</c-button>
+  Sans href : <button type="button|submit">. Les autres attributs (hx-*, name…) sont transmis.
+{% endcomment %}
+<c-vars variant="primary" size="" icon="" icon_right="" href="" type="button" class="" />
+{% if href %}
+<a href="{{ href }}" class="btn btn-{{ variant }}{% if size %} btn-{{ size }}{% endif %} {{ class }}" {{ attrs }}>{% if icon %}{% icon icon %}{% endif %}{{ slot }}{% if icon_right %}{% icon icon_right %}{% endif %}</a>
+{% else %}
+<button type="{{ type }}" class="btn btn-{{ variant }}{% if size %} btn-{{ size }}{% endif %} {{ class }}" {{ attrs }}>{% if icon %}{% icon icon %}{% endif %}{{ slot }}{% if icon_right %}{% icon icon_right %}{% endif %}</button>
+{% endif %}

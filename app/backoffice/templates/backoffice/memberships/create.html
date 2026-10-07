@@ -1,0 +1,35 @@
+{% extends "layouts/app.html" %}
+{% block title %}Saisir une adhésion{% endblock %}
+{% block content %}
+<c-page-header eyebrow="Adhésions" title="Saisir une adhésion" subtitle="Pour les paiements hors HelloAsso (espèces, chèque, virement, adhésion offerte)." back="{% url 'backoffice:memberships' %}" back_label="Adhésions" />
+<form method="post" class="max-w-3xl space-y-6" novalidate x-data="{ mode: '{% if form.new_last_name.value %}new{% else %}existing{% endif %}' }">
+  {% csrf_token %}
+  <c-form-errors :form="form" />
+  <c-card title="Qui ?">
+    <div class="mb-5 flex gap-2" role="radiogroup">
+      <button type="button" class="btn btn-sm" :class="mode === 'existing' ? 'btn-primary' : 'btn-secondary'" @click="mode = 'existing'">Personne existante</button>
+      <button type="button" class="btn btn-sm" :class="mode === 'new' ? 'btn-primary' : 'btn-secondary'" @click="mode = 'new'">Nouvelle personne</button>
+    </div>
+    <div x-show="mode === 'existing'"><c-field :field="form.person" /></div>
+    <div x-show="mode === 'new'" x-cloak class="grid gap-5 sm:grid-cols-2">
+      <c-field :field="form.new_first_name" />
+      <c-field :field="form.new_last_name" />
+      <c-field :field="form.new_email" />
+      <c-field :field="form.new_phone" />
+    </div>
+  </c-card>
+  <c-card title="Adhésion">
+    <div class="grid gap-5 sm:grid-cols-2">
+      <c-field :field="form.season" />
+      <c-field :field="form.joined_at" />
+      <c-field :field="form.amount" />
+      <c-field :field="form.payment_method" />
+      <c-field :field="form.notes" class="sm:col-span-2" />
+    </div>
+  </c-card>
+  <div class="flex justify-end gap-2">
+    <c-button href="{% url 'backoffice:memberships' %}" variant="secondary">Annuler</c-button>
+    <button type="submit" class="btn btn-primary">{% icon "check" %} Enregistrer l'adhésion</button>
+  </div>
+</form>
+{% endblock %}

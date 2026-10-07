@@ -1,0 +1,20 @@
+{% load bo %}
+<div class="table-wrap">
+  <table class="table">
+    <thead><tr><th>Projet</th><th>Demandeur·se</th><th class="num">{% sort_header "montant" "Montant" %}</th><th>{% sort_header "date" "Déposée" %}</th><th>Statut</th></tr></thead>
+    <tbody>
+      {% for funding in rows %}
+      <tr>
+        <td><a href="{% url 'backoffice:funding-detail' funding.pk %}" class="font-semibold hover:text-accent">{{ funding.name }}</a><span class="block text-xs text-muted">{{ funding.genre }} · {{ funding.directors }}</span></td>
+        <td>{{ funding.asker.display_name|default:"—" }}</td>
+        <td class="num font-semibold">{{ funding.funding_value }} €{% if funding.granted_amount %}<span class="block text-xs text-emerald-600">{{ funding.granted_amount|money }} accordés</span>{% endif %}</td>
+        <td class="whitespace-nowrap text-muted">{{ funding.deposit_date|date:"j M Y" }}</td>
+        <td><c-badge tone="{{ funding.status_tone }}">{{ funding.get_status_display }}</c-badge></td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="5" class="py-12 text-center text-muted">Aucune demande.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% include "backoffice/partials/pagination.html" %}

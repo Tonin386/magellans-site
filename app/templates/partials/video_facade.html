@@ -1,0 +1,14 @@
+{% comment %} Lecteur vidéo à la demande : aucune requête vers YouTube/Vimeo avant le clic. {% endcomment %}
+<div x-data="videoFacade('{{ video.embed|escapejs }}')" class="relative aspect-video overflow-hidden rounded-2xl border border-white/10 bg-ink-950 shadow-2xl">
+  <template x-if="!playing">
+    <button type="button" @click="play()" class="group absolute inset-0 grid place-items-center" aria-label="Lire la vidéo « {{ title }} »">
+      {% if video.thumbnail %}<img src="{{ video.thumbnail }}" alt="" loading="lazy" class="absolute inset-0 size-full object-cover opacity-80 transition duration-500 group-hover:scale-105 group-hover:opacity-100">{% endif %}
+      <span class="absolute inset-0 bg-gradient-to-t from-ink-950/80 to-transparent"></span>
+      <span class="relative grid size-20 place-items-center rounded-full bg-amber-500 text-3xl text-ink-950 shadow-2xl shadow-amber-500/40 transition duration-300 group-hover:scale-110">{% icon "play" css="translate-x-0.5" %}</span>
+      <span class="absolute bottom-3 left-4 text-xs text-ink-300">La vidéo sera chargée depuis {% if video.provider == "vimeo" %}Vimeo{% else %}YouTube{% endif %}.</span>
+    </button>
+  </template>
+  <template x-if="playing">
+    <iframe x-ref="frame" class="absolute inset-0 size-full" title="{{ title }}" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>
+  </template>
+</div>

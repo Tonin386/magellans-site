@@ -1,13 +1,17 @@
-from channels.layers import get_channel_layer
-from asgiref.sync import async_to_sync
-from members.models import Member
+"""Historique : notifications de l'ancienne API (conservées, plus alimentées).
+
+Les actions sont désormais tracées dans le journal d'activité (``core.ActivityLog``).
+"""
+
 from django.db import models
 
+from members.models import Member
+
 NOTIFICATION_STATUS = [
-    (0, 'success'),
-    (1, 'info'),
-    (2, 'warning'),
-    (3, 'danger')
+    (0, "success"),
+    (1, "info"),
+    (2, "warning"),
+    (3, "danger"),
 ]
 
 APPLICATION_CHOICES = [
@@ -17,8 +21,9 @@ APPLICATION_CHOICES = [
     (3, "Magellans"),
     (4, "Membres"),
     (5, "Vitrine"),
-    (6, "Magasin")
+    (6, "Magasin"),
 ]
+
 
 class Notification(models.Model):
     title = models.CharField("Titre", max_length=255)
@@ -29,28 +34,10 @@ class Notification(models.Model):
     time = models.DateTimeField("Date et heure", auto_now_add=True)
     user = models.ForeignKey(Member, verbose_name="Auteur de l'action", blank=True, null=True, on_delete=models.SET_NULL)
     extra_field = models.TextField("Informations supplémentaires", blank=True, null=True)
-    
-    def show(self):
-        channel_layer = get_channel_layer()
-        
-        async_to_sync(channel_layer.group_send)(
-            'notifications',
-            {
-                'type': 'emit_notification',
-                'notification': dict(
-                    id=self.pk,
-                    title=self.title, 
-                    subtitle=self.subtitle, 
-                    application=self.application,
-                    status=self.status,
-                    message=self.message,
-                    time=str(self.time),
-                    target=self.user.api_token
-                )
-            }
-        )
-        
-    def __str__(self):
-        return self.time.strftime("%Y-%m-%d %H:%M:%S") + f" {self.title} - {self.application} ({self.status})"    
+
     class Meta:
-        pass
+        verbose_name = "Notification (ancien site)"
+        verbose_name_plural = "Notifications (ancien site)"
+
+    def __str__(self):
+        return self.time.strftime("%Y-%m-%d %H:%M:%S") + f" {self.title} - {self.application} ({self.status})"

@@ -1,0 +1,7 @@
+{% comment %} Barre de recherche HTMX : met à jour #table. Variable : placeholder {% endcomment %}
+<label class="relative block w-full sm:w-72">
+  <span class="sr-only">Rechercher</span>
+  <span class="pointer-events-none absolute top-1/2 left-3.5 -translate-y-1/2 text-subtle">{% icon "search" %}</span>
+  <input type="search" name="q" value="{{ q }}" placeholder="{{ placeholder|default:'Rechercher…' }}" class="input pl-10"
+         hx-get="{{ request.path }}" hx-target="#table" hx-trigger="input changed delay:300ms, search" hx-include="closest form" hx-push-url="true">
+</label>

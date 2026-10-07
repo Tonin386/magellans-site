@@ -1,0 +1,77 @@
+{% extends "layouts/app.html" %}
+
+{% block title %}Réservation #{{ order.pk }}{% endblock %}
+
+{% block content %}
+<c-page-header title="Réservation #{{ order.pk }}" subtitle="{{ order.project_name|default:'Sans projet' }} · demandée par {{ order.user.display_name }}"
+               back="{% if is_owner %}{% url 'warehouse:orders' %}{% else %}{% url 'backoffice:orders' %}{% endif %}" back_label="{% if is_owner %}Mes réservations{% else %}Toutes les réservations{% endif %}">
+  <c-badge tone="{{ order.status_tone }}" class="text-sm">{{ order.get_status_display }}</c-badge>
+  {% if is_manager and not is_owner %}<c-button href="{% url 'backoffice:order-detail' order.pk %}" variant="secondary" icon="settings">Gérer</c-button>{% endif %}
+</c-page-header>
+
+<div class="card card-body mb-6"><c-status-steps :steps="steps" /></div>
+
+{% if order.needs_contract and is_owner %}
+<c-alert tone="brand" title="Réservation acceptée : il reste à signer le contrat de prêt" class="mb-6">
+  C'est rapide et ça se fait en ligne. <a href="{% url 'warehouse:contract' order.pk %}">Signer le contrat →</a>
+</c-alert>
+{% endif %}
+
+<div class="grid gap-6 lg:grid-cols-[1fr_22rem] lg:items-start">
+  <div class="space-y-6">
+    <c-card title="Matériel">
+      <ul class="divide-y divide-line">
+        {% for line in lines %}
+        <li class="flex items-center gap-4 py-3 {% if not line.available %}opacity-60{% endif %}">
+          <span class="size-12 shrink-0 overflow-hidden rounded-xl {% if line.item.has_photo %}bg-white{% else %}bg-surface-2{% endif %}">{% if line.item.has_photo %}<img src="{{ line.item.image.url }}" alt="" class="size-full object-contain p-1">{% else %}<span class="grid size-full place-items-center text-subtle">{% icon "camera" %}</span>{% endif %}</span>
+          <span class="min-w-0 flex-1">
+            <span class="block truncate font-semibold {% if not line.available %}line-through{% endif %}">{{ line.item.name }}</span>
+            {% if not line.available %}<span class="text-xs font-semibold text-red-600 dark:text-red-400">Non accordé par le magasin</span>{% endif %}
+          </span>
+          <span class="font-display text-lg font-bold tabular">× {{ line.quantity }}</span>
+        </li>
+        {% empty %}
+        <li class="py-3 text-sm text-muted">Aucun objet.</li>
+        {% endfor %}
+      </ul>
+    </c-card>
+
+    <c-card title="Échanges avec le magasin" subtitle="Questions, précisions, modifications : tout se passe ici.">
+      <div id="order-thread">{% include "warehouse/partials/thread.html" %}</div>
+    </c-card>
+  </div>
+
+  <aside class="space-y-6">
+    <c-card title="Détails">
+      <dl class="space-y-4 text-sm">
+        <div><dt class="text-xs font-semibold tracking-wide text-muted uppercase">Retrait</dt><dd class="mt-0.5 font-semibold">{{ order.date_start|date:"l j F Y à H:i"|capfirst }}</dd></div>
+        <div><dt class="text-xs font-semibold tracking-wide text-muted uppercase">Retour</dt><dd class="mt-0.5 font-semibold">{{ order.date_end|date:"l j F Y à H:i"|capfirst }}</dd></div>
+        <div><dt class="text-xs font-semibold tracking-wide text-muted uppercase">Personne qui récupère</dt><dd class="mt-0.5">{{ order.pickup_display }}{% if order.pickup_phone %} · {{ order.pickup_phone|phone }}{% endif %}</dd></div>
+        <div><dt class="text-xs font-semibold tracking-wide text-muted uppercase">Lieu</dt><dd class="mt-0.5">{{ site.pickup_address }}</dd></div>
+        {% if order.message %}<div><dt class="text-xs font-semibold tracking-wide text-muted uppercase">Message joint</dt><dd class="mt-1 rounded-xl bg-surface-2 p-3 whitespace-pre-line">{{ order.message }}</dd></div>{% endif %}
+      </dl>
+      <div class="mt-5 flex flex-wrap gap-2 border-t border-line pt-5">
+        {% if order.date_start %}<c-button href="{% url 'warehouse:order-ics' order.pk %}" variant="secondary" size="sm" icon="calendar-plus">Ajouter à mon agenda</c-button>{% endif %}
+        {% if is_owner and order.owner_can_cancel %}
+        <button type="button" class="btn btn-soft-danger btn-sm" hx-post="{% url 'warehouse:order-cancel' order.pk %}" hx-confirm="Annuler cette réservation ? L'équipe du magasin sera prévenue." data-confirm-danger data-confirm-label="Annuler la réservation">{% icon "x" %} Annuler</button>
+        {% endif %}
+      </div>
+    </c-card>
+
+    {% if contract %}
+    <c-card title="Contrat de prêt">
+      {% if contract.is_signed %}
+      <p class="flex items-center gap-2 text-sm font-semibold text-emerald-700 dark:text-emerald-400">{% icon "circle-check" %} Signé le {{ contract.signed_at|date:"j F Y à H:i" }}</p>
+      <p class="mt-1 text-xs text-muted">par {{ contract.signer_name }} · réf. {{ contract.reference }}</p>
+      <c-button href="{% url 'warehouse:contract-pdf' order.pk %}" variant="secondary" class="mt-4 w-full" icon="file-text" target="_blank">Télécharger le contrat (PDF)</c-button>
+      {% elif is_owner %}
+      <p class="text-sm text-muted">Informations saisies, signature en attente.</p>
+      <c-button href="{% url 'warehouse:contract' order.pk %}" class="mt-4 w-full" icon="signature">Signer le contrat</c-button>
+      {% else %}
+      <p class="text-sm text-muted">En attente de signature par le demandeur.</p>
+      {% endif %}
+    </c-card>
+    {% endif %}
+  </aside>
+</div>
+{% endblock %}

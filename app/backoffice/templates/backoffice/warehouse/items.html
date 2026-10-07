@@ -1,0 +1,23 @@
+{% extends "layouts/app.html" %}
+{% block title %}Magasin — inventaire{% endblock %}
+{% block content %}
+<c-page-header eyebrow="Espace CA" title="Magasin" subtitle="L'inventaire du matériel. Les disponibilités du catalogue sont calculées automatiquement à partir des réservations acceptées.">
+  <c-button href="{% url 'backoffice:orders' %}" variant="secondary" icon="clipboard-list">Réservations</c-button>
+  <c-button href="{% url 'backoffice:calendar' %}" variant="secondary" icon="calendar">Calendrier</c-button>
+  <c-button href="{% url 'backoffice:tags' %}" variant="secondary" icon="tag">Catégories</c-button>
+  <c-button href="{% url 'backoffice:item-create' %}" icon="plus">Ajouter un objet</c-button>
+</c-page-header>
+<form class="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center" hx-get="{{ request.path }}" hx-target="#table" hx-trigger="change" hx-push-url="true">
+  {% include "backoffice/partials/search.html" with placeholder="Nom, propriétaire…" %}
+  <select name="tag" class="select sm:w-52" aria-label="Catégorie">
+    <option value="">Toutes les catégories</option>
+    {% for item in tags %}<option value="{{ item.pk }}" {% if item.pk|stringformat:"s" == tag %}selected{% endif %}>{{ item.name }}</option>{% endfor %}
+  </select>
+  <select name="etat" class="select sm:w-52" aria-label="Filtre">
+    <option value="">Objets actifs</option>
+    <option value="indisponibles" {% if state == "indisponibles" %}selected{% endif %}>Non réservables / hors service</option>
+    <option value="archives" {% if state == "archives" %}selected{% endif %}>Archivés</option>
+  </select>
+</form>
+<div id="table" class="card overflow-hidden">{% include "backoffice/warehouse/partials/items_table.html" %}</div>
+{% endblock %}

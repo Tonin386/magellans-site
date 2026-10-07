@@ -1,0 +1,26 @@
+{% load bo %}
+<div class="table-wrap">
+  <table class="table">
+    <thead><tr><th>{% sort_header "numero" "N°" %}</th><th>{% sort_header "date" "Date" %}</th><th>Libellé</th><th>Tiers</th><th>Catégorie</th><th class="num">{% sort_header "montant" "Montant" %}</th><th></th></tr></thead>
+    <tbody>
+      {% for op in rows %}
+      <tr>
+        <td class="font-mono text-xs whitespace-nowrap text-muted">{{ op.id }}</td>
+        <td class="whitespace-nowrap">{{ op.date|date:"j M Y" }}</td>
+        <td>{{ op.desc|truncatechars:80 }}{% if op.invoice %}<a href="{% url 'backoffice:invoice-detail' op.invoice.pk %}" class="block text-xs text-accent hover:underline">Note de frais « {{ op.invoice.title }} »</a>{% endif %}</td>
+        <td><a href="{% url 'backoffice:person-detail' op.third_party.pk %}" class="hover:text-accent">{{ op.third_party.display_name }}</a></td>
+        <td><c-badge tone="neutral" plain="1">{{ op.get_category_display }}</c-badge></td>
+        <td class="num font-semibold whitespace-nowrap {% if op.type == 'C' %}text-emerald-600 dark:text-emerald-400{% else %}text-red-600 dark:text-red-400{% endif %}">{{ op.signed_amount|money:True }}</td>
+        <td class="text-right whitespace-nowrap">
+          {% if op.attachment %}<a href="{{ op|private_url:'attachment' }}" target="_blank" class="btn btn-ghost btn-sm" aria-label="Pièce jointe">{% icon "paperclip" %}</a>{% endif %}
+          {% if can_edit %}<a href="{% url 'backoffice:operation-edit' op.id %}" class="btn btn-ghost btn-sm" aria-label="Modifier">{% icon "pencil" %}</a>{% endif %}
+        </td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="7" class="py-12 text-center text-muted">Aucune opération.</td></tr>
+      {% endfor %}
+    </tbody>
+    {% if rows %}<tfoot><tr><td colspan="5" class="px-4 py-3 text-right text-sm text-muted">Total de la sélection ({{ total }} opérations)</td><td class="num px-4 py-3 font-display text-lg font-extrabold">{{ filtered_total|money:True }}</td><td></td></tr></tfoot>{% endif %}
+  </table>
+</div>
+{% include "backoffice/partials/pagination.html" %}

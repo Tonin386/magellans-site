@@ -1,0 +1,15 @@
+{% partialdef subject %}Active ton compte {{ site.site_name }}{% endpartialdef %}
+{% partialdef body %}{% autoescape off %}
+Bonjour {{ user.first_name|default:"" }} 👋
+
+Merci pour ton inscription sur le site de {{ site.site_name }} ! Il ne reste qu'à confirmer ton adresse e-mail :
+
+[[Activer mon compte|{{ site_url }}{{ activation_path }}]]
+
+Le lien est valable 7 jours.
+
+**À noter :** créer un compte ne fait pas de toi un·e adhérent·e de l'association. Pour adhérer, rendez-vous sur [la page d'adhésion]({{ site_url }}{% url 'join' %}).
+
+À très vite,
+L'équipe {{ site.site_name }}
+{% endautoescape %}{% endpartialdef %}

@@ -1,0 +1,2 @@
+{% url 'warehouse:order-message' order.pk as post_url %}
+{% include "partials/thread.html" with post_url=post_url target="order-thread" board_label="Équipe du magasin" board_icon="package" intro_author=order.user.display_name intro_date=order.date_created intro_body=order.message %}

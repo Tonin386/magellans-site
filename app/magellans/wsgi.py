@@ -1,16 +1,9 @@
-"""
-WSGI config for magellans project.
-
-It exposes the WSGI callable as a module-level variable named ``application``.
-
-For more information on this file, see
-https://docs.djangoproject.com/en/4.2/howto/deployment/wsgi/
-"""
+"""Point d'entrée WSGI (gunicorn) du site Magellans."""
 
 import os
 
 from django.core.wsgi import get_wsgi_application
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'magellans.settings')
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "magellans.settings")
 
 application = get_wsgi_application()

@@ -1,68 +1,71 @@
+# Site magellans.fr — Docker Compose
+#
+# ⚠️  Ne pas renommer le projet, le service « postgres-django » ni le volume
+#     « postgres_data_django » : ils désignent la base de données existante.
+#
+# Déploiement : ./run.sh deploy    (sauvegarde vérifiée, puis mise à jour)
+
 networks:
   magellans_site:
-    driver: 'bridge'
+    driver: bridge
 
 services:
-  # PostgreSQL service
   postgres-django:
-    restart: always
-    stop_grace_period: 15s
+    image: postgres:16-bullseye  # version inchangée : la base existante en dépend
     container_name: magellans-django-pgsql
-    image: postgres:16-bullseye
+    restart: always
+    stop_grace_period: 30s
     environment:
       POSTGRES_DB: ${DB_DJANGO_NAME}
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
     volumes:
       - postgres_data_django:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
     networks:
       - magellans_site
 
-  # Redis service
-  redis:
-    restart: always
-    stop_grace_period: 15s
-    container_name: magellans-redis
-    image: redis:latest
-    command: ["redis-server"]
-    ports:
-      - 6379:6379
-    volumes:
-      - redis_data:/data
-    networks:
-      - magellans_site
-
-  # Django service
   django:
-    restart: always
-    stop_grace_period: 15s
-    container_name: magellans-django
     build:
       context: ./app
-    command: ${COMMAND}
+    image: magellans-django:latest
+    container_name: magellans-django
+    restart: always
+    stop_grace_period: 30s
+    env_file:
+      - ./app/.env
+    environment:
+      DB_HOST: postgres-django
     volumes:
-      - ./app:/app
+      - ./app/media:/app/media
+      - ./app/private:/app/private
+      - ./backups:/app/backups
     depends_on:
-      - postgres-django
-      - redis
+      postgres-django:
+        condition: service_healthy
     networks:
       - magellans_site
 
-  # Nginx service
   nginx:
+    image: nginx:1.28
+    container_name: magellans-nginx
     restart: always
     stop_grace_period: 15s
-    container_name: magellans-nginx
-    image: nginx:latest
     logging:
-      driver: "local"  # ou un autre driver
+      driver: local
       options:
-        max-size: "10m"
+        max-size: 10m
     volumes:
-      - ./nginx/${NGINX_CONF_FILE}:/etc/nginx/conf.d/default.conf
-      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
-      - ${STATICFILES_DIR}:/app/staticfiles/
-      - ${SSL_LETSENCRYPT}:${SSL_LETSENCRYPT}
+      - ./nginx/${NGINX_CONF_FILE:-conf.d}:/etc/nginx/conf.d/default.conf:ro
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./app/media:/srv/media:ro
+      - ./app/private:/srv/private:ro
+      - ${SSL_LETSENCRYPT:-./nginx/no-ssl}:/etc/letsencrypt/:ro
+      - ./nginx/acme:/var/www/certbot:ro  # jetons de renouvellement écrits par certbot (--webroot)
     ports:
       - "80:80"
       - "443:443"
@@ -73,4 +76,3 @@ services:
 
 volumes:
   postgres_data_django:
-  redis_data:

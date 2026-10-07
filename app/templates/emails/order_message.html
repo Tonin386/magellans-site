@@ -1,0 +1,12 @@
+{% partialdef subject %}{% if from_board %}Nouveau message du magasin — réservation #{{ order.pk }}{% else %}Nouveau message de {{ order.user.display_name }} — réservation #{{ order.pk }}{% endif %}{% endpartialdef %}
+{% partialdef body %}{% autoescape off %}
+{% if from_board %}Bonjour {{ order.user.first_name }},
+
+L'équipe du magasin t'a écrit à propos de ta réservation **#{{ order.pk }}** :{% else %}**{{ order.user.display_name }}** a écrit à propos de la réservation **#{{ order.pk }}** :{% endif %}
+
+{{ body|blockquote }}
+
+[[Voir la conversation|{{ site_url }}{% if from_board %}{{ order.get_absolute_url }}{% else %}{% url 'backoffice:order-detail' order.pk %}{% endif %}]]
+
+L'équipe {{ site.site_name }}
+{% endautoescape %}{% endpartialdef %}

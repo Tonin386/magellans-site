@@ -1,0 +1,2 @@
+{% url 'bank:invoice-message' invoice.pk as post_url %}
+{% include "partials/thread.html" with post_url=post_url target="invoice-thread" board_label="Trésorerie" board_icon="landmark" intro_author=invoice.author.display_name intro_date=invoice.date_created intro_body=invoice.comm %}

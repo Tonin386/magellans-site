@@ -1,0 +1,14 @@
+{% extends "layouts/app.html" %}
+{% block title %}Demandes d'aide{% endblock %}
+{% block content %}
+<c-page-header eyebrow="Espace CA" title="Demandes d'aide à projet" subtitle="Les dossiers déposés par les membres, à étudier en réunion du CA." />
+<form class="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center" hx-get="{{ request.path }}" hx-target="#table" hx-trigger="change" hx-push-url="true">
+  {% include "backoffice/partials/search.html" with placeholder="Projet, réalisation…" %}
+  <select name="statut" class="select sm:w-64" aria-label="Statut">
+    <option value="todo" {% if status == "todo" %}selected{% endif %}>À étudier</option>
+    <option value="all" {% if status == "all" %}selected{% endif %}>Toutes</option>
+    {% for value, label in statuses %}<option value="{{ value }}" {% if value == status %}selected{% endif %}>{{ label }}</option>{% endfor %}
+  </select>
+</form>
+<div id="table" class="card overflow-hidden">{% include "backoffice/projects/partials/funding_table.html" %}</div>
+{% endblock %}

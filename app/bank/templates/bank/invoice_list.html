@@ -1,0 +1,33 @@
+{% extends "layouts/app.html" %}
+
+{% block title %}Mes notes de frais{% endblock %}
+
+{% block content %}
+<c-page-header title="Mes notes de frais" subtitle="Déclare les frais avancés pour un projet de l'association et suis leur remboursement.">
+  <c-button href="{% url 'bank:invoice-create' %}" icon="plus">Nouvelle note de frais</c-button>
+</c-page-header>
+{% if invoices %}
+<div class="card overflow-hidden">
+  <ul class="divide-y divide-line">
+    {% for invoice in invoices %}
+    <li>
+      <a href="{{ invoice.get_absolute_url }}" class="flex flex-col gap-3 p-4 transition hover:bg-surface-2 sm:flex-row sm:items-center sm:gap-5 sm:px-6">
+        <span class="min-w-0 flex-1">
+          <span class="block truncate font-semibold">{{ invoice.title }}</span>
+          <span class="text-sm text-muted">{{ invoice.project }} · déposée le {{ invoice.date_created|date:"j F Y" }} · {{ invoice.expense_set.all|length }} dépense{{ invoice.expense_set.all|length|pluralize }}</span>
+          {% if invoice.needs_author_action %}<span class="mt-1 flex items-center gap-1 text-xs font-semibold text-amber-700 dark:text-amber-400">{% icon "circle-alert" %} Action attendue de ta part</span>{% endif %}
+        </span>
+        <span class="font-display text-lg font-bold tabular">{{ invoice.total_amount|money }}</span>
+        <c-badge tone="{{ invoice.status_tone }}">{{ invoice.get_status_display }}</c-badge>
+      </a>
+    </li>
+    {% endfor %}
+  </ul>
+</div>
+{% else %}
+<c-empty icon="receipt" title="Aucune note de frais">
+  Tu as avancé des frais pour un projet de l'association ? Déclare-les ici pour être remboursé·e.
+  <c-slot name="actions"><c-button href="{% url 'bank:invoice-create' %}">Déclarer des frais</c-button></c-slot>
+</c-empty>
+{% endif %}
+{% endblock %}

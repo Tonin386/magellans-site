@@ -1,0 +1,157 @@
+{% extends "layouts/app.html" %}
+
+{% block title %}Mon espace{% endblock %}
+
+{% block content %}
+<header class="mb-8">
+  <p class="text-sm text-muted">{% now "l j F Y" %}</p>
+  <h1 class="mt-1 text-3xl font-extrabold sm:text-4xl">Bonjour {{ person.clean_first_name|default:"et bienvenue" }} 👋</h1>
+</header>
+
+{% if not user.profile_complete %}
+<c-alert tone="warning" title="Complète ton profil" class="mb-6">
+  Ton nom et ton téléphone sont nécessaires pour réserver du matériel. <a href="{% url 'members:profile' %}">Compléter mon profil →</a>
+</c-alert>
+{% endif %}
+
+{% for order in orders_to_sign %}
+<c-alert tone="brand" title="Ta réservation #{{ order.pk }} a été acceptée !" class="mb-6">
+  Il ne reste plus qu'à signer le contrat de prêt en ligne. <a href="{% url 'warehouse:contract' order.pk %}">Signer le contrat →</a>
+</c-alert>
+{% endfor %}
+
+<div class="grid gap-6 lg:grid-cols-3">
+  {# --- Adhésion --------------------------------------------------------- #}
+  <section class="relative overflow-hidden rounded-3xl p-6 text-white lg:col-span-1 {% if membership %}bg-gradient-to-br from-ink-900 via-rust-900 to-rust-700{% else %}bg-gradient-to-br from-ink-800 to-ink-950{% endif %}">
+    <div class="pointer-events-none absolute -top-10 -right-10 size-40 rounded-full bg-amber-500/30 blur-2xl" aria-hidden="true"></div>
+    <p class="text-xs font-bold tracking-[0.18em] text-amber-300 uppercase">Adhésion {{ season.label|default:"" }}</p>
+    {% if membership %}
+    <p class="mt-3 flex items-center gap-2 font-display text-2xl font-extrabold">{% icon "circle-check" css="text-emerald-400" %} Tu es à jour</p>
+    <p class="mt-2 text-sm text-ink-200">Adhérent·e depuis le {{ membership.joined_at|date:"j F Y" }}{% if season %}, valable jusqu'au {{ season.end_date|date:"j F Y" }}{% endif %}.</p>
+    {% if membership.membership_card_url %}
+    <a href="{{ membership.membership_card_url }}" target="_blank" rel="noopener" class="btn btn-glass btn-sm mt-5">{% icon "id-card" %} Ma carte d'adhérent·e</a>
+    {% endif %}
+    {% else %}
+    <p class="mt-3 font-display text-2xl font-extrabold">Pas encore adhérent·e{% if season %} pour {{ season.label }}{% endif %}</p>
+    <p class="mt-2 text-sm text-ink-300">L'adhésion te donne accès au magasin, aux tournages et aux aides à projet.</p>
+    {% if season.is_open %}<c-button href="{% url 'join' %}" size="sm" class="mt-5" icon_right="arrow-right">Adhérer {% if season.price %}({{ season.price|money }}){% endif %}</c-button>{% endif %}
+    <p class="mt-4 text-xs text-ink-400">Déjà payé ? L'adhésion apparaît ici quelques minutes après le paiement, si l'e-mail saisi sur HelloAsso est {{ user.email }}.</p>
+    {% endif %}
+  </section>
+
+  {# --- Raccourcis ------------------------------------------------------- #}
+  <section class="grid grid-cols-2 gap-3 lg:col-span-2 lg:grid-cols-4">
+    {% url 'warehouse:catalogue' as shop_url %}{% url 'bank:invoice-create' as invoice_url %}{% url 'funding:create' as funding_url %}{% url 'resources:list' as resources_url %}
+    <a href="{{ shop_url }}" class="card group flex flex-col justify-between gap-6 p-5 transition hover:-translate-y-0.5 hover:border-amber-500/50">
+      <span class="grid size-11 place-items-center rounded-2xl bg-amber-500 text-xl text-ink-950">{% icon "package" %}</span>
+      <span><span class="block font-display font-bold">Réserver du matériel</span><span class="text-xs text-muted">Caméras, son, lumière…</span></span>
+    </a>
+    <a href="{{ invoice_url }}" class="card group flex flex-col justify-between gap-6 p-5 transition hover:-translate-y-0.5 hover:border-amber-500/50">
+      <span class="grid size-11 place-items-center rounded-2xl bg-surface-2 text-xl">{% icon "receipt" %}</span>
+      <span><span class="block font-display font-bold">Note de frais</span><span class="text-xs text-muted">Se faire rembourser</span></span>
+    </a>
+    <a href="{{ funding_url }}" class="card group flex flex-col justify-between gap-6 p-5 transition hover:-translate-y-0.5 hover:border-amber-500/50">
+      <span class="grid size-11 place-items-center rounded-2xl bg-surface-2 text-xl">{% icon "hand-coins" %}</span>
+      <span><span class="block font-display font-bold">Aide à projet</span><span class="text-xs text-muted">Jusqu'à {{ site.funding_max_amount }} €</span></span>
+    </a>
+    <a href="{{ resources_url }}" class="card group flex flex-col justify-between gap-6 p-5 transition hover:-translate-y-0.5 hover:border-amber-500/50">
+      <span class="grid size-11 place-items-center rounded-2xl bg-surface-2 text-xl">{% icon "folder-open" %}</span>
+      <span><span class="block font-display font-bold">Ressources</span><span class="text-xs text-muted">Modèles, guides…</span></span>
+    </a>
+  </section>
+</div>
+
+{% if board_todo %}
+<section class="mt-6 rounded-3xl border border-amber-500/30 bg-accent-soft p-5">
+  <div class="flex flex-wrap items-center justify-between gap-4">
+    <p class="flex items-center gap-2 font-display font-bold">{% icon "shield-check" css="text-accent" %} À traiter par le CA</p>
+    <c-button href="{% url 'backoffice:dashboard' %}" variant="secondary" size="sm" icon_right="arrow-right">Espace CA</c-button>
+  </div>
+  <div class="mt-4 grid gap-3 sm:grid-cols-3">
+    <a href="{% url 'backoffice:orders' %}?statut=1" class="rounded-2xl bg-surface p-4 transition hover:shadow-md"><span class="font-display text-2xl font-extrabold">{{ board_todo.orders }}</span> <span class="text-sm text-muted">réservation{{ board_todo.orders|pluralize }} en attente</span></a>
+    <a href="{% url 'backoffice:invoices' %}" class="rounded-2xl bg-surface p-4 transition hover:shadow-md"><span class="font-display text-2xl font-extrabold">{{ board_todo.invoices }}</span> <span class="text-sm text-muted">note{{ board_todo.invoices|pluralize }} de frais à traiter</span></a>
+    <a href="{% url 'backoffice:funding' %}" class="rounded-2xl bg-surface p-4 transition hover:shadow-md"><span class="font-display text-2xl font-extrabold">{{ board_todo.funding }}</span> <span class="text-sm text-muted">demande{{ board_todo.funding|pluralize }} d'aide</span></a>
+  </div>
+</section>
+{% endif %}
+
+<div class="mt-6 grid gap-6 lg:grid-cols-2">
+  {# --- Réservations ----------------------------------------------------- #}
+  <c-card title="Mes réservations" subtitle="En cours et à venir">
+    <c-slot name="actions"><c-button href="{% url 'warehouse:orders' %}" variant="ghost" size="sm">Historique</c-button></c-slot>
+    {% if draft and draft.lines.all %}
+    <a href="{% url 'warehouse:cart' %}" class="mb-4 flex items-center justify-between gap-3 rounded-2xl border border-dashed border-amber-500/60 bg-accent-soft p-4 text-sm">
+      <span class="flex items-center gap-2 font-semibold">{% icon "shopping-basket" %} Une demande est en cours de préparation</span>
+      <span class="text-accent">Reprendre {% icon "arrow-right" %}</span>
+    </a>
+    {% endif %}
+    {% if orders %}
+    <ul class="divide-y divide-line">
+      {% for order in orders %}
+      <li>
+        <a href="{{ order.get_absolute_url }}" class="-mx-2 flex items-center gap-4 rounded-xl px-2 py-3 transition hover:bg-surface-2">
+          <span class="grid size-12 shrink-0 place-items-center rounded-2xl bg-surface-2 text-center leading-none">
+            <span><span class="block font-display text-lg font-extrabold">{{ order.date_start|date:"d" }}</span><span class="text-[0.65rem] font-semibold text-muted uppercase">{{ order.date_start|date:"M" }}</span></span>
+          </span>
+          <span class="min-w-0 flex-1">
+            <span class="block truncate font-semibold">#{{ order.pk }} · {{ order.project_name|default:"Sans projet" }}</span>
+            <span class="text-xs text-muted">{{ order.date_start|date:"j M H:i" }} → {{ order.date_end|date:"j M H:i" }} · {{ order.total_items }} objet{{ order.total_items|pluralize }}</span>
+          </span>
+          <c-badge tone="{{ order.status_tone }}">{{ order.get_status_display }}</c-badge>
+        </a>
+      </li>
+      {% endfor %}
+    </ul>
+    {% else %}
+    <c-empty icon="package" title="Aucune réservation en cours">
+      Le magasin prête gratuitement son matériel aux membres.
+      <c-slot name="actions"><c-button href="{% url 'warehouse:catalogue' %}" size="sm">Voir le catalogue</c-button></c-slot>
+    </c-empty>
+    {% endif %}
+  </c-card>
+
+  {# --- Notes de frais & aides ------------------------------------------- #}
+  <c-card title="Mes notes de frais">
+    <c-slot name="actions"><c-button href="{% url 'bank:list' %}" variant="ghost" size="sm">Tout voir</c-button></c-slot>
+    {% if invoices %}
+    <ul class="divide-y divide-line">
+      {% for invoice in invoices %}
+      <li>
+        <a href="{{ invoice.get_absolute_url }}" class="-mx-2 flex items-center justify-between gap-4 rounded-xl px-2 py-3 transition hover:bg-surface-2">
+          <span class="min-w-0">
+            <span class="block truncate font-semibold">{{ invoice.title }}</span>
+            <span class="text-xs text-muted">{{ invoice.date_created|date:"j F Y" }} · {{ invoice.total_amount|money }}</span>
+          </span>
+          <c-badge tone="{{ invoice.status_tone }}">{{ invoice.get_status_display }}</c-badge>
+        </a>
+      </li>
+      {% endfor %}
+    </ul>
+    {% else %}
+    <p class="text-sm text-muted">Aucune note de frais pour le moment.</p>
+    {% endif %}
+    {% if funding_requests %}
+    <h3 class="mt-6 mb-2 font-display font-bold">Mes demandes d'aide</h3>
+    <ul class="divide-y divide-line">
+      {% for request_obj in funding_requests %}
+      <li>
+        <a href="{{ request_obj.get_absolute_url }}" class="-mx-2 flex items-center justify-between gap-4 rounded-xl px-2 py-3 transition hover:bg-surface-2">
+          <span class="min-w-0"><span class="block truncate font-semibold">{{ request_obj.name }}</span><span class="text-xs text-muted">{{ request_obj.funding_value }} € demandés</span></span>
+          <c-badge tone="{{ request_obj.status_tone }}">{{ request_obj.get_status_display }}</c-badge>
+        </a>
+      </li>
+      {% endfor %}
+    </ul>
+    {% endif %}
+  </c-card>
+</div>
+
+{% if memberships|length > 1 %}
+<section class="mt-6">
+  <h2 class="font-display text-lg font-bold">Mon historique d'adhésion</h2>
+  <ul class="mt-3 flex flex-wrap gap-2">
+    {% for item in memberships %}<li><c-badge tone="{% if item.season == season %}success{% else %}neutral{% endif %}">{{ item.season.label }}</c-badge></li>{% endfor %}
+  </ul>
+</section>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,21 @@
+{% load bo %}
+<div class="table-wrap">
+  <table class="table">
+    <thead><tr><th>{% sort_header "numero" "N°" %}</th><th>Demandeur · projet</th><th>{% sort_header "debut" "Période" %}</th><th class="num">Objets</th><th>Statut</th><th>{% sort_header "envoi" "Reçue" %}</th></tr></thead>
+    <tbody>
+      {% for order in rows %}
+      <tr class="cursor-pointer">
+        <td><a href="{% url 'backoffice:order-detail' order.pk %}" class="font-display font-bold hover:text-accent">#{{ order.pk }}</a></td>
+        <td><a href="{% url 'backoffice:order-detail' order.pk %}" class="block hover:text-accent"><span class="block font-semibold">{{ order.user.display_name }}</span><span class="text-xs text-muted">{{ order.project_name|default:"—" }}</span></a></td>
+        <td class="text-sm whitespace-nowrap">{{ order.date_start|date:"D j M H:i" }}<span class="block text-xs text-muted">→ {{ order.date_end|date:"D j M H:i" }}</span></td>
+        <td class="num">{{ order.nb_items|default:0 }}</td>
+        <td><c-badge tone="{{ order.status_tone }}">{{ order.get_status_display }}</c-badge></td>
+        <td class="text-sm whitespace-nowrap text-muted">{{ order.date_created|date:"j M Y" }}</td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="6" class="py-12 text-center text-muted">Aucune réservation dans cette vue.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% include "backoffice/partials/pagination.html" %}

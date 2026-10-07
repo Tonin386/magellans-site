@@ -1,0 +1,56 @@
+/* Listes déroulantes avec recherche (Tom Select) aux couleurs du site */
+@import "tom-select/dist/css/tom-select.css";
+
+.ts-wrapper.single .ts-control,
+.ts-wrapper.multi .ts-control {
+  border-radius: 0.75rem;
+  border-color: var(--ui-line-strong);
+  background: var(--ui-surface);
+  color: var(--ui-fg);
+  padding: 0.55rem 0.85rem;
+  font-size: 0.875rem;
+  box-shadow: 0 1px 2px rgb(0 0 0 / 0.04);
+  min-height: 2.65rem;
+}
+.ts-wrapper.focus .ts-control {
+  border-color: #ffab0e;
+  box-shadow: 0 0 0 4px rgb(255 171 14 / 0.2);
+}
+.ts-wrapper .ts-control input { color: var(--ui-fg); }
+.ts-wrapper .ts-control input::placeholder { color: var(--ui-subtle); }
+.ts-wrapper.multi .ts-control > div {
+  border-radius: 999px;
+  background: var(--ui-accent-soft);
+  color: var(--ui-fg);
+  padding: 0.1rem 0.6rem;
+  font-weight: 600;
+}
+.ts-dropdown {
+  border-radius: 0.875rem;
+  border: 1px solid var(--ui-line-strong);
+  background: var(--ui-surface);
+  color: var(--ui-fg);
+  box-shadow: 0 18px 40px -18px rgb(0 0 0 / 0.35);
+  margin-top: 0.35rem;
+  overflow: hidden;
+  z-index: 60;
+}
+.ts-dropdown .option,
+.ts-dropdown .optgroup-header,
+.ts-dropdown .no-results,
+.ts-dropdown .create {
+  padding: 0.55rem 0.85rem;
+}
+.ts-dropdown .optgroup-header {
+  background: var(--ui-surface-2);
+  color: var(--ui-muted);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.ts-dropdown .active {
+  background: var(--ui-accent-soft);
+  color: var(--ui-fg);
+}
+.ts-dropdown .option .muted { color: var(--ui-subtle); font-size: 0.75rem; }

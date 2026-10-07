@@ -1,0 +1,15 @@
+{% partialdef subject %}Bienvenue dans l'équipage {{ membership.season.label }} 🎬{% endpartialdef %}
+{% partialdef body %}{% autoescape off %}
+Bonjour {{ membership.person.clean_first_name|default:"" }},
+
+Merci pour ton adhésion à {{ site.site_name }} pour la saison **{{ membership.season.label }}** ! Elle est bien enregistrée.
+
+Avec ton espace membre, tu peux réserver le matériel du magasin, demander une aide pour tes projets, consulter les ressources et rejoindre l'annuaire des membres.
+
+[[Accéder à mon espace membre|{{ site_url }}{% url 'members:home' %}]]
+{% if membership.membership_card_url %}
+Ta carte d'adhérent·e HelloAsso : {{ membership.membership_card_url }}{% endif %}
+
+À très vite sur un tournage,
+L'équipe {{ site.site_name }}
+{% endautoescape %}{% endpartialdef %}

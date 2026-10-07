@@ -1,0 +1,36 @@
+{% extends "layouts/app.html" %}
+{% block title %}Calendrier du magasin{% endblock %}
+{% block content %}
+<c-page-header eyebrow="Magasin" title="Calendrier" subtitle="Les réservations acceptées (pleines) et en attente (hachurées), jour par jour." back="{% url 'backoffice:items' %}" back_label="Inventaire">
+  <div class="flex items-center gap-1">
+    <c-button href="?annee={{ previous.year }}&mois={{ previous.month }}" variant="secondary" size="sm" class="btn-icon" aria-label="Mois précédent">{% icon "chevron-left" %}</c-button>
+    <span class="min-w-40 text-center font-display text-lg font-bold capitalize">{{ month|date:"F Y" }}</span>
+    <c-button href="?annee={{ following.year }}&mois={{ following.month }}" variant="secondary" size="sm" class="btn-icon" aria-label="Mois suivant">{% icon "chevron-right" %}</c-button>
+  </div>
+</c-page-header>
+<div class="card overflow-hidden">
+  <div class="grid grid-cols-7 border-b border-line bg-surface-2 text-center text-xs font-semibold tracking-wide text-muted uppercase">
+    {% for name in "lmmjvsd" %}<span class="py-2">{% cycle "Lun" "Mar" "Mer" "Jeu" "Ven" "Sam" "Dim" %}</span>{% endfor %}
+  </div>
+  {% for week in weeks %}
+  <div class="grid grid-cols-7 border-b border-line last:border-b-0">
+    {% for day in week %}
+    <div class="min-h-28 border-r border-line p-1.5 last:border-r-0 {% if not day.in_month %}bg-surface-2/50 text-subtle{% endif %}">
+      <p class="mb-1 text-right text-xs font-semibold {% if day.is_today %}text-accent{% endif %}">{% if day.is_today %}<span class="rounded-full bg-amber-500 px-1.5 py-0.5 text-ink-950">{{ day.date.day }}</span>{% else %}{{ day.date.day }}{% endif %}</p>
+      <ul class="space-y-1">
+        {% for order in day.orders|slice:":4" %}
+        <li><a href="{% url 'backoffice:order-detail' order.pk %}" class="block truncate rounded-md px-1.5 py-0.5 text-[0.7rem] leading-tight font-semibold {% if order.status == 1 %}border border-dashed border-amber-500 text-amber-800 dark:text-amber-300{% elif order.status == 5 %}bg-emerald-500/15 text-emerald-800 dark:text-emerald-300{% else %}bg-sky-500/15 text-sky-800 dark:text-sky-300{% endif %}" title="#{{ order.pk }} {{ order.user.display_name }} — {{ order.get_status_display }}">#{{ order.pk }} {{ order.user.display_name|default:"" }}</a></li>
+        {% endfor %}
+        {% if day.orders|length > 4 %}<li class="px-1.5 text-[0.7rem] text-muted">+ {{ day.orders|length|add:-4 }} autres</li>{% endif %}
+      </ul>
+    </div>
+    {% endfor %}
+  </div>
+  {% endfor %}
+</div>
+<div class="mt-4 flex flex-wrap gap-4 text-xs text-muted">
+  <span class="flex items-center gap-2"><span class="h-3 w-5 rounded border border-dashed border-amber-500"></span> En attente</span>
+  <span class="flex items-center gap-2"><span class="h-3 w-5 rounded bg-sky-500/30"></span> Acceptée (contrat à signer)</span>
+  <span class="flex items-center gap-2"><span class="h-3 w-5 rounded bg-emerald-500/30"></span> Contrat signé</span>
+</div>
+{% endblock %}

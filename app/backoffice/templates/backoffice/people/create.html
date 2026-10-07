@@ -1,0 +1,21 @@
+{% extends "layouts/app.html" %}
+{% block title %}Nouvelle fiche{% endblock %}
+{% block content %}
+<c-page-header eyebrow="Personnes" title="Nouvelle fiche" subtitle="Pour un contact externe ou une organisation (fournisseur, partenaire, festival…). Les adhérent·es sont créé·es automatiquement par HelloAsso." back="{% url 'backoffice:people' %}" back_label="Personnes" />
+<form method="post" class="max-w-3xl space-y-6" novalidate>
+  {% csrf_token %}
+  <c-form-errors :form="form" />
+  <c-card>
+    <div class="grid gap-5 sm:grid-cols-2">
+      <c-field :field="form.kind" class="sm:col-span-2" />
+      <c-field :field="form.first_name" />
+      <c-field :field="form.last_name" />
+      <c-field :field="form.organisation_name" class="sm:col-span-2" />
+      <c-field :field="form.email" />
+      <c-field :field="form.phone" />
+      <c-field :field="form.additional_notes" class="sm:col-span-2" />
+    </div>
+  </c-card>
+  <div class="flex justify-end gap-2"><c-button href="{% url 'backoffice:people' %}" variant="secondary">Annuler</c-button><button type="submit" class="btn btn-primary">{% icon "check" %} Créer la fiche</button></div>
+</form>
+{% endblock %}

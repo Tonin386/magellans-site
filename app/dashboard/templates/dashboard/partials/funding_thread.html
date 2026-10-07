@@ -1,0 +1,2 @@
+{% url 'funding:message' funding.pk as post_url %}
+{% include "partials/thread.html" with post_url=post_url target="funding-thread" board_label="Le CA" board_icon="shield-check" %}

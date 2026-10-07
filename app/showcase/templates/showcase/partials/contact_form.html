@@ -1,0 +1,20 @@
+<form id="contact-form" method="post" action="{% url 'contact' %}" hx-post="{% url 'contact' %}" hx-target="this" hx-swap="outerHTML" class="space-y-5" novalidate>
+  {% csrf_token %}
+  <c-form-errors :form="form" />
+  <div class="hp-field" aria-hidden="true"><label for="{{ form.website.id_for_label }}">Ne pas remplir</label>{{ form.website }}</div>
+  {{ form.form_token }}
+  <div class="grid gap-5 sm:grid-cols-2">
+    <c-field :field="form.name" />
+    <c-field :field="form.email" />
+    <c-field :field="form.phone" />
+    <c-field :field="form.subject" />
+  </div>
+  <c-field :field="form.message" />
+  <div class="flex flex-wrap items-center justify-between gap-4">
+    <p class="text-xs text-ink-400">Tes informations servent uniquement à te répondre.</p>
+    <button type="submit" class="btn btn-primary btn-lg">
+      <span class="htmx-indicator spinner -ml-1" aria-hidden="true"></span>
+      Envoyer le message {% icon "send" %}
+    </button>
+  </div>
+</form>

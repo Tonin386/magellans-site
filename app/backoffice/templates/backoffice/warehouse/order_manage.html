@@ -1,0 +1,72 @@
+{% extends "layouts/app.html" %}
+{% block title %}Réservation #{{ order.pk }} — gestion{% endblock %}
+{% block content %}
+<c-page-header eyebrow="Magasin" title="Réservation #{{ order.pk }}" subtitle="{{ order.project_name|default:'Sans projet' }}" back="{% url 'backoffice:orders' %}" back_label="Réservations">
+  <c-badge tone="{{ order.status_tone }}" class="text-sm">{{ order.get_status_display }}</c-badge>
+  <c-button href="{{ order.get_absolute_url }}" variant="ghost" icon="eye">Vue du membre</c-button>
+</c-page-header>
+
+<div class="grid gap-6 xl:grid-cols-[1fr_24rem] xl:items-start">
+  <div class="min-w-0 space-y-6">
+    <c-card title="Matériel demandé" subtitle="Décoche ce que le magasin ne peut pas prêter, ajuste les quantités si besoin.">
+      <div id="order-lines">{% include "backoffice/warehouse/partials/order_lines.html" %}</div>
+    </c-card>
+
+    <c-card title="Échanges avec le demandeur">
+      <div id="order-thread">{% include "warehouse/partials/thread.html" %}</div>
+    </c-card>
+
+    <c-card title="Notes internes">
+      <form hx-post="{% url 'backoffice:order-notes' order.pk %}" hx-trigger="input changed delay:800ms from:#id_notes" hx-target="#notes-status" class="space-y-2">
+        {% csrf_token %}
+        <c-field :field="notes_form.notes" hide_label="1" />
+        <p class="help flex items-center gap-2">Enregistrement automatique · <span id="notes-status"></span></p>
+      </form>
+    </c-card>
+  </div>
+
+  <aside class="space-y-6">
+    <form method="post" class="card">
+      {% csrf_token %}
+      <input type="hidden" name="action" value="decision">
+      <div class="card-header"><h2 class="card-title">Décision</h2></div>
+      <div class="card-body space-y-4">
+        <c-form-errors :form="decision" />
+        <c-field :field="decision.status" />
+        <c-field :field="decision.note" />
+        <c-field :field="decision.notify" />
+        <button type="submit" class="btn btn-primary w-full">{% icon "check" %} Enregistrer la décision</button>
+        <p class="help">« Accepter » envoie au demandeur le lien pour signer le contrat en ligne.</p>
+      </div>
+    </form>
+
+    <c-card title="Demandeur">
+      <p class="font-semibold">{% if order.user %}<a href="{% url 'backoffice:person-detail' order.user.person.pk %}" class="hover:text-accent">{{ order.user.display_name }}</a>{% else %}Compte supprimé{% endif %}</p>
+      {% if order.user %}<p class="text-sm text-muted">{{ order.user.email }} · {{ order.user.person.phone_display }}</p>{% endif %}
+      <dl class="mt-4 space-y-3 text-sm">
+        <div><dt class="text-xs text-muted">Retrait</dt><dd class="font-semibold">{{ order.date_start|date:"l j F Y H:i"|capfirst }}</dd></div>
+        <div><dt class="text-xs text-muted">Retour</dt><dd class="font-semibold">{{ order.date_end|date:"l j F Y H:i"|capfirst }}</dd></div>
+        <div><dt class="text-xs text-muted">Récupération</dt><dd>{{ order.pickup_display|default:"le demandeur" }}{% if order.pickup_phone %} · {{ order.pickup_phone|phone }}{% endif %}</dd></div>
+        <div><dt class="text-xs text-muted">Reçue le</dt><dd>{{ order.date_created|date:"j F Y H:i" }}</dd></div>
+      </dl>
+      {% if history %}
+      <p class="mt-5 mb-2 text-xs font-bold tracking-wide text-muted uppercase">Réservations précédentes</p>
+      <ul class="space-y-1 text-sm">{% for previous in history %}<li><a href="{% url 'backoffice:order-detail' previous.pk %}" class="hover:text-accent">#{{ previous.pk }} · {{ previous.date_start|date:"M Y" }} · {{ previous.get_status_display }}</a></li>{% endfor %}</ul>
+      {% endif %}
+    </c-card>
+
+    <c-card title="Contrat">
+      {% if contract.is_signed %}
+      <p class="text-sm font-semibold text-emerald-700 dark:text-emerald-400">{% icon "circle-check" %} Signé le {{ contract.signed_at|date:"j F Y H:i" }} par {{ contract.signer_name }}</p>
+      <p class="mt-1 font-mono text-[0.7rem] break-all text-muted">SHA-256 {{ contract.sha256 }}</p>
+      <c-button href="{% url 'warehouse:contract-pdf' order.pk %}" variant="secondary" size="sm" class="mt-4 w-full" icon="file-text" target="_blank">Ouvrir le PDF</c-button>
+      {% elif contract %}
+      <p class="text-sm text-muted">Informations saisies par le demandeur, signature en attente.</p>
+      <c-button href="{% url 'warehouse:contract-pdf' order.pk %}" variant="secondary" size="sm" class="mt-4 w-full" icon="file-text" target="_blank">Aperçu</c-button>
+      {% else %}
+      <p class="text-sm text-muted">{% if order.is_accepted %}En attente du demandeur.{% else %}Disponible après acceptation.{% endif %}</p>
+      {% endif %}
+    </c-card>
+  </aside>
+</div>
+{% endblock %}

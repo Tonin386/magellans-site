@@ -1,0 +1,46 @@
+{% extends "layouts/app.html" %}
+
+{% block title %}Demande d'aide à projet{% endblock %}
+
+{% block content %}
+<c-page-header title="Demande d'aide à projet" back="{% url 'funding:list' %}" back_label="Aides à projet" />
+<div class="grid gap-6 lg:grid-cols-[1fr_20rem] lg:items-start">
+  <form method="post" enctype="multipart/form-data" class="space-y-6" novalidate>
+    {% csrf_token %}
+    <c-form-errors :form="form" />
+    <c-card title="Le projet">
+      <div class="grid gap-5 sm:grid-cols-2">
+        <c-field :field="form.name" />
+        <c-field :field="form.genre" />
+        <c-field :field="form.directors" />
+        <c-field :field="form.production" />
+        <c-field :field="form.role" />
+        <c-field :field="form.duration" />
+        <c-field :field="form.previsional_shoot_start_date" />
+        <c-field :field="form.previsional_shoot_end_date" />
+      </div>
+    </c-card>
+    <c-card title="La demande">
+      <div class="space-y-5">
+        <c-field :field="form.funding_value" />
+        <c-field :field="form.explanation" />
+      </div>
+    </c-card>
+    <c-card title="Le dossier" subtitle="Documents au format PDF de préférence (20 Mo maximum chacun).">
+      <div class="grid gap-5 sm:grid-cols-2">
+        <c-field :field="form.script" />
+        <c-field :field="form.intention_note" />
+        <c-field :field="form.previsional_budget_plan" />
+        <c-field :field="form.contact_list" />
+      </div>
+    </c-card>
+    <div class="flex justify-end"><button type="submit" class="btn btn-primary btn-lg">{% icon "send" %} Déposer ma demande</button></div>
+  </form>
+  <aside class="lg:sticky lg:top-6">
+    <c-card title="Comment ça marche ?">
+      <div class="prose-mag text-sm">{{ site.funding_intro|markdown }}</div>
+      <p class="mt-4 text-xs text-muted">Une question ? <a href="mailto:{{ site.contact_email }}" class="link">{{ site.contact_email }}</a></p>
+    </c-card>
+  </aside>
+</div>
+{% endblock %}

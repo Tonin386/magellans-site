@@ -1,0 +1,48 @@
+{% extends "layouts/app.html" %}
+
+{% block title %}{{ crud.title }}{% endblock %}
+
+{% block content %}
+<c-page-header eyebrow="Espace CA" title="{{ crud.title }}" subtitle="{{ crud.description }}" back="{{ crud.back_url }}" back_label="{{ crud.back_label }}">
+  {% if crud.name == "team" %}
+  <form method="post" action="{% url 'backoffice:team-copy' %}">{% csrf_token %}<button type="submit" class="btn btn-secondary" title="Copier l'équipe de la saison précédente vers la saison en cours">{% icon "copy" %} Reprendre l'équipe précédente</button></form>
+  {% endif %}
+  <c-button href="{{ crud.create_url }}" icon="plus">Ajouter</c-button>
+</c-page-header>
+
+{% if seasons %}
+<div class="mb-4 flex flex-wrap gap-2">
+  <a href="?" class="rounded-full px-3 py-1.5 text-sm font-semibold {% if not selected_season %}bg-fg text-canvas{% else %}bg-surface-2 hover:bg-surface-3{% endif %}">Toutes les saisons</a>
+  {% for season in seasons %}<a href="?saison={{ season.label }}" class="rounded-full px-3 py-1.5 text-sm font-semibold {% if selected_season == season.label %}bg-fg text-canvas{% else %}bg-surface-2 hover:bg-surface-3{% endif %}">{{ season.label }}</a>{% endfor %}
+</div>
+{% endif %}
+
+{% if rows %}
+<div class="card overflow-hidden">
+  {% if crud.orderable %}<p class="flex items-center gap-2 border-b border-line px-5 py-3 text-xs text-muted">{% icon "grip-vertical" %} Glisse les lignes pour changer l'ordre d'affichage sur le site.</p>{% endif %}
+  <ul class="divide-y divide-line" {% if crud.orderable %}x-data="sortableList" x-sort="sorted()"{% endif %}
+      {% if crud.orderable %}hx-post="{{ crud.reorder_url }}" hx-trigger="reordered" hx-include="[name=ids]" hx-swap="none"{% endif %}>
+    {% for row in rows %}
+    <li class="flex items-center gap-4 px-4 py-3 sm:px-5" {% if crud.orderable %}x-sort:item{% endif %}>
+      {% if crud.orderable %}<span class="cursor-grab text-subtle active:cursor-grabbing" x-sort:handle aria-hidden="true">{% icon "grip-vertical" %}</span><input type="hidden" name="ids" value="{{ row.obj.pk }}">{% endif %}
+      {% if crud.image_attr %}
+      <span class="size-12 shrink-0 overflow-hidden rounded-xl bg-surface-2">{% if row.image %}<img src="{{ row.image }}" alt="" class="size-full object-cover">{% else %}<span class="grid size-full place-items-center text-subtle">{% icon crud.icon %}</span>{% endif %}</span>
+      {% endif %}
+      <a href="{% url 'backoffice:'|add:crud.name|add:'-edit' row.obj.pk %}" class="grid min-w-0 flex-1 gap-x-6 gap-y-0.5 sm:grid-flow-col sm:auto-cols-fr">
+        {% for cell in row.cells %}<span class="truncate text-sm {% if forloop.first %}font-semibold{% else %}text-muted{% endif %}">{{ cell }}</span>{% endfor %}
+      </a>
+      <div class="flex shrink-0 gap-1">
+        <c-button href="{% url 'backoffice:'|add:crud.name|add:'-edit' row.obj.pk %}" variant="ghost" size="sm" class="btn-icon" aria-label="Modifier">{% icon "pencil" %}</c-button>
+        <button type="button" class="btn btn-ghost btn-icon btn-sm text-red-600" hx-post="{% url 'backoffice:'|add:crud.name|add:'-delete' row.obj.pk %}" hx-confirm="Supprimer « {{ row.obj }} » ? Cette action est définitive." data-confirm-danger data-confirm-label="Supprimer" aria-label="Supprimer">{% icon "trash-2" %}</button>
+      </div>
+    </li>
+    {% endfor %}
+  </ul>
+</div>
+{% else %}
+<c-empty icon="{{ crud.icon }}" title="Rien pour l'instant">
+  Ajoute un premier élément.
+  <c-slot name="actions"><c-button href="{{ crud.create_url }}" icon="plus">Ajouter</c-button></c-slot>
+</c-empty>
+{% endif %}
+{% endblock %}

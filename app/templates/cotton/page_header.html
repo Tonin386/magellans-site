@@ -1,0 +1,13 @@
+{% comment %} En-tête de page de l'espace membre / CA. {% endcomment %}
+<c-vars title="" subtitle="" eyebrow="" back="" back_label="Retour" />
+<header class="mb-6 flex flex-col gap-4 sm:mb-8 sm:flex-row sm:items-end sm:justify-between">
+  <div class="min-w-0">
+    {% if back %}
+    <a href="{{ back }}" class="mb-3 inline-flex items-center gap-1.5 text-sm font-medium text-muted transition hover:text-fg">{% icon "arrow-left" %} {{ back_label }}</a>
+    {% endif %}
+    {% if eyebrow %}<p class="eyebrow mb-1.5">{{ eyebrow }}</p>{% endif %}
+    <h1 class="text-2xl font-extrabold sm:text-3xl">{{ title }}</h1>
+    {% if subtitle %}<p class="mt-1.5 max-w-2xl text-sm text-muted sm:text-base">{{ subtitle }}</p>{% endif %}
+  </div>
+  {% if slot %}<div class="flex flex-wrap items-center gap-2">{{ slot }}</div>{% endif %}
+</header>

@@ -1,0 +1,32 @@
+{% extends "layouts/app.html" %}
+{% block title %}Adhésion de {{ membership.person.display_name }}{% endblock %}
+{% block content %}
+<c-page-header eyebrow="Adhésion {{ membership.season.label }}" title="{{ membership.person.display_name }}" back="{% url 'backoffice:memberships' %}?saison={{ membership.season.label }}" back_label="Adhésions" />
+<div class="grid max-w-5xl gap-6 lg:grid-cols-[1fr_20rem]">
+  <form method="post" class="space-y-6" novalidate>
+    {% csrf_token %}
+    <c-card>
+      <div class="grid gap-5 sm:grid-cols-2">
+        <c-field :field="form.status" />
+        <c-field :field="form.payment_method" />
+        <c-field :field="form.amount" />
+        <c-field :field="form.donation" />
+        <c-field :field="form.notes" class="sm:col-span-2" />
+      </div>
+    </c-card>
+    <div class="flex justify-end"><button type="submit" class="btn btn-primary">{% icon "check" %} Enregistrer</button></div>
+  </form>
+  <c-card title="Détails">
+    <dl class="space-y-3 text-sm">
+      <div><dt class="text-xs text-muted">Origine</dt><dd>{{ membership.get_source_display }}</dd></div>
+      <div><dt class="text-xs text-muted">Date</dt><dd>{{ membership.joined_at|date:"j F Y H:i" }}</dd></div>
+      {% if membership.tier_label %}<div><dt class="text-xs text-muted">Formule</dt><dd>{{ membership.tier_label }}</dd></div>{% endif %}
+      {% if membership.helloasso_order_id %}<div><dt class="text-xs text-muted">Commande HelloAsso</dt><dd class="font-mono">{{ membership.helloasso_order_id }}</dd></div>{% endif %}
+      {% if membership.payer_name %}<div><dt class="text-xs text-muted">Payé par</dt><dd>{{ membership.payer_name }} {{ membership.payer_email }}</dd></div>{% endif %}
+      {% if membership.membership_card_url %}<div><a class="link" href="{{ membership.membership_card_url }}" target="_blank" rel="noopener">Carte d'adhérent·e</a></div>{% endif %}
+      {% if membership.created_by %}<div><dt class="text-xs text-muted">Saisie par</dt><dd>{{ membership.created_by.display_name }}</dd></div>{% endif %}
+    </dl>
+    <c-button href="{% url 'backoffice:person-detail' membership.person.pk %}" variant="secondary" size="sm" class="mt-5 w-full" icon="user-round">Fiche de la personne</c-button>
+  </c-card>
+</div>
+{% endblock %}

@@ -1,0 +1,36 @@
+{% extends "layouts/app.html" %}
+{% block title %}Paramètres du site{% endblock %}
+{% block content %}
+<c-page-header eyebrow="Contenus du site" title="Paramètres du site" back="{% url 'backoffice:content' %}" back_label="Contenus du site">
+  {% if site_obj.updated_by %}<p class="text-xs text-muted">Dernière modification par {{ site_obj.updated_by.display_name }} {{ site_obj.updated_at|timesince }}</p>{% endif %}
+</c-page-header>
+<div class="grid gap-6 lg:grid-cols-[15rem_1fr] lg:items-start">
+  <nav class="scrollbar-none flex gap-1 overflow-x-auto lg:sticky lg:top-6 lg:flex-col" aria-label="Sections des paramètres">
+    {% for section in sections %}
+    <a href="{% url 'backoffice:settings-section' section.key %}" class="flex shrink-0 items-center gap-2.5 rounded-xl px-3 py-2 text-sm font-semibold transition {% if section.key == current.key %}bg-accent-soft text-fg{% else %}text-muted hover:bg-surface-2 hover:text-fg{% endif %}">
+      {% icon section.icon %} {{ section.label }}
+    </a>
+    {% endfor %}
+  </nav>
+  <form method="post" enctype="multipart/form-data" class="min-w-0 space-y-6" novalidate>
+    {% csrf_token %}
+    <c-form-errors :form="form" />
+    <c-card title="{{ current.label }}">
+      {% if current.key == "contrat" and site_obj.contract_signature %}
+      <div class="mb-5 flex items-center gap-4 rounded-2xl bg-surface-2 p-4">
+        <img src="{{ site_obj|private_url:'contract_signature' }}" alt="Signature actuelle" class="h-14 rounded bg-white p-1">
+        <p class="text-sm text-muted">Signature actuellement utilisée sur les contrats (fichier privé).</p>
+      </div>
+      {% endif %}
+      {% if current.key == "notifications" %}<c-alert tone="info" class="mb-5">Une adresse par ligne. Les membres du CA concernés (magasin, trésorerie) sont prévenus en plus automatiquement.</c-alert>{% endif %}
+      {% if current.key == "avance" %}<c-alert tone="warning" class="mb-5">Le mode maintenance ferme le site public aux visiteurs (le CA garde l'accès).</c-alert>{% endif %}
+      <div class="grid gap-5 sm:grid-cols-2">
+        {% for field in form %}
+        <c-field :field="field" class="{% if field.widget_type == 'textarea' or field.widget_type == 'clearablefile' or field.widget_type == 'checkbox' %}sm:col-span-2{% endif %}" />
+        {% endfor %}
+      </div>
+    </c-card>
+    <div class="flex justify-end"><button type="submit" class="btn btn-primary btn-lg">{% icon "check" %} Enregistrer</button></div>
+  </form>
+</div>
+{% endblock %}

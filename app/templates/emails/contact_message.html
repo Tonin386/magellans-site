@@ -1,0 +1,17 @@
+{% partialdef subject %}[Contact] {{ subject_label }} — {{ data.name }}{% endpartialdef %}
+{% partialdef body %}{% autoescape off %}
+**Nouveau message reçu via le formulaire de contact du site.**
+
+- **Nom :** {{ data.name }}
+- **E-mail :** {{ data.email }}
+- **Téléphone :** {{ data.phone|default:"non renseigné" }}
+- **Sujet :** {{ subject_label }}
+
+---
+
+{{ data.message }}
+
+---
+
+Réponds directement à cet e-mail pour écrire à {{ data.name }}.
+{% endautoescape %}{% endpartialdef %}

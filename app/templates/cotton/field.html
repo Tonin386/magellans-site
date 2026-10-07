@@ -1,0 +1,25 @@
+{% comment %}
+  Champ de formulaire Django : <c-field :field="form.email" />
+  Options : hide_label, class (conteneur).
+{% endcomment %}
+<c-vars field="" hide_label="" class="" />
+{% if field.is_hidden %}{{ field }}{% else %}
+<div class="{% if field.errors %}has-error {% endif %}{{ class }}">
+  {% if field.widget_type == 'checkbox' %}
+  <label class="flex cursor-pointer items-start gap-3 text-sm" for="{{ field.id_for_label }}">
+    {{ field }}
+    <span>
+      <span class="font-semibold">{{ field.label }}</span>
+      {% if field.help_text %}<span class="help block">{{ field.help_text|safe }}</span>{% endif %}
+    </span>
+  </label>
+  {% else %}
+  {% if not hide_label %}
+  <label class="label" for="{{ field.id_for_label }}">{{ field.label }}{% if not field.field.required and field.widget_type != 'clearablefile' %}<span class="label-optional">facultatif</span>{% endif %}</label>
+  {% endif %}
+  {{ field }}
+  {% if field.help_text %}<p class="help">{{ field.help_text|safe }}</p>{% endif %}
+  {% endif %}
+  {% for error in field.errors %}<p class="field-error">{% icon "circle-alert" %} {{ error }}</p>{% endfor %}
+</div>
+{% endif %}

@@ -1,0 +1,92 @@
+{% extends "layouts/base.html" %}
+{% load static %}
+
+{% block robots %}<meta name="robots" content="noindex">{% endblock %}
+{% block body_class %}bg-canvas{% endblock %}
+
+{% block body %}
+<div x-data="drawer" class="min-h-dvh lg:grid lg:grid-cols-[17.5rem_1fr]" @keydown.escape.window="close()">
+  {# ----------------------------------------------------------- Barre mobile #}
+  <div class="sticky top-0 z-30 flex items-center justify-between gap-3 border-b border-line bg-canvas/85 px-4 py-3 backdrop-blur-xl lg:hidden">
+    <button type="button" class="btn btn-ghost btn-icon" @click="toggle()" :aria-expanded="open" aria-controls="app-sidebar" aria-label="Ouvrir le menu">{% icon "menu" css="text-xl" %}</button>
+    <a href="{% url 'members:home' %}" class="flex items-center gap-2 font-display text-lg font-extrabold"><img src="{% static 'img/logo.svg' %}" alt="" class="size-8"> {{ site.site_name }}</a>
+    <a href="{% url 'members:profile' %}" aria-label="Mon profil"><c-avatar name="{{ user.display_name }}" src="{% if user.person.avatar %}{{ user.person.avatar.url }}{% endif %}" size="size-9" class="text-xs" /></a>
+  </div>
+
+  {# --------------------------------------------------------- Barre latérale #}
+  <div x-show="open" x-cloak x-transition.opacity class="fixed inset-0 z-40 bg-ink-950/60 backdrop-blur-sm lg:hidden" @click="close()" aria-hidden="true"></div>
+  <aside id="app-sidebar"
+         class="fixed inset-y-0 left-0 z-50 flex w-[min(19rem,88vw)] flex-col border-r border-line bg-surface transition-transform duration-300 ease-out max-lg:-translate-x-full max-lg:data-open:translate-x-0 lg:sticky lg:top-0 lg:z-auto lg:h-dvh lg:w-auto"
+         :data-open="open" aria-label="Navigation de l'espace membre">
+    <div class="flex items-center justify-between gap-2 px-5 pt-5 pb-4">
+      <a href="{% url 'home' %}" class="group flex items-center gap-2.5 font-display text-lg font-extrabold">
+        <img src="{% static 'img/logo.svg' %}" alt="" class="size-9 transition duration-700 group-hover:rotate-[30deg]">{{ site.site_name }}
+      </a>
+      <button type="button" class="btn btn-ghost btn-icon btn-sm lg:hidden" @click="close()" aria-label="Fermer le menu">{% icon "x" %}</button>
+    </div>
+
+    <nav class="flex-1 space-y-6 overflow-y-auto px-3 pb-6 text-sm" @click="closeOnLink($event)">
+      <div>
+        <p class="px-3 pb-2 text-[0.7rem] font-bold tracking-[0.14em] text-subtle uppercase">Mon espace</p>
+        <ul class="space-y-0.5">
+          {% include "partials/nav_link.html" with url="/membres/" label="Accueil" icon="house" exact=True %}
+          {% include "partials/nav_link.html" with url="/magasin/" label="Magasin" icon="package" %}
+          {% include "partials/nav_link.html" with url="/membres/notes-de-frais/" label="Notes de frais" icon="receipt" %}
+          {% include "partials/nav_link.html" with url="/membres/aides-projets/" label="Aides à projet" icon="hand-coins" %}
+          {% include "partials/nav_link.html" with url="/membres/ressources/" label="Ressources" icon="folder-open" %}
+          {% include "partials/nav_link.html" with url="/membres/annuaire/" label="Annuaire des membres" icon="contact" %}
+          {% include "partials/nav_link.html" with url="/membres/profil/" label="Mon profil" icon="user-round" %}
+        </ul>
+      </div>
+
+      {% if "backoffice" in caps %}
+      <div>
+        <p class="flex items-center gap-2 px-3 pb-2 text-[0.7rem] font-bold tracking-[0.14em] text-subtle uppercase">{% icon "shield-check" css="text-accent" %} Espace CA</p>
+        <ul class="space-y-0.5">
+          {% include "partials/nav_link.html" with url="/espace-ca/" label="Tableau de bord" icon="layout-dashboard" exact=True %}
+          {% include "partials/nav_link.html" with url="/espace-ca/adhesions/" label="Adhésions" icon="id-card" %}
+          {% include "partials/nav_link.html" with url="/espace-ca/personnes/" label="Personnes" icon="users" %}
+          {% include "partials/nav_link.html" with url="/espace-ca/magasin/" label="Magasin & réservations" icon="boxes" %}
+          {% if "finance" in caps %}{% include "partials/nav_link.html" with url="/espace-ca/tresorerie/" label="Trésorerie" icon="landmark" %}{% endif %}
+          {% include "partials/nav_link.html" with url="/espace-ca/projets/" label="Projets" icon="clapperboard" %}
+          {% include "partials/nav_link.html" with url="/espace-ca/aides/" label="Demandes d'aide" icon="hand-coins" %}
+          {% include "partials/nav_link.html" with url="/espace-ca/ressources/" label="Ressources" icon="folder-open" %}
+          {% include "partials/nav_link.html" with url="/espace-ca/contenus/" label="Contenus du site" icon="pen-line" %}
+          {% include "partials/nav_link.html" with url="/espace-ca/journal/" label="Journal d'activité" icon="history" %}
+        </ul>
+      </div>
+      {% endif %}
+    </nav>
+
+    <div class="space-y-3 border-t border-line p-4">
+      <div x-data="themeSwitcher" class="grid grid-cols-3 gap-1 rounded-full bg-surface-2 p-1 text-xs font-semibold" role="radiogroup" aria-label="Thème d'affichage">
+        <button type="button" role="radio" :aria-checked="isActive('light')" @click="set('light')" class="flex items-center justify-center gap-1 rounded-full py-1.5 transition aria-checked:bg-surface aria-checked:shadow-sm">{% icon "sun" %}<span class="sr-only sm:not-sr-only">Clair</span></button>
+        <button type="button" role="radio" :aria-checked="isActive('system')" @click="set('system')" class="flex items-center justify-center gap-1 rounded-full py-1.5 transition aria-checked:bg-surface aria-checked:shadow-sm">{% icon "monitor" %}<span class="sr-only sm:not-sr-only">Auto</span></button>
+        <button type="button" role="radio" :aria-checked="isActive('dark')" @click="set('dark')" class="flex items-center justify-center gap-1 rounded-full py-1.5 transition aria-checked:bg-surface aria-checked:shadow-sm">{% icon "moon" %}<span class="sr-only sm:not-sr-only">Sombre</span></button>
+      </div>
+      <div class="flex items-center gap-3 rounded-2xl bg-surface-2 p-2.5">
+        <c-avatar name="{{ user.display_name }}" src="{% if user.person.avatar %}{{ user.person.avatar.url }}{% endif %}" size="size-9" class="text-xs" />
+        <div class="min-w-0 flex-1">
+          <p class="truncate text-sm font-semibold">{{ user.display_name|default:"Mon compte" }}</p>
+          <p class="truncate text-xs text-muted">{% if board_roles %}{{ user.person.board_role_labels|join:", " }}{% elif my_membership %}Adhérent·e {{ current_season.label }}{% else %}{{ user.email }}{% endif %}</p>
+        </div>
+        <form method="post" action="{% url 'logout' %}">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-ghost btn-icon btn-sm" aria-label="Se déconnecter" title="Se déconnecter">{% icon "log-out" %}</button>
+        </form>
+      </div>
+      <a href="{% url 'home' %}" class="flex items-center justify-center gap-1.5 text-xs font-medium text-muted hover:text-fg">{% icon "external-link" %} Voir le site public</a>
+    </div>
+  </aside>
+
+  {# ---------------------------------------------------------------- Contenu #}
+  <main id="contenu" class="min-w-0">
+    {% if site.maintenance_mode %}
+    <div class="bg-amber-500 px-4 py-2 text-center text-sm font-semibold text-ink-950">{% icon "triangle-alert" %} Mode maintenance activé : le site public est fermé aux visiteurs.</div>
+    {% endif %}
+    <div class="mx-auto w-full max-w-7xl px-4 py-6 sm:px-6 sm:py-8 lg:px-10 lg:py-10">
+      {% block content %}{% endblock %}
+    </div>
+  </main>
+</div>
+{% endblock %}

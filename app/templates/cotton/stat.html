@@ -1,0 +1,10 @@
+<c-vars label="" value="" hint="" icon="" href="" tone="" />
+<{% if href %}a href="{{ href }}"{% else %}div{% endif %} class="card group flex flex-col gap-3 p-5 {% if href %}transition hover:-translate-y-0.5 hover:border-line-strong{% endif %}">
+  <div class="flex items-center justify-between gap-3">
+    <span class="text-sm font-medium text-muted">{{ label }}</span>
+    {% if icon %}<span class="grid size-9 place-items-center rounded-xl {% if tone == 'warning' %}bg-amber-500/15 text-amber-700 dark:text-amber-300{% elif tone == 'success' %}bg-emerald-500/12 text-emerald-700 dark:text-emerald-300{% elif tone == 'danger' %}bg-red-500/12 text-red-700 dark:text-red-300{% else %}bg-surface-2 text-fg{% endif %}">{% icon icon %}</span>{% endif %}
+  </div>
+  <p class="font-display text-3xl font-extrabold tabular">{{ value }}</p>
+  {% if hint %}<p class="text-xs text-muted">{{ hint }}</p>{% endif %}
+  {{ slot }}
+</{% if href %}a{% else %}div{% endif %}>

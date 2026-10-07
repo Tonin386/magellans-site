@@ -1,10 +1,13 @@
 from django.urls import path
-from .views import *
+
+from . import views
+
+app_name = "api"
 
 urlpatterns = [
-    path("bank", api_bank, name="api-bank"),
-    path("dashboard", api_dashboard, name="api-dashboard"),
-    path("members", api_members, name="api-members"),
-    path("warehouse", api_warehouse, name="api-warehouse"),
-    path("helloasso", webhook_helloasso, name="webhook-helloasso")
+    # URL historique (configurée sur HelloAsso) : chaque commande est revérifiée auprès de l'API.
+    path("helloasso", views.helloasso_webhook, name="helloasso"),
+    path("helloasso/", views.helloasso_webhook),
+    # URL recommandée, avec secret : https://magellans.fr/api/helloasso/<secret>/
+    path("helloasso/<str:secret>/", views.helloasso_webhook, name="helloasso-secret"),
 ]

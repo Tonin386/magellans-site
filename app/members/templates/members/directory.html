@@ -1,0 +1,29 @@
+{% extends "layouts/app.html" %}
+
+{% block title %}Annuaire des membres{% endblock %}
+
+{% block content %}
+<c-page-header title="Annuaire des membres" subtitle="Trouve des membres pour ton prochain tournage : chef·fe opérateur·ice, monteur·se, comédien·ne…">
+  <c-button href="{% url 'members:profile' %}" variant="secondary" icon="user-round">{% if me.show_in_directory %}Modifier ma fiche{% else %}Apparaître dans l'annuaire{% endif %}</c-button>
+</c-page-header>
+
+{% if not allowed %}
+<c-empty icon="lock" title="Réservé aux adhérent·es à jour">
+  L'annuaire est accessible aux membres ayant adhéré pour la saison en cours.
+  <c-slot name="actions"><c-button href="{% url 'join' %}">Adhérer</c-button></c-slot>
+</c-empty>
+{% else %}
+<form class="mb-6 flex flex-col gap-3 sm:flex-row" hx-get="{% url 'members:directory' %}" hx-target="#directory-results" hx-trigger="input changed delay:300ms from:input[name=q], change" hx-push-url="true">
+  <label class="relative flex-1">
+    <span class="sr-only">Rechercher</span>
+    <span class="pointer-events-none absolute top-1/2 left-3.5 -translate-y-1/2 text-subtle">{% icon "search" %}</span>
+    <input type="search" name="q" value="{{ query }}" placeholder="Nom, présentation…" class="input pl-10">
+  </label>
+  <select name="competence" class="select sm:w-64" aria-label="Compétence">
+    <option value="">Toutes les compétences</option>
+    {% for item in all_skills %}<option value="{{ item }}" {% if item == skill %}selected{% endif %}>{{ item }}</option>{% endfor %}
+  </select>
+</form>
+<div id="directory-results">{% include "members/partials/directory_results.html" %}</div>
+{% endif %}
+{% endblock %}

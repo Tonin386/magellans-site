@@ -1,0 +1,19 @@
+{% partialdef subject %}Réservation #{{ order.pk }} : {{ order.get_status_display|lower }}{% endpartialdef %}
+{% partialdef body %}{% autoescape off %}
+Bonjour {{ order.user.first_name }},
+
+{% if order.status == 3 or order.status == 4 %}Bonne nouvelle 🎉 Ta réservation **#{{ order.pk }}** ({{ order.project_name }}) est **acceptée**{% if order.status == 4 %}, avec quelques modifications{% endif %} !
+
+Dernière étape : **signer le contrat de prêt en ligne**, ça prend deux minutes.
+
+[[Signer le contrat|{{ site_url }}{% url 'warehouse:contract' order.pk %}]]{% elif order.status == 2 %}Ta réservation **#{{ order.pk }}** ({{ order.project_name }}) n'a malheureusement pas pu être acceptée.{% elif order.status == 6 %}Le matériel de ta réservation **#{{ order.pk }}** est bien rentré au magasin. Merci, et bon montage ! 🎬{% else %}Le statut de ta réservation **#{{ order.pk }}** est maintenant : **{{ order.get_status_display }}**.{% endif %}
+{% if note %}
+
+**Message de l'équipe du magasin :**
+
+{{ note|blockquote }}{% endif %}
+
+[[Voir ma réservation|{{ site_url }}{{ order.get_absolute_url }}]]
+
+L'équipe {{ site.site_name }}
+{% endautoescape %}{% endpartialdef %}

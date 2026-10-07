@@ -1,0 +1,29 @@
+{% extends "layouts/auth.html" %}
+{% block title %}Créer un compte{% endblock %}
+{% block auth_content %}
+<h1 class="text-3xl font-extrabold">Créer un compte</h1>
+<p class="mt-2 text-muted">Le compte te donne accès au magasin et à l'espace membre. Pour devenir adhérent·e, <a href="{% url 'join' %}" class="link">adhère sur HelloAsso</a> : ton compte sera créé automatiquement.</p>
+<form method="post" class="mt-8 space-y-5" novalidate>
+  {% csrf_token %}
+  <c-form-errors :form="form" />
+  <div class="hp-field" aria-hidden="true"><label for="{{ form.website.id_for_label }}">Ne pas remplir</label>{{ form.website }}</div>
+  {{ form.form_token }}
+  <div class="grid gap-5 sm:grid-cols-2">
+    <c-field :field="form.first_name" />
+    <c-field :field="form.last_name" />
+  </div>
+  <c-field :field="form.email" />
+  <c-field :field="form.phone" />
+  <c-field :field="form.password1" />
+  <c-field :field="form.password2" />
+  <div class="{% if form.tos.errors %}has-error{% endif %}">
+    <label class="flex items-start gap-3 text-sm" for="{{ form.tos.id_for_label }}">
+      {{ form.tos }}
+      <span>J'accepte les <a href="{% url 'page' 'cgu-magasin' %}" target="_blank" class="link">conditions d'utilisation</a> et la <a href="{% url 'page' 'confidentialite' %}" target="_blank" class="link">politique de confidentialité</a>.</span>
+    </label>
+    {% for error in form.tos.errors %}<p class="field-error">{% icon "circle-alert" %} {{ error }}</p>{% endfor %}
+  </div>
+  <button type="submit" class="btn btn-primary btn-lg w-full">Créer mon compte</button>
+</form>
+<p class="mt-8 text-center text-sm text-muted">Déjà inscrit·e ? <a href="{% url 'login' %}" class="link">Se connecter</a></p>
+{% endblock %}
