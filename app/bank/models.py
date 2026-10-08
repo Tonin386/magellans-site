@@ -196,3 +196,9 @@ class Expense(models.Model):
     @property
     def amount_decimal(self):
         return to_decimal(self.amount)
+
+    @property
+    def note(self):
+        """Précisions, sans le « undefined » enregistré par l'ancien site quand le champ était vide."""
+        value = (self.comm or "").strip()
+        return "" if value in {"undefined", "null"} else value

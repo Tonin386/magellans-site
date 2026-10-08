@@ -13,7 +13,7 @@
           <tbody>
             {% for expense in expenses %}
             <tr>
-              <td><span class="font-semibold">{{ expense.title }}</span>{% if expense.comm %}<span class="block text-xs text-muted">{{ expense.comm }}</span>{% endif %}</td>
+              <td><span class="font-semibold">{{ expense.title }}</span>{% if expense.note %}<span class="block text-xs text-muted">{{ expense.note }}</span>{% endif %}</td>
               <td class="whitespace-nowrap">{{ expense.date|date:"j M Y" }}</td>
               <td class="num font-semibold">{{ expense.amount|money }}</td>
               <td>{% if expense.proof %}<a href="{{ expense|private_url:'proof' }}" target="_blank" class="link inline-flex items-center gap-1 text-sm">{% icon "paperclip" %} Ouvrir</a>{% else %}<c-badge tone="danger">Manquant</c-badge>{% endif %}</td>

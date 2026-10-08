@@ -167,6 +167,13 @@ class PersonQuerySet(models.QuerySet):
             return self.none()
         return self.filter(memberships__season=season, memberships__status="active").distinct()
 
+    def in_directory(self):
+        """Fiches visibles dans l'annuaire : volontaires, adhérent·es de la saison en cours ou membres du CA."""
+        people = self.model.objects
+        return self.filter(show_in_directory=True).filter(
+            models.Q(pk__in=people.current_members()) | models.Q(pk__in=people.board())
+        )
+
 
 class Person(models.Model):
     class Kind(models.TextChoices):
@@ -316,6 +323,11 @@ class Person(models.Model):
     @property
     def is_current_member(self):
         return self.current_membership is not None
+
+    @property
+    def is_in_directory(self):
+        """Même règle que ``PersonQuerySet.in_directory``."""
+        return self.show_in_directory and (self.is_board or self.is_current_member)
 
     @property
     def status_label(self):
