@@ -93,9 +93,9 @@ member_password_change = login_required(MemberPasswordChangeView.as_view())
 
 @login_required
 def directory(request):
-    """Annuaire des membres (réservé aux adhérent·es à jour et au CA)."""
+    """Annuaire des membres (réservé aux adhérent·es à jour, CA compris)."""
     person = ensure_person(request.user)
-    allowed = person.is_current_member or has_capability(request.user, "backoffice")
+    allowed = person.is_current_member
     people = Person.objects.none()
     query = (request.GET.get("q") or "").strip()
     skill = (request.GET.get("competence") or "").strip()
@@ -121,7 +121,6 @@ def directory(request):
             "skill": skill,
             "all_skills": all_skills,
             "me": person,
-            "season": Season.current(),
         },
     )
 
