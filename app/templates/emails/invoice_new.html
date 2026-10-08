@@ -1,12 +1,14 @@
 {% partialdef subject %}Nouvelle note de frais : {{ invoice.title }} ({{ invoice.total_amount }} €){% endpartialdef %}
 {% partialdef body %}{% autoescape off %}
 **{{ invoice.author.display_name }}** ({{ invoice.author.email }}) a déposé une note de frais de **{{ invoice.total_amount }} €** pour le projet « {{ invoice.project }} » (rôle : {{ invoice.role }}).
-{% if invoice.comm %}
+{% if new_project %}
+Ce projet vient d'être créé par {{ invoice.author.display_name }} : pense à [compléter sa fiche]({{ site_url }}{% url 'backoffice:project-edit' invoice.project.pk %}) si besoin.
+{% endif %}{% if invoice.comm %}
 {{ invoice.comm|blockquote }}
 {% endif %}
 **Dépenses :**
 {% for expense in expenses %}
-- {{ expense.date|date:"j M Y" }} — {{ expense.title }} : {{ expense.amount }} €{% if not expense.proof %} (**justificatif manquant**){% endif %}{% endfor %}
+- {{ expense.date|date:"j M Y" }} — {{ expense.title }} : {{ expense.amount_decimal }} €{% if not expense.proof %} (**justificatif manquant**){% endif %}{% endfor %}
 
 Les justificatifs sont joints à cet e-mail (dans la limite de 15 Mo) et consultables en ligne.
 

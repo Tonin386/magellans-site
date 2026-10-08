@@ -71,9 +71,11 @@ def invoice_create(request):
                 expense.save()
             invoice.refresh_total()
         invoice.refresh_from_db()
+        if form.new_project is not None:
+            log_activity(request, "project-created", f"Projet « {invoice.project.name} » créé depuis une note de frais.", target=invoice.project, category="projects")
         send_templated_email(
             "invoice_new",
-            {"invoice": invoice, "expenses": list(invoice.expense_set.all())},
+            {"invoice": invoice, "expenses": list(invoice.expense_set.all()), "new_project": form.new_project is not None},
             finance_recipients(),
             reply_to=[request.user.email],
             attachments=_proof_attachments(invoice),

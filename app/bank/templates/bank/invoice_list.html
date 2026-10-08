@@ -18,7 +18,7 @@
           {% if invoice.needs_author_action %}<span class="mt-1 flex items-center gap-1 text-xs font-semibold text-amber-700 dark:text-amber-400">{% icon "circle-alert" %} Action attendue de ta part</span>{% endif %}
         </span>
         <span class="font-display text-lg font-bold tabular">{{ invoice.total_amount|money }}</span>
-        <c-badge tone="{{ invoice.status_tone }}">{{ invoice.get_status_display }}</c-badge>
+        <c-badge tone="{{ invoice.status_tone }}" class="self-start sm:self-auto">{{ invoice.get_status_display }}</c-badge>
       </a>
     </li>
     {% endfor %}

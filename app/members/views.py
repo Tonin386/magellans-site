@@ -73,7 +73,7 @@ def profile(request):
         form.save()
         messages.success(request, "Ton profil est à jour.")
         return redirect("members:profile")
-    return render(request, "members/profile.html", {"form": form, "person": person})
+    return render(request, "members/profile.html", {"form": form, "person": person, "season": Season.current()})
 
 
 class MemberPasswordChangeView(PasswordChangeView):
@@ -100,7 +100,7 @@ def directory(request):
     query = (request.GET.get("q") or "").strip()
     skill = (request.GET.get("competence") or "").strip()
     if allowed:
-        people = Person.objects.current_members().filter(show_in_directory=True).order_by("first_name", "last_name")
+        people = Person.objects.in_directory().order_by("first_name", "last_name")
         if query:
             people = people.filter(
                 Q(first_name__icontains=query) | Q(last_name__icontains=query) | Q(bio__icontains=query)
@@ -108,13 +108,21 @@ def directory(request):
         if skill:
             people = [p for p in people if skill in (p.skills or [])]
     all_skills = sorted(
-        {s for skills in Person.objects.filter(show_in_directory=True).values_list("skills", flat=True) for s in (skills or [])}
-    )
+        {s for skills in Person.objects.in_directory().values_list("skills", flat=True) for s in (skills or [])}
+    ) if allowed else []
     template = "members/partials/directory_results.html" if request.htmx else "members/directory.html"
     return render(
         request,
         template,
-        {"people": people, "allowed": allowed, "query": query, "skill": skill, "all_skills": all_skills, "me": person},
+        {
+            "people": people,
+            "allowed": allowed,
+            "query": query,
+            "skill": skill,
+            "all_skills": all_skills,
+            "me": person,
+            "season": Season.current(),
+        },
     )
 
 

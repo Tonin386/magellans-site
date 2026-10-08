@@ -13,6 +13,12 @@
   <c-slot name="actions"><c-button href="{% url 'join' %}">Adhérer</c-button></c-slot>
 </c-empty>
 {% else %}
+{% if me.show_in_directory and not me.is_in_directory %}
+<c-alert tone="info" title="Ta fiche n'apparaît pas encore" class="mb-6">
+  L'annuaire présente les membres ayant adhéré pour la saison {{ season.label }}. Ta fiche s'affichera dès que ton adhésion sera enregistrée.
+  <a href="{% url 'join' %}" class="link font-semibold">Adhérer</a>
+</c-alert>
+{% endif %}
 <form class="mb-6 flex flex-col gap-3 sm:flex-row" hx-get="{% url 'members:directory' %}" hx-target="#directory-results" hx-trigger="input changed delay:300ms from:input[name=q], change" hx-push-url="true">
   <label class="relative flex-1">
     <span class="sr-only">Rechercher</span>

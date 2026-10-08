@@ -10,18 +10,32 @@ export function enhance(root: ParentNode): void {
     void import("tom-select").then(({ default: TomSelect }) => {
       selects.forEach((select) => {
         if (select.tomselect) return;
+        // data-create : saisie libre ; data-create-prefix distingue une nouvelle valeur d'un
+        // identifiant existant (ex. « nouveau:Titre » pour un projet à créer).
         const allowCreate = select.hasAttribute("data-create");
-        new TomSelect(select, {
-          create: allowCreate,
+        const createPrefix = select.dataset.createPrefix ?? "";
+        const createLabel = select.dataset.createLabel ?? "Ajouter";
+        const instance = new TomSelect(select, {
+          create: allowCreate && createPrefix
+            ? (input, done) => {
+                done({ value: createPrefix + input.trim(), text: input.trim() });
+                return true;
+              }
+            : allowCreate,
           maxOptions: 500,
           allowEmptyOption: true,
-          plugins: select.multiple ? ["remove_button"] : [],
+          // Choix unique : la recherche se tape dans la liste déroulante, le champ garde la sélection.
+          plugins: select.multiple ? ["remove_button"] : ["dropdown_input"],
           render: {
-            no_results: () => '<div class="no-results">Aucun résultat</div>',
+            // Avec la saisie libre, l'option « Créer… » suffit quand rien ne correspond.
+            no_results: () => (allowCreate ? "" : '<div class="no-results">Aucun résultat</div>'),
             option_create: (data: { input: string }, escape: (s: string) => string) =>
-              `<div class="create">Ajouter « ${escape(data.input)} »</div>`,
+              `<div class="create">${escape(createLabel)} « <strong>${escape(data.input)}</strong> »</div>`,
           },
         });
+        if (!select.multiple) {
+          instance.control_input.placeholder = allowCreate ? "Rechercher ou saisir un nouveau nom…" : "Rechercher…";
+        }
       });
     });
   }

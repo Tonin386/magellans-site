@@ -25,6 +25,9 @@
     <c-card title="Annuaire des membres" subtitle="Visible uniquement par les adhérent·es connecté·es, si tu le souhaites.">
       <div class="space-y-5">
         <c-field :field="form.show_in_directory" />
+        {% if person.show_in_directory and not person.is_in_directory %}
+        <c-alert tone="info">Ta fiche s'affichera dans l'annuaire dès que ton adhésion {{ season.label }} sera enregistrée. <a href="{% url 'join' %}" class="link font-semibold">Adhérer</a></c-alert>
+        {% endif %}
         <div class="flex items-center gap-4">
           <c-avatar name="{{ person.full_name|default:user.email }}" src="{% if person.avatar %}{{ person.avatar.url }}{% endif %}" size="size-16" class="text-lg" />
           <div class="flex-1 space-y-2">

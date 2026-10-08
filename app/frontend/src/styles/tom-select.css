@@ -1,17 +1,42 @@
 /* Listes déroulantes avec recherche (Tom Select) aux couleurs du site */
 @import "tom-select/dist/css/tom-select.css";
 
+/* Tom Select recopie les classes du <select> d'origine (dont « select ») sur son conteneur :
+   seul .ts-control doit porter l'apparence du champ, sinon le cadre est dessiné deux fois. */
+.ts-wrapper.select {
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: none;
+  box-shadow: none;
+}
+.ts-wrapper.single { --ts-pr-caret: 2.5rem; }
 .ts-wrapper.single .ts-control,
-.ts-wrapper.multi .ts-control {
+.ts-wrapper.multi .ts-control,
+.ts-wrapper.single.input-active .ts-control {
   border-radius: 0.75rem;
   border-color: var(--ui-line-strong);
-  background: var(--ui-surface);
+  background-color: var(--ui-surface);
   color: var(--ui-fg);
   padding: 0.55rem 0.85rem;
   font-size: 0.875rem;
   box-shadow: 0 1px 2px rgb(0 0 0 / 0.04);
   min-height: 2.65rem;
 }
+.ts-wrapper.single .ts-control {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%238a7d72' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-position: right 0.75rem center;
+  background-repeat: no-repeat;
+  background-size: 1.1rem;
+}
+.ts-wrapper .ts-control .item {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.has-error .ts-wrapper .ts-control { border-color: #ef4444; }
+.ts-wrapper.disabled .ts-control { background-color: var(--ui-surface-2); opacity: 0.6; }
 .ts-wrapper.focus .ts-control {
   border-color: #ffab0e;
   box-shadow: 0 0 0 4px rgb(255 171 14 / 0.2);
@@ -54,3 +79,21 @@
   color: var(--ui-fg);
 }
 .ts-dropdown .option .muted { color: var(--ui-subtle); font-size: 0.75rem; }
+.ts-dropdown .dropdown-input-wrap { padding: 0.5rem; border-bottom: 1px solid var(--ui-line); }
+.ts-dropdown .dropdown-input {
+  width: 100%;
+  border: 1px solid var(--ui-line-strong);
+  border-radius: 0.6rem;
+  background: var(--ui-surface);
+  color: var(--ui-fg);
+  padding: 0.45rem 0.7rem;
+  font-size: 0.875rem;
+  box-shadow: none;
+}
+.ts-dropdown .dropdown-input:focus {
+  outline: none;
+  border-color: #ffab0e;
+  box-shadow: 0 0 0 3px rgb(255 171 14 / 0.2);
+}
+.ts-dropdown .dropdown-input::placeholder { color: var(--ui-subtle); }
+.ts-dropdown .create strong { font-weight: 700; }

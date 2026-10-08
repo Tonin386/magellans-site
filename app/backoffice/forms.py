@@ -334,7 +334,7 @@ class OrderDecisionForm(StyledFormMixin, forms.Form):
     ]
     status = forms.TypedChoiceField(label="Nouveau statut", choices=STATUS_CHOICES, coerce=int)
     note = forms.CharField(
-        label="Message pour le demandeur (facultatif)", required=False, widget=forms.Textarea(attrs={"rows": 3})
+        label="Message pour le demandeur", required=False, widget=forms.Textarea(attrs={"rows": 3})
     )
     notify = forms.BooleanField(label="Prévenir le demandeur par e-mail", required=False, initial=True)
 
@@ -387,7 +387,7 @@ class FundingDecisionForm(StyledFormMixin, forms.ModelForm):
 
 class InvoiceStatusForm(StyledFormMixin, forms.Form):
     status = forms.ChoiceField(label="Nouveau statut", choices=INVOICE_STATUS)
-    note = forms.CharField(label="Message pour l'auteur·ice (facultatif)", required=False, widget=forms.Textarea(attrs={"rows": 3}))
+    note = forms.CharField(label="Message pour l'auteur·ice", required=False, widget=forms.Textarea(attrs={"rows": 3}))
     notify = forms.BooleanField(label="Prévenir par e-mail", required=False, initial=True)
 
 

@@ -17,12 +17,12 @@
     <c-card title="Dépenses">
       <div class="table-wrap">
         <table class="table">
-          <thead><tr><th>Dépense</th><th>Date</th><th class="num">Montant</th><th>Justificatif</th></tr></thead>
+          <thead><tr><th>Dépense</th><th class="hidden sm:table-cell">Date</th><th class="num">Montant</th><th><span class="hidden sm:inline">Justificatif</span><span class="sm:hidden" aria-hidden="true">{% icon "paperclip" %}</span><span class="sr-only sm:hidden">Justificatif</span></th></tr></thead>
           <tbody>
             {% for expense in expenses %}
             <tr>
-              <td><span class="font-semibold">{{ expense.title }}</span>{% if expense.comm %}<span class="block text-xs text-muted">{{ expense.comm }}</span>{% endif %}</td>
-              <td class="whitespace-nowrap">{{ expense.date|date:"j M Y" }}</td>
+              <td><span class="font-semibold">{{ expense.title }}</span><span class="block text-xs text-muted sm:hidden">{{ expense.date|date:"j M Y" }}</span>{% if expense.note %}<span class="block text-xs text-muted">{{ expense.note }}</span>{% endif %}</td>
+              <td class="hidden whitespace-nowrap sm:table-cell">{{ expense.date|date:"j M Y" }}</td>
               <td class="num font-semibold">{{ expense.amount|money }}</td>
               <td>
                 {% if expense.proof %}
@@ -40,7 +40,7 @@
             </tr>
             {% endfor %}
           </tbody>
-          <tfoot><tr><td colspan="2" class="px-4 py-3 text-right font-semibold">Total</td><td class="num px-4 py-3 font-display text-lg font-extrabold">{{ invoice.total_amount|money }}</td><td></td></tr></tfoot>
+          <tfoot><tr><td class="hidden sm:table-cell"></td><td class="px-4 py-3 text-right font-semibold">Total</td><td class="num px-4 py-3 font-display text-lg font-extrabold">{{ invoice.total_amount|money }}</td><td></td></tr></tfoot>
         </table>
       </div>
     </c-card>
