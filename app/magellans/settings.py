@@ -164,6 +164,9 @@ if env("CACHE_BACKEND", "locmem" if (DEBUG or TESTING) else "db") == "db":
         "default": {
             "BACKEND": "django.core.cache.backends.db.DatabaseCache",
             "LOCATION": "django_cache",
+            # 300 entrées par défaut : une vague de robots effacerait les compteurs
+            # anti-abus et les défis déjà utilisés (core/antispam.py).
+            "OPTIONS": {"MAX_ENTRIES": 50_000},
         }
     }
 else:

@@ -1,8 +1,7 @@
 <form id="contact-form" method="post" action="{% url 'contact' %}" hx-post="{% url 'contact' %}" hx-target="this" hx-swap="outerHTML" class="space-y-5" novalidate>
   {% csrf_token %}
   <c-form-errors :form="form" />
-  <div class="hp-field" aria-hidden="true"><label for="{{ form.website.id_for_label }}">Ne pas remplir</label>{{ form.website }}</div>
-  {{ form.form_token }}
+  <c-antispam :form="form" />
   <div class="grid gap-5 sm:grid-cols-2">
     <c-field :field="form.name" />
     <c-field :field="form.email" />

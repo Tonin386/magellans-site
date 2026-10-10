@@ -7,6 +7,7 @@
  */
 import type { AlpineInstance } from "@alpinejs/csp";
 
+import { antispam } from "./antispam";
 import { consent } from "./consent";
 import { defineComponent } from "./define";
 import { countUp } from "./count-up";
@@ -40,6 +41,9 @@ export function applyTheme(theme: Theme): void {
 }
 
 export function registerComponents(Alpine: AlpineInstance): void {
+  // ------------------------------------------- Anti-robots des formulaires publics
+  Alpine.data("antispam", antispam);
+
   // ------------------------------------------------------------- Thème
   Alpine.data("themeSwitcher", () =>
     defineComponent({

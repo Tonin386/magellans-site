@@ -3,6 +3,7 @@
 from collections import Counter
 
 from django.contrib import messages
+from django.core.cache import cache
 from django.db.models import Count, Q
 from django.http import Http404
 from django.shortcuts import get_object_or_404, redirect, render
@@ -10,7 +11,7 @@ from django.utils import timezone
 from django.utils.text import slugify
 from django.views.decorators.http import require_http_methods
 
-from core.antispam import rate_limited
+from core.antispam import message_fingerprint, rate_limited
 from core.audit import log_activity
 from core.emails import send_templated_email
 from core.models import FAQEntry, Page, Service, SiteSettings, TeamMember, TimelineEntry
@@ -64,24 +65,51 @@ def home(request):
     )
 
 
+# Coupe-circuit : au-delà de ce nombre de messages transmis en 24 h (tous expéditeurs
+# confondus), le formulaire renvoie vers l'adresse e-mail jusqu'au lendemain.
+CONTACT_DAILY_LIMIT = 20
+DAY = 24 * 60 * 60
+
+
 @require_http_methods(["POST"])
 def contact(request):
     form = ContactForm(request.POST)
     if rate_limited(request, "contact", limit=5, period=3600):
         form.add_error(None, "Trop de messages envoyés depuis ta connexion. Réessaie dans une heure.")
     elif form.is_valid():
-        site = SiteSettings.load()
         data = form.cleaned_data
-        sent = send_templated_email(
-            "contact_message",
-            {"data": data, "subject_label": dict(form.fields["subject"].choices)[data["subject"]]},
-            site.recipients("contact"),
-            reply_to=[data["email"]],
+        duplicate_key = f"contact:sent:{message_fingerprint(data['message'])}"
+        if rate_limited(request, "contact-email", limit=3, period=DAY, key=data["email"].lower()):
+            form.add_error(None, "Tu nous as déjà écrit plusieurs fois aujourd'hui : nous te répondrons dès que possible.")
+        elif not cache.add(duplicate_key, 1, DAY):
+            form.add_error(None, "Ce message nous a déjà été envoyé : nous te répondrons dès que possible.")
+        elif rate_limited(request, "contact-all", limit=CONTACT_DAILY_LIMIT, period=DAY, key="site"):
+            cache.delete(duplicate_key)
+            form.add_error(None, "Le formulaire reçoit exceptionnellement beaucoup de messages. Écris-nous directement par e-mail, désolé !")
+        else:
+            site = SiteSettings.load()
+            sent = send_templated_email(
+                "contact_message",
+                {"data": data, "subject_label": dict(form.fields["subject"].choices)[data["subject"]]},
+                site.recipients("contact"),
+                reply_to=[data["email"]],
+            )
+            log_activity(request, "contact", f"Message de contact reçu de {data['name']} ({data['email']}).", category="system")
+            if sent:
+                return render(request, "showcase/partials/contact_success.html", {"name": data["name"]})
+            cache.delete(duplicate_key)
+            form.add_error(None, "Le message n'a pas pu être envoyé. Écris-nous directement par e-mail, désolé !")
+    elif form.spam_reasons:
+        # Trace pour repérer un éventuel faux positif (la personne a aussi vu le message d'erreur).
+        data = form.cleaned_data
+        excerpt = " ".join(data.get("message", "").split())[:300]
+        log_activity(
+            request,
+            "contact-blocked",
+            f"Message de contact bloqué par l'anti-spam, de {data.get('name')} ({data.get('email')}) — "
+            f"{' ; '.join(form.spam_reasons)} — « {excerpt} »",
+            category="system",
         )
-        log_activity(request, "contact", f"Message de contact reçu de {data['name']} ({data['email']}).", category="system")
-        if sent:
-            return render(request, "showcase/partials/contact_success.html", {"name": data["name"]})
-        form.add_error(None, "Le message n'a pas pu être envoyé. Écris-nous directement par e-mail, désolé !")
     template = "showcase/partials/contact_form.html" if request.htmx else "showcase/contact_page.html"
     return render(request, template, {"form": form}, status=422 if request.htmx else 200)
 

@@ -1,0 +1,15 @@
+{% comment %}
+Protection anti-robots d'un formulaire public (voir core/antispam.py) : pot de miel
+et défi de preuve de travail, résolu en arrière-plan dès qu'on touche au formulaire.
+Usage : <c-antispam :form="form" />
+{% endcomment %}
+<c-vars form="" />
+<div class="hp-field" aria-hidden="true"><label for="{{ form.website.id_for_label }}">Ne pas remplir</label>{{ form.website }}</div>
+<div class="contents" x-data="antispam" data-salt="{{ form.antispam.salt }}" data-hash="{{ form.antispam.hash }}" data-max="{{ form.antispam.max }}">
+  <input type="hidden" name="form_token" value="{{ form.antispam.token }}">
+  <input type="hidden" name="form_proof" value="" x-ref="proof">
+  <p x-show="waiting" x-cloak role="status" class="flex items-center gap-2 text-xs text-ink-400">
+    <span class="spinner" aria-hidden="true"></span> Vérification anti-robot…
+  </p>
+  <noscript><p class="text-sm text-red-400">JavaScript doit être activé pour envoyer ce formulaire.</p></noscript>
+</div>
